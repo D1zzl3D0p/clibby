@@ -1,0 +1,7 @@
+**/frames/
+**/pixel-frames/
+**/*.blend
+**/*.blend1
+**/render_stats.json
+**/palette_stats.json
+**/palette-preview-*.png

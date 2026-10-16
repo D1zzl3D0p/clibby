@@ -1,5 +1,17 @@
 # New-session handoff
 
+## Current art direction: pixel-rendered 3D cat
+
+The user prefers the 3D motion probe and requested art-direction work at the
+existing pixel density: refined, lively, simple core forms; avoid childish
+proportions and excessive detail. Three editable model studies (lean tabby,
+woodland cat, graphic copper) share the procedural gait and 96×96 grid under
+ignored `results/marmalade-3d-art-direction-2026-10-16/`. The user selected **B,
+woodland cat**, for its strong feline outline and broader applicability. Preserve
+its body/tail silhouette; refine small-scale facial readability next. Production
+integration has not changed. Read the
+[art-direction record](results/2026-10-16-marmalade-art-direction.md).
+
 ## Git baseline and first walking quadruped
 
 Git now exists: `main` preserves the pre-implementation baseline `2dbd7c1`;
