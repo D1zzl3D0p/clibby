@@ -43,3 +43,10 @@ The next art pass concentrates on small-scale facial readability: a clear small
 eye, short muzzle/nose separation and restrained cheek/ear planes, without
 increasing pixel density, enlarging the head or adding fine fur texture. Native
 spatial rig integration remains the subsequent engineering task.
+
+The completed `woodland-refined/` study moves small dark eye shapes outward/up,
+removes the tiny competing iris and strengthens nose contrast. Both headings
+were inspected; 120 native frames retain nine colours and binary alpha. Selected
+and refined recipes, reference PNGs and shared pose input are now versioned in
+`art-studies/marmalade/`, while generated Blender/animation output remains
+ignored. The original B remains preserved alongside the facial refinement.

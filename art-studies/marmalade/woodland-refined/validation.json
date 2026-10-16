@@ -1,0 +1,15 @@
+{
+  "frames": 120,
+  "size": [
+    96,
+    96
+  ],
+  "opaqueColors": 9,
+  "alphaValues": [
+    0,
+    255
+  ],
+  "alphaPixelsDifferentFromBaselineAcross120Frames": 170,
+  "sourceFps": 15,
+  "seconds": 8
+}

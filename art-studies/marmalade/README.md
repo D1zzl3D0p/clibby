@@ -5,6 +5,10 @@ pass and native 96×96 rest reference. `poses.json` is the recorded 120-frame,
 15 fps procedural pose input used for all three comparison studies. Preserve
 this baseline while refining the face or adapting the artwork to runtime rigs.
 
+`woodland-refined/` retains the subsequent small eye/nose readability pass,
+without changing the selected body/head/tail silhouette. It uses the same input
+and commands with `woodland-refined` substituted for `woodland` below.
+
 From the repository root, with Blender installed:
 
 ```
