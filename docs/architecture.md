@@ -1,0 +1,290 @@
+# Architecture direction
+
+Update, 2026-10-10: the trusted built-in 3D werewolf now uses the same resident
+host, controls, sessions and timer through a timerless `SpatialCharacter` adapter.
+Motion proposes model-world travel and accepts host-realized placement; projected
+masks and utility anchors share the scene calibration. Optional 3D dependencies
+retain a 2D-only build. The initial delivery and remaining native/energy checks
+are recorded in [resident 3D](results/2026-10-10-resident-3d.md). Broader downloaded
+3D package and desktop-object contracts remain proposals.
+
+Status: design direction recorded on 2026-10-08 with the resident foundation,
+stage-2 session inputs and initial skeletal pixel characters implemented. The
+[session API](api/session-v1.md) and [character directory format](characters-v1.md)
+are defined; broader world and 3D contracts remain proposals. The benchmark is a comparison fixture; the product
+direction is a modular desktop pet with hand-authored characters and external inputs.
+
+The [resident companion specification](superpowers/specs/2026-10-08-resident-companion-design.md)
+now defines the initial delivery scope and development requirements. Its staged
+resident-first sequence refines the broader direction below. The
+[stage-1 record](results/2026-10-08-resident-foundation.md) and
+[session-input record](results/2026-10-08-session-inputs.md) track software evidence,
+the open monitor-crossing defect and outstanding live IPC/native acceptance.
+
+## Eye blink presentation
+
+A Qt-free `Blink` driver produces bounded openness with seeded sparse deadlines.
+The resident merges those deadlines into its existing timer and redraws only
+when openness changes. Eye activity does not wake limb motion. The 2D pose carries
+one scalar consumed by eye-only artwork transforms; the trusted 3D binding scales
+separate eye joints. Quiet eyes produce no frame ticks, and suppression freezes
+progress without catch-up. Capability is optional. See the
+[blink record](results/2026-10-12-eye-blinks.md).
+
+## Nearby cursor observations
+
+The resident samples the global cursor in logical pixels through a replaceable
+observation source. Posed head position and pet width normalize proximity;
+`Curiosity::Observation::cursorOffset` adds one optional target without renderer
+or OS dependencies. Attention owns procedural gaze/ear goals, uses proximity
+hysteresis and filters small direction changes. The resident converts held
+screen directions into the current planar/spatial frame. Spatial `Motion::face`
+and planar `GroundedController::face` change heading without changing navigation;
+nearby lateral attention can turn either resident in place. Spatial turns use
+the yaw follower and foot replants; planar turns use the facing blend with fixed
+sole contacts. Both share a center zone and cooldown to prevent rapid reversals.
+Cursor polling shares
+the single timer (500 ms distant, 100 ms nearby); suppression cancels it and
+stationary goals settle without frame ticks. See the
+[cursor record](results/2026-10-10-nearby-cursor-attention.md).
+
+## Autonomous behavior and procedural expression
+
+Implemented 2026-10-10: `pet_behavior` is a Qt-free seeded activity chooser. It
+consumes capability, suppression, usable-span and navigation observations and
+emits semantic look, role-goal, impulse, reach and travel commands. Character
+profiles vary timing and selection without introducing package schema changes.
+`ExpressionMotion` tracks independent head, ears, tail and wrist roles through
+bounded second-order followers. Spatial reach tracks endpoints before measured
+arm IK; clearing a goal returns smoothly. Renderers only consume solved poses.
+
+The resident dispatches these intents alongside notification goals and grounded
+navigation. Quiet activity and reaction-phase deadlines join its existing timer;
+only unsettled motion requests frame ticks. Held nonzero goals settle. Hidden,
+paused, dragged, suspended and manually controlled states preempt autonomy;
+missed activities never queue. Existing planted contacts and gait stay shared.
+The frozen fixture retains its legacy ambient behavior. See the
+[implementation record](results/2026-10-10-curious-procedural-behavior.md).
+
+## Direction and current reality
+
+The [pixel-character implementation](results/2026-10-08-pixel-characters.md) adds
+`pet_character_core` (Qt-free bones, poses, actions and bounded secondary motion),
+`pet_character` (validated version-1 JSON/image boundary) and
+`pet_character_render` (retained 2D attachments plus an experimental CPU comparison
+mode). The resident and interactive preview share this production path. Bones and
+art attachments are separate; semantic controller bindings do not enforce a fixed
+anatomy. See the [format](characters-v1.md). 3D shares the proposed action/anatomy
+concepts through a separate optional Qt Quick 3D preview and original Blender
+model. Its Qt-free pose adapter shares ground navigation/contact planning while
+solving the measured 3D rig separately. See the
+[grounded record](results/2026-10-08-grounded-characters.md). Native GPU acceptance
+and resident 3D integration remain open.
+
+Use C++ for the Qt Quick runtime and QML for UI and a future rig editor. Retain the
+current C++17 baseline unless a concrete requirement justifies changing it. Do not add
+Rust merely to create a boundary. Python remains useful for asset tools and experiments.
+
+The preserved benchmark `main.cpp` still combines scenario timing, placement and
+telemetry. The resident `better_pets` entry point composes separate services:
+Qt-free `pets::Runtime` computes suppression and quiet/active deadlines;
+`pets::DesktopHost` owns the transparent window, renderer and display placement;
+`pets::ResidentApplication` owns the precise single-shot timer, menu, preferences,
+lock and RAII macOS sleep observer. `pets::Sessions` owns bounded session policy;
+`IpcServer` validates authenticated local transport before dispatching to the shell.
+`petctl` uses that same public boundary. The shell advances a typed `MotionPhase`
+fixture adapter with cached numeric parameters and reuses `PetItem` without
+benchmark telemetry hooks. Typed notification intents add bounded local pose
+offsets without changing window placement. A shared Qt Widgets card presents
+Open source/Acknowledge above the posed head anchor and in a summoned toolbox;
+a sequence-aware registered dispatcher revalidates user actions. The real
+command-outcome wrapper uses the existing session boundary. Cards own no timers.
+See the [utility slice](results/2026-10-08-utility-slice.md). Hidden and paused states have no
+animation ticks; the same application timer still handles pending session expiry.
+Placement saves on drag release, pause changes, display reconciliation and
+shutdown. Runtime diagnostics retain saturating counters, not frame history.
+
+`pet_motion` still depends on Qt Core and remains the frozen fixture adapter.
+There is no real coding-tool adapter or object-aware behavior. `Runtime` and `Sessions` are
+Qt-free; motion and display still use Qt types. Small internal boundaries do not
+freeze future character contracts. macOS sleep observation is native;
+other platforms use a stub and have no support claim. Actual desktop behavior
+and battery impact still need native evidence.
+
+Initially use modular libraries in one process and typed interfaces on the hot path.
+External integrations can run separately where useful. Compiled component replacement
+requires rebuild/restart; future pack reload is separate. Modularity needs no dynamic plugins.
+
+The frozen twelve-part rig and motion contract in `shared/` remain benchmark fixtures
+and regression references, not a universal anatomy or production character format.
+
+## Proposed boundaries
+
+- **Core:** Qt-free C++ value types and deterministic behavior/motion logic.
+  Typed inputs and outputs; no windows, QML objects, JSON parsing, or OS calls.
+- **Behavior:** chooses actions and targets from inputs, context, and personality.
+  Produces intents such as rest, look, approach, or walk; does not draw or move OS
+  windows directly.
+- **Motion and rig:** resolve intents against available anatomy and capabilities,
+  producing poses, contact states, and desired root motion.
+- **Renderer:** converts pose snapshots into retained Qt Quick scene-graph state.
+  Owns textures, ordered geometry, and render-thread synchronization. It does not
+  choose behaviors or discover desktop geometry.
+- **Desktop host:** owns transparent windows, focus policy, pointer delivery,
+  dragging, logical/device coordinates, visibility, and supported positioning.
+- **Surface providers:** expose typed usable regions, edges, obstacles, or other
+  world geometry, with source identity and lifetime. Start with screen bounds;
+  window edges and integration-supplied surfaces are separate optional providers.
+- **Input adapters:** normalize pointer interaction and external integration data.
+  Permissions and validation precede delivery to the core.
+- **Pack loader:** validates versioned data, resolves capabilities, and constructs
+  immutable character definitions. QML UI controls trusted runtime services.
+
+The flow is input/world observations → behavior intents → motion/pose → renderer
+and desktop host. Host feedback (clipping or unavailable surfaces) returns as typed
+observations. Distinguish desired from realized motion for gait/contact decisions.
+
+## External integration direction
+
+Propose versioned JSON-RPC over local IPC, with `petctl` as one client. Transport,
+endpoint discovery, authentication, and exact schemas remain open. Shell commands,
+editor adapters, and other apps should share this integration path.
+
+Four input surfaces express different lifetimes and semantics:
+- **Commands:** explicit requests such as pause, select a pet, or look at a target;
+  return acceptance, rejection, and any relevant completion status.
+- **Events:** transient observations such as a completed task or notification;
+  they are not indefinitely retained state.
+- **State:** query or subscribe to authoritative runtime state, such as activity,
+  position, and capabilities. Distinguish that from client-supplied, source-owned
+  context such as a focus session, with expiry or explicit clearing.
+- **World objects:** identified targets, regions, or surfaces, with declared
+  coordinate spaces, source ownership, and lifecycle.
+
+Negotiate API version and capabilities. Give each client only approved abilities;
+local IPC alone does not establish permission. Use source identity, bounded
+payloads, rate limits, and TTLs for temporary inputs. Remove or expire stale state
+and objects after disconnect according to an explicit policy. Decide arbitration
+centrally: direct user control, dragging, pause, and safety bounds take priority
+above optional external reactions. Define cancellation and conflict behavior.
+
+Apply backpressure: bounded queues, coalescing of replaceable state, and visible
+rejection or dropping rules for excess events. Translate JSON at the boundary
+into typed messages. No JSON, IPC round trips, or external integration callbacks
+in the per-frame pose/render path. Integrations request intent; they do not stream
+individual joint transforms by default.
+
+## Character packages and authoring
+
+The [catalogue expansion design](superpowers/specs/2026-10-16-catalogue-architecture-design.md)
+maps 18 concepts onto explicit body families and staged actions. Its
+[quadruped slice](superpowers/specs/2026-10-16-quadruped-foundation-design.md)
+starts with four named contacts and a conservative planar walk. Shared support
+math now has two/four-contact overloads and normalized neutral calibration;
+the live loader, planner and spatial adapters still require their subsequent
+quadruped integration. This mathematical foundation alone is not a new walking
+body capability. See the [implementation status](results/2026-10-16-catalogue-and-quadruped-foundation.md).
+
+The initial directory-based production format and the original Mallow/Bramble
+examples are implemented. Editable Pillow shape recipes draw a few raster pieces,
+not animation frames. Grounded Mallow defaults to nearest-filtered CPU composition; Bramble uses
+retained 2D.
+changing characters validates before swapping, preserves session state and resolves
+saved manifest identity within its configured sibling-directory catalog.
+Grounded Mallow uses planted world-space contacts, reach-triggered generated
+steps and analytical two-link IK. Its second-order followers expose frequency,
+damping and response. The host returns realized integer window movement to the
+controller; ground deadlines join the existing timer and disappear on settling.
+Legacy packages retain bounded local springs/contact correction. Full rigid-body
+physics and autonomous wandering remain deferred. Drag motion can drive these
+local responses while direct placement remains host-owned; pause still wins.
+Sparse spring deadlines join the existing application timer and disappear when
+settled. Preview palette/dither/debug modes opt into CPU composition with changed-
+frame texture uploads; their performance and battery suitability are unverified.
+
+Use versioned data-only packages with a manifest, preview, asset attribution and
+licenses, art, rig, and declared capabilities. Keep these concepts distinct:
+
+- Art: hand-authored SVG/PNG sources, exported runtime atlas, filtering, variants.
+- Anatomy: local transforms, pivots, hierarchy, independent draw order, semantic
+  roles, joint limits, and contact anchors.
+- Motion: built-in controller selection and bounded parameters for gaze,
+  breathing, springs, locomotion, or squash/stretch.
+- Personality/behavior: optional preferences, reaction weights, and timing;
+  separate from geometry and executable runtime logic.
+- Interaction: click/petting hit regions, movement colliders, and contact anchors
+  serve different purposes and must not collapse into one conservative polygon.
+
+Support biped, quadruped, and blob designs through capability-aware controllers.
+Skin swaps require compatible rigs; different anatomies supply their own rig and
+bindings. Missing optional features can be disabled; missing required capabilities
+reject the controller with an explanation. Downloaded QML, JavaScript, native plugins,
+and shaders are outside the default pack format.
+
+Start authoring with named layers and a template rig. Later add a GUI for pivots,
+semantic roles, anchors, motion sliders, and previewing representative actions.
+Export a validated ZIP with JSON, images, preview, and licenses. Validate finite
+numbers, acyclic hierarchy, references, atlas bounds, capabilities, archive paths,
+and resource limits. Source artwork should remain editable; runtime SVG rendering
+and a universal animation editor are not prerequisites.
+
+## Raven airborne motion and shared support
+
+Production motion has one Qt-free airborne owner for held, ballistic, powered,
+landing and recovering phases. Wings expose solved shoulder/elbow/wrist state;
+actual extension and stroke velocity generate bounded lift and thrust. Both
+planar and spatial poses consume this state. Missing complete wing anatomy
+leaves a pet unable to fly. A hop remains a ballistic launch.
+
+Window geometry enters as fresh source-qualified horizontal support segments.
+The desktop host owns realized placement and selected support; changing the
+floor reference preserves pending displacement and momentum. New sole contacts
+are bounded to the usable segment. Surface movement carries relative contacts
+and destinations; support loss hands motion back to gravity. Placement and
+walking are shared by every grounded pet, while autonomous flight requires wing
+capability. macOS supplies geometry only; unsupported providers report absence.
+The resident samples available geometry at 500 ms through its existing timer and
+stops sampling under suppression. See the
+[raven record](results/2026-10-10-raven-flight-and-perching.md) for verification.
+
+## Desktop and power constraints
+
+Native adapters must expose capabilities rather than promise identical behavior
+on every OS. In particular, ordinary Wayland clients cannot assume arbitrary
+global positioning, global input, or knowledge of other windows. Desktop-specific
+protocols/extensions may be needed; provide supported fallback behavior when a
+capability is absent. Verify each target platform before committing to its UX.
+
+Use event-driven scheduling. Frozen or hidden pets should stop application
+animation scheduling; sparse deadlines can wake resting behavior. Retain GPU
+resources, avoid per-frame allocations/uploads, and request redraws only when
+visual state changes. Active tick rate, catch-up policy, and interpolation are
+production design choices; the fixture's 60 Hz contract remains unchanged.
+Battery impact is unverified: architecture and process CPU measurements do not establish
+whole-system battery savings or the proposed under-5% target.
+
+## First milestone and open decisions
+
+Prove the boundaries with two materially different body types and two external
+integrations, using the same runtime and API. Select the specific examples before
+implementation. First define typed intent/pose/world interfaces and a small pack
+and IPC contract, then extract the core, renderer, and desktop host in stages.
+Preserve golden-pose regression coverage and verify behavior at each boundary.
+
+Open questions: target OS order; the first two anatomies and integrations;
+capability vocabulary; movement/contact conventions; API versioning and IPC
+transport; client permissions and arbitration; package compatibility policy;
+rest/active timing; and authoring ergonomics. Do not freeze a broad schema before
+those examples exercise it. Marketplace infrastructure, executable third-party
+plugins, full physics, and a general animation tool are outside this milestone.
+
+## Primary references
+
+- [Qt C++/QML integration](https://doc.qt.io/qt-6/qtqml-cppintegration-overview.html)
+- [Qt Quick scene graph and synchronization](https://doc.qt.io/qt-6/qtquick-visualcanvas-scenegraph.html)
+- [Qt security model: QML is trusted application code](https://doc.qt.io/qt-6/shared-security-model.html)
+- [Official Python bindings](https://doc.qt.io/qtforpython-6/)
+- [Qt Bridge for Rust 0.3 beta, September 2026](https://www.qt.io/blog/qt-bridge-for-rust-0.3-cxx-qt-compatibility-and-soundness)
+- [JSON-RPC 2.0 specification](https://www.jsonrpc.org/specification)
+- [Qt local IPC socket](https://doc.qt.io/qt-6/qlocalsocket.html)
+- [Qt window positioning and platform limitations](https://doc.qt.io/qt-6/qwindow.html#position)

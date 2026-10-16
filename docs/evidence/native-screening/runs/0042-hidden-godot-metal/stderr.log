@@ -1,0 +1,4 @@
+ERROR: Can't change visibility of main window.
+   at: set_visible (scene/main/window.cpp:1017)
+ERROR: Can't change visibility of main window.
+   at: set_visible (scene/main/window.cpp:1017)

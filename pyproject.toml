@@ -1,0 +1,9 @@
+[project]
+name = "better-pets-tools"
+version = "0.1.0"
+description = "Development, validation, and resource profiling tools for the Qt desktop pet"
+requires-python = ">=3.12"
+dependencies = ["psutil==7.2.2", "Pillow==12.3.0"]
+
+[tool.uv]
+package = false

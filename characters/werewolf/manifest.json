@@ -1,0 +1,631 @@
+{
+  "version": 1,
+  "id": "werewolf",
+  "name": "Bramble",
+  "controller": "articulated",
+  "width": 144,
+  "height": 176,
+  "origin": [
+    74,
+    162
+  ],
+  "atlas": "atlas.png",
+  "motionEnvelope": 16,
+  "bones": [
+    {
+      "id": "spine",
+      "parent": null,
+      "rest": {
+        "x": 74,
+        "y": 88,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "silhouette",
+      "parent": "spine",
+      "rest": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "skull",
+      "parent": "silhouette",
+      "rest": {
+        "x": 0,
+        "y": -34,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "eyes",
+      "parent": "skull",
+      "rest": {
+        "x": 0,
+        "y": -3,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "ear-l",
+      "parent": "skull",
+      "rest": {
+        "x": -18,
+        "y": -17,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "ear-r",
+      "parent": "skull",
+      "rest": {
+        "x": 17,
+        "y": -17,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "tail",
+      "parent": "silhouette",
+      "rest": {
+        "x": -17,
+        "y": 19,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "upper-arm-l",
+      "parent": "silhouette",
+      "rest": {
+        "x": -23,
+        "y": -10,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "forearm-l",
+      "parent": "upper-arm-l",
+      "rest": {
+        "x": -4,
+        "y": 21,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "thigh-l",
+      "parent": "spine",
+      "rest": {
+        "x": -13,
+        "y": 24,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "shin-l",
+      "parent": "thigh-l",
+      "rest": {
+        "x": 4,
+        "y": 21,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "paw-l",
+      "parent": "shin-l",
+      "rest": {
+        "x": -3,
+        "y": 19,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "upper-arm-r",
+      "parent": "silhouette",
+      "rest": {
+        "x": 23,
+        "y": -10,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "forearm-r",
+      "parent": "upper-arm-r",
+      "rest": {
+        "x": 4,
+        "y": 21,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "thigh-r",
+      "parent": "spine",
+      "rest": {
+        "x": 13,
+        "y": 24,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "shin-r",
+      "parent": "thigh-r",
+      "rest": {
+        "x": 4,
+        "y": 21,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "paw-r",
+      "parent": "shin-r",
+      "rest": {
+        "x": -3,
+        "y": 19,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    }
+  ],
+  "attachments": [
+    {
+      "bone": "tail",
+      "source": [
+        2,
+        2,
+        51,
+        47
+      ],
+      "pivot": [
+        44,
+        8
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 0
+    },
+    {
+      "bone": "thigh-l",
+      "source": [
+        55,
+        2,
+        27,
+        32
+      ],
+      "pivot": [
+        13,
+        5
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 2
+    },
+    {
+      "bone": "shin-l",
+      "source": [
+        84,
+        2,
+        19,
+        29
+      ],
+      "pivot": [
+        9,
+        4
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 3
+    },
+    {
+      "bone": "paw-l",
+      "source": [
+        105,
+        2,
+        28,
+        15
+      ],
+      "pivot": [
+        13,
+        3
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 4
+    },
+    {
+      "bone": "upper-arm-l",
+      "source": [
+        135,
+        2,
+        21,
+        31
+      ],
+      "pivot": [
+        10,
+        5
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 6
+    },
+    {
+      "bone": "forearm-l",
+      "source": [
+        158,
+        2,
+        23,
+        34
+      ],
+      "pivot": [
+        11,
+        5
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 9
+    },
+    {
+      "bone": "thigh-r",
+      "source": [
+        183,
+        2,
+        27,
+        32
+      ],
+      "pivot": [
+        13,
+        5
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 2
+    },
+    {
+      "bone": "shin-r",
+      "source": [
+        212,
+        2,
+        19,
+        29
+      ],
+      "pivot": [
+        9,
+        4
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 3
+    },
+    {
+      "bone": "paw-r",
+      "source": [
+        233,
+        2,
+        28,
+        15
+      ],
+      "pivot": [
+        13,
+        3
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 4
+    },
+    {
+      "bone": "upper-arm-r",
+      "source": [
+        263,
+        2,
+        21,
+        31
+      ],
+      "pivot": [
+        10,
+        5
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 6
+    },
+    {
+      "bone": "forearm-r",
+      "source": [
+        286,
+        2,
+        23,
+        34
+      ],
+      "pivot": [
+        11,
+        5
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 9
+    },
+    {
+      "bone": "silhouette",
+      "source": [
+        311,
+        2,
+        51,
+        57
+      ],
+      "pivot": [
+        25,
+        25
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 7
+    },
+    {
+      "bone": "silhouette",
+      "source": [
+        364,
+        2,
+        51,
+        57
+      ],
+      "pivot": [
+        25,
+        25
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 8
+    },
+    {
+      "bone": "ear-l",
+      "source": [
+        417,
+        2,
+        23,
+        33
+      ],
+      "pivot": [
+        11,
+        29
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 10
+    },
+    {
+      "bone": "ear-r",
+      "source": [
+        442,
+        2,
+        23,
+        33
+      ],
+      "pivot": [
+        11,
+        29
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 10
+    },
+    {
+      "bone": "skull",
+      "source": [
+        2,
+        61,
+        65,
+        53
+      ],
+      "pivot": [
+        32,
+        25
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 11
+    },
+    {
+      "bone": "eyes",
+      "source": [
+        69,
+        61,
+        65,
+        53
+      ],
+      "pivot": [
+        32,
+        22
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 12
+    },
+    {
+      "bone": "skull",
+      "source": [
+        136,
+        61,
+        65,
+        53
+      ],
+      "pivot": [
+        32,
+        25
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 12
+    }
+  ],
+  "bindings": {
+    "body": "spine",
+    "facing": "silhouette",
+    "head": "skull",
+    "eyes": "eyes",
+    "earLeft": "ear-l",
+    "earRight": "ear-r",
+    "tail": "tail",
+    "footLeft": "paw-l",
+    "footRight": "paw-r",
+    "armLeft": "upper-arm-l",
+    "armRight": "upper-arm-r",
+    "forearmLeft": "forearm-l",
+    "forearmRight": "forearm-r"
+  },
+  "contacts": [
+    {
+      "bone": "paw-l",
+      "point": [
+        0,
+        10
+      ]
+    },
+    {
+      "bone": "paw-r",
+      "point": [
+        0,
+        10
+      ]
+    }
+  ],
+  "interaction": [
+    [
+      50,
+      25
+    ],
+    [
+      98,
+      25
+    ],
+    [
+      113,
+      63
+    ],
+    [
+      117,
+      125
+    ],
+    [
+      103,
+      165
+    ],
+    [
+      46,
+      165
+    ],
+    [
+      29,
+      124
+    ],
+    [
+      33,
+      66
+    ]
+  ],
+  "locomotion": {
+    "legs": [
+      {
+        "hip": "thigh-l",
+        "knee": "shin-l",
+        "ankle": "paw-l",
+        "contact": [
+          0,
+          10
+        ],
+        "bend": -1
+      },
+      {
+        "hip": "thigh-r",
+        "knee": "shin-r",
+        "ankle": "paw-r",
+        "contact": [
+          0,
+          10
+        ],
+        "bend": -1
+      }
+    ],
+    "groundY": 162,
+    "speed": 70,
+    "acceleration": 240,
+    "reachThreshold": 13,
+    "stride": 18,
+    "lift": 6,
+    "minStepDuration": 0.18,
+    "maxStepDuration": 0.26,
+    "secondary": {
+      "frequency": 3,
+      "damping": 0.8,
+      "response": 0
+    }
+  }
+}

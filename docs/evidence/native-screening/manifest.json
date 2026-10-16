@@ -1,0 +1,225 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-10-08T18:50:58.159532+00:00",
+  "seed": 20261008,
+  "blocks": [
+    {
+      "block_id": "block-0000",
+      "scenario": "static",
+      "pair": [
+        "godot-metal",
+        "qt-metal"
+      ],
+      "order": [
+        "qt-metal",
+        "godot-metal"
+      ]
+    },
+    {
+      "block_id": "block-0001",
+      "scenario": "static",
+      "pair": [
+        "godot-metal",
+        "qt-metal"
+      ],
+      "order": [
+        "godot-metal",
+        "qt-metal"
+      ]
+    },
+    {
+      "block_id": "block-0002",
+      "scenario": "static",
+      "pair": [
+        "godot-metal",
+        "qt-metal"
+      ],
+      "order": [
+        "qt-metal",
+        "godot-metal"
+      ]
+    },
+    {
+      "block_id": "block-0003",
+      "scenario": "idle-motion",
+      "pair": [
+        "godot-metal",
+        "qt-metal"
+      ],
+      "order": [
+        "godot-metal",
+        "qt-metal"
+      ]
+    },
+    {
+      "block_id": "block-0004",
+      "scenario": "idle-motion",
+      "pair": [
+        "godot-metal",
+        "qt-metal"
+      ],
+      "order": [
+        "qt-metal",
+        "godot-metal"
+      ]
+    },
+    {
+      "block_id": "block-0005",
+      "scenario": "idle-motion",
+      "pair": [
+        "godot-metal",
+        "qt-metal"
+      ],
+      "order": [
+        "godot-metal",
+        "qt-metal"
+      ]
+    },
+    {
+      "block_id": "block-0006",
+      "scenario": "walk-desktop",
+      "pair": [
+        "godot-metal",
+        "qt-metal"
+      ],
+      "order": [
+        "qt-metal",
+        "godot-metal"
+      ]
+    },
+    {
+      "block_id": "block-0007",
+      "scenario": "walk-desktop",
+      "pair": [
+        "godot-metal",
+        "qt-metal"
+      ],
+      "order": [
+        "godot-metal",
+        "qt-metal"
+      ]
+    },
+    {
+      "block_id": "block-0008",
+      "scenario": "walk-desktop",
+      "pair": [
+        "godot-metal",
+        "qt-metal"
+      ],
+      "order": [
+        "godot-metal",
+        "qt-metal"
+      ]
+    },
+    {
+      "block_id": "block-0009",
+      "scenario": "hidden",
+      "pair": [
+        "godot-metal",
+        "qt-metal"
+      ],
+      "order": [
+        "godot-metal",
+        "qt-metal"
+      ]
+    },
+    {
+      "block_id": "block-0010",
+      "scenario": "hidden",
+      "pair": [
+        "godot-metal",
+        "qt-metal"
+      ],
+      "order": [
+        "qt-metal",
+        "godot-metal"
+      ]
+    },
+    {
+      "block_id": "block-0011",
+      "scenario": "hidden",
+      "pair": [
+        "godot-metal",
+        "qt-metal"
+      ],
+      "order": [
+        "qt-metal",
+        "godot-metal"
+      ]
+    }
+  ],
+  "config": {
+    "schema_version": 1,
+    "assets": "/Users/dizzler/Projects/Repos/better-pets/shared",
+    "scenarios": [
+      "static",
+      "idle-motion",
+      "walk-desktop",
+      "hidden"
+    ],
+    "seed": 20261008,
+    "environment": {
+      "foreground_workload": "uncontrolled desktop; replace with controlled workload before energy trials",
+      "power_source": "unverified",
+      "display": "unverified",
+      "functional_equivalence": "unverified"
+    },
+    "candidates": [
+      {
+        "name": "godot-metal",
+        "argv": [
+          "/Users/dizzler/Projects/Repos/better-pets/build/godot/BetterPets-mobile.app/Contents/MacOS/Better Pets Godot",
+          "--rendering-method",
+          "mobile",
+          "--rendering-driver",
+          "metal",
+          "--"
+        ],
+        "renderer": "Mobile/Metal requested; confirm telemetry",
+        "build_id": "Godot 4.7.2 release"
+      },
+      {
+        "name": "qt-metal",
+        "argv": [
+          "/Users/dizzler/Projects/Repos/better-pets/build/qt/pet_qt"
+        ],
+        "renderer": "Metal requested; confirm telemetry",
+        "build_id": "Qt 6.10.3 Release",
+        "environment": {
+          "QSG_RHI_BACKEND": "metal"
+        }
+      }
+    ]
+  },
+  "settings": {
+    "warmup": 5.0,
+    "duration": 20.0,
+    "repeats": 3,
+    "interval": 1,
+    "baseline_duration": 5.0,
+    "cooldown": 1.0,
+    "exit_margin": 5,
+    "startup_timeout": 30,
+    "readiness_poll_interval": 0.005,
+    "required_metric_coverage": 0.9
+  },
+  "host": {
+    "platform": "macOS-27.2-arm64-arm-64bit",
+    "machine": "arm64",
+    "logical_cpus": 12,
+    "python": "3.12.13 (main, Jun  2 2026, 22:42:28) [Clang 22.1.3 ]",
+    "psutil": "7.2.2"
+  },
+  "environment": {
+    "control_status": "uncontrolled; no settings changed or user apps closed",
+    "power_source": "unverified",
+    "display": "unverified",
+    "thermal_recovery": "unverified; cooldown is a delay only",
+    "foreground_workload": "uncontrolled desktop; replace with controlled workload before energy trials",
+    "functional_equivalence": "unverified"
+  },
+  "status": "complete",
+  "mixed_cycles_requested": false,
+  "exact_phase_alignment": false,
+  "completed_runs": 48
+}

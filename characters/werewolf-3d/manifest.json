@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "kind": "builtin-3d",
+  "id": "werewolf-3d",
+  "name": "Werewolf 3D",
+  "asset": "werewolf",
+  "license": "LICENSE"
+}

@@ -1,0 +1,1588 @@
+[
+  {
+    "elapsed_s": 0.001666165997448843,
+    "monotonic_s": 57556.014101666,
+    "interval_s": 0.0,
+    "measurement_interval_s": 0.0,
+    "phase": "initial",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": null,
+        "reason": "first sample has no CPU delta"
+      },
+      "root_cpu_percent": {
+        "value": null,
+        "reason": "first sample has no CPU delta"
+      },
+      "root_rss_bytes": {
+        "value": 64307200,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": null,
+        "reason": "first sample has no CPU delta"
+      },
+      "rss_bytes": {
+        "value": 68157440,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 1.0058199580016662,
+    "monotonic_s": 57557.018255458,
+    "interval_s": 1.0041537920042174,
+    "measurement_interval_s": 0.0,
+    "phase": "warmup",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 97.59461227945147,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 5.5310208896534,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 84164608,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": 4.5651959256662815,
+        "reason": null
+      },
+      "rss_bytes": {
+        "value": 84312064,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 2.006387249995896,
+    "monotonic_s": 57558.01882275,
+    "interval_s": 1.00056729199423,
+    "measurement_interval_s": 0.0,
+    "phase": "warmup",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 64.96314692624668,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 0.12300062273143908,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 84312064,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": 0.07213787676003339,
+        "reason": null
+      },
+      "rss_bytes": {
+        "value": 84312064,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 3.0112412500020582,
+    "monotonic_s": 57559.02367675,
+    "interval_s": 1.004854000006162,
+    "measurement_interval_s": 0.0,
+    "phase": "warmup",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 49.75847237623433,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 0.010731509254014887,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 84312064,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": 0.010731509254014887,
+        "reason": null
+      },
+      "rss_bytes": {
+        "value": 84312064,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 4.016354040999431,
+    "monotonic_s": 57560.028789541,
+    "interval_s": 1.005112790997373,
+    "measurement_interval_s": 0.0,
+    "phase": "warmup",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 37.80670223074954,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 0.06542390126659005,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 84312064,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": 0.06542390126659005,
+        "reason": null
+      },
+      "rss_bytes": {
+        "value": 84312064,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 5.003341582996654,
+    "monotonic_s": 57561.015777083,
+    "interval_s": 0.9869875419972232,
+    "measurement_interval_s": 0.0,
+    "phase": "warmup",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 73.96243305495858,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 0.10301528203107475,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 84328448,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": 0.10301528203107475,
+        "reason": null
+      },
+      "rss_bytes": {
+        "value": 84328448,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 6.005680875001417,
+    "monotonic_s": 57562.018116375,
+    "interval_s": 1.0023392920047627,
+    "measurement_interval_s": 1.0023392920047627,
+    "phase": "measurement",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 45.89264370468929,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 0.0,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 84328448,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": 0.0,
+        "reason": null
+      },
+      "rss_bytes": {
+        "value": 84328448,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 7.008361457999854,
+    "monotonic_s": 57563.020796958,
+    "interval_s": 1.0026805829984369,
+    "measurement_interval_s": 1.0026805829984369,
+    "phase": "measurement",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 42.88504308338016,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 0.013048223154851036,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 84279296,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": 0.013048223154851036,
+        "reason": null
+      },
+      "rss_bytes": {
+        "value": 84279296,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 8.01345879099972,
+    "monotonic_s": 57564.025894291,
+    "interval_s": 1.005097332999867,
+    "measurement_interval_s": 1.005097332999867,
+    "phase": "measurement",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 42.7819262761514,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 0.058887431153900945,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 84279296,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": 0.058887431153900945,
+        "reason": null
+      },
+      "rss_bytes": {
+        "value": 84279296,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 9.016155999997864,
+    "monotonic_s": 57565.0285915,
+    "interval_s": 1.0026972089981427,
+    "measurement_interval_s": 1.0026972089981427,
+    "phase": "measurement",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 43.881642040468,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 0.0,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 84279296,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": 0.0,
+        "reason": null
+      },
+      "rss_bytes": {
+        "value": 84279296,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 10.019518332999723,
+    "monotonic_s": 57566.031953833,
+    "interval_s": 1.00336233300186,
+    "measurement_interval_s": 1.00336233300186,
+    "phase": "measurement",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 34.88271270301115,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 0.0,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 84279296,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": 0.0,
+        "reason": null
+      },
+      "rss_bytes": {
+        "value": 84279296,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 11.023768624996592,
+    "monotonic_s": 57567.036204125,
+    "interval_s": 1.0042502919968683,
+    "measurement_interval_s": 1.0042502919968683,
+    "phase": "measurement",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 36.843404771098356,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 0.006746525297521699,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 84279296,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": 0.006746525297521699,
+        "reason": null
+      },
+      "rss_bytes": {
+        "value": 84279296,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 12.02886316600052,
+    "monotonic_s": 57568.041298666,
+    "interval_s": 1.0050945410039276,
+    "measurement_interval_s": 1.0050945410039276,
+    "phase": "measurement",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 49.74656409088964,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 0.0,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 84279296,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": 0.0,
+        "reason": null
+      },
+      "rss_bytes": {
+        "value": 84279296,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 13.03217633299937,
+    "monotonic_s": 57569.044611833,
+    "interval_s": 1.0033131669988506,
+    "measurement_interval_s": 1.0033131669988506,
+    "phase": "measurement",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 46.84479537002853,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 0.0,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 84279296,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": 0.0,
+        "reason": null
+      },
+      "rss_bytes": {
+        "value": 84279296,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 14.037244499995722,
+    "monotonic_s": 57570.04968,
+    "interval_s": 1.0050681669963524,
+    "measurement_interval_s": 1.0050681669963524,
+    "phase": "measurement",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 96.5108668101598,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 7.239599301752047,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 84951040,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": 7.3748442577297375,
+        "reason": null
+      },
+      "rss_bytes": {
+        "value": 84951040,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 15.041047915998206,
+    "monotonic_s": 57571.053483416,
+    "interval_s": 1.0038034160024836,
+    "measurement_interval_s": 1.0038034160024836,
+    "phase": "measurement",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 155.40891524459727,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 8.027003566184382,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 84967424,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": 7.891588207127998,
+        "reason": null
+      },
+      "rss_bytes": {
+        "value": 84967424,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 16.041271125002822,
+    "monotonic_s": 57572.053706625,
+    "interval_s": 1.0002232090046164,
+    "measurement_interval_s": 1.0002232090046164,
+    "phase": "measurement",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 60.98638728780136,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 0.0,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 84967424,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": 0.0,
+        "reason": null
+      },
+      "rss_bytes": {
+        "value": 84967424,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 17.043675415996404,
+    "monotonic_s": 57573.056110916,
+    "interval_s": 1.0024042909935815,
+    "measurement_interval_s": 1.0024042909935815,
+    "phase": "measurement",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 52.87287821643826,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 0.995444262325474,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 84967424,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": 0.995444262325474,
+        "reason": null
+      },
+      "rss_bytes": {
+        "value": 84967424,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 18.04449483299686,
+    "monotonic_s": 57574.056930333,
+    "interval_s": 1.0008194170004572,
+    "measurement_interval_s": 1.0008194170004572,
+    "phase": "measurement",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 111.90830043711908,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 8.555149764841234,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 84967424,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": 8.64300417544362,
+        "reason": null
+      },
+      "rss_bytes": {
+        "value": 84967424,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 19.048984000000928,
+    "monotonic_s": 57575.0614195,
+    "interval_s": 1.004489167004067,
+    "measurement_interval_s": 1.004489167004067,
+    "phase": "measurement",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 55.74973014924037,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 2.2909268467906587,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 84983808,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": 2.2033933990559826,
+        "reason": null
+      },
+      "rss_bytes": {
+        "value": 84983808,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 20.052468125002633,
+    "monotonic_s": 57576.064903625,
+    "interval_s": 1.0034841250017053,
+    "measurement_interval_s": 1.0034841250017053,
+    "phase": "measurement",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 46.836814681628724,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 0.0,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 84983808,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": 0.0,
+        "reason": null
+      },
+      "rss_bytes": {
+        "value": 84983808,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 21.052759332997084,
+    "monotonic_s": 57577.065194833,
+    "interval_s": 1.0002912079944508,
+    "measurement_interval_s": 1.0002912079944508,
+    "phase": "measurement",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 33.99010181318094,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 0.019899805017682813,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 84983808,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": 0.019899805017682813,
+        "reason": null
+      },
+      "rss_bytes": {
+        "value": 84983808,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 22.056940707996546,
+    "monotonic_s": 57578.069376208,
+    "interval_s": 1.0041813749994617,
+    "measurement_interval_s": 1.0041813749994617,
+    "phase": "measurement",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 39.8334414432247,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 0.0,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 84983808,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": 0.0,
+        "reason": null
+      },
+      "rss_bytes": {
+        "value": 84983808,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 23.06052770799579,
+    "monotonic_s": 57579.072963208,
+    "interval_s": 1.0035869999992428,
+    "measurement_interval_s": 1.0035869999992428,
+    "phase": "measurement",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 46.832013566035315,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 0.00747558507634029,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 84983808,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": 0.00747558507634029,
+        "reason": null
+      },
+      "rss_bytes": {
+        "value": 84983808,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 24.06280883299769,
+    "monotonic_s": 57580.075244333,
+    "interval_s": 1.0022811250019004,
+    "measurement_interval_s": 1.0022811250019004,
+    "phase": "measurement",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 36.91579046838718,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 0.02170728297409016,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 84934656,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": 0.02170728297409016,
+        "reason": null
+      },
+      "rss_bytes": {
+        "value": 84934656,
+        "reason": null
+      },
+      "process_count": {
+        "value": 1,
+        "reason": null
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  },
+  {
+    "elapsed_s": 25.0032484580006,
+    "monotonic_s": 57581.015683958,
+    "interval_s": 0.9404396250029095,
+    "measurement_interval_s": 0.937191167002311,
+    "phase": "measurement",
+    "metrics": {
+      "physical_footprint_bytes": {
+        "value": null,
+        "reason": "physical footprint collection unavailable"
+      },
+      "wakeups_per_second": {
+        "value": null,
+        "reason": "task wakeup collection unavailable"
+      },
+      "whole_system_power_w": {
+        "value": null,
+        "reason": "validated total-system energy telemetry unavailable"
+      },
+      "cpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "gpu_power_w": {
+        "value": null,
+        "reason": "component power collection unavailable"
+      },
+      "system_cpu_percent": {
+        "value": 39.34330180889589,
+        "reason": null
+      },
+      "root_cpu_percent": {
+        "value": 0.4983609660200616,
+        "reason": null
+      },
+      "root_rss_bytes": {
+        "value": 85082112,
+        "reason": null
+      },
+      "process_cpu_percent": {
+        "value": null,
+        "reason": "process tree unavailable: NoSuchProcess"
+      },
+      "rss_bytes": {
+        "value": null,
+        "reason": "process tree unavailable: NoSuchProcess"
+      },
+      "process_count": {
+        "value": null,
+        "reason": "process tree unavailable: NoSuchProcess"
+      },
+      "windowserver_cpu_percent": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      },
+      "windowserver_rss_bytes": {
+        "value": null,
+        "reason": "WindowServer unavailable: AccessDenied"
+      }
+    }
+  }
+]

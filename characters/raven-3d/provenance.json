@@ -1,0 +1,13 @@
+{
+  "authoring_source": "tools/author_raven_3d.py",
+  "source_sha256": "28f2bac7c90a6fb7a8b962bec3e495a863285c4903836bd80ecf573d78763a04",
+  "license": "MIT",
+  "original_geometry": true,
+  "original_texture": true,
+  "reference": "https://www.allaboutbirds.org/guide/Common_Raven/id",
+  "reference_use": "Anatomical proportions only: heavy bill, thick neck, shaggy throat, wedge tail; original mesh and texture, no copied art",
+  "blender_version": "5.2.2 LTS",
+  "blender_build_hash": "d13f752e3b9c",
+  "fallback_distribution": null,
+  "skin_bounds_source": "tools/measure_raven_bounds.py"
+}

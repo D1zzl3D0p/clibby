@@ -1,0 +1,4669 @@
+{
+  "version": 1,
+  "poses": [
+    {
+      "scenario": "static",
+      "tick": 0,
+      "root_offset": [
+        0.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.2,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 0,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -13,
+          "y": -10,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 13,
+          "y": -10,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "static",
+      "tick": 600,
+      "root_offset": [
+        0.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.2,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 0,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -13,
+          "y": -10,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 13,
+          "y": -10,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "hidden",
+      "tick": 0,
+      "root_offset": [
+        0.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.2,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 0,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -13,
+          "y": -10,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 13,
+          "y": -10,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "hidden",
+      "tick": 600,
+      "root_offset": [
+        0.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.2,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 0,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -13,
+          "y": -10,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 13,
+          "y": -10,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "idle-motion",
+      "tick": 0,
+      "root_offset": [
+        0.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.2,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 0,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -13,
+          "y": -10,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 13,
+          "y": -10,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "idle-motion",
+      "tick": 1,
+      "root_offset": [
+        0.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.20013083989060737,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": -0.05234924505375145,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0005234924505375
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0.002143986956441816,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -12.947650754946249,
+          "y": -9.980367288769095,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 13.052349245053751,
+          "y": -9.980367288769095,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "idle-motion",
+      "tick": 30,
+      "root_offset": [
+        0.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.3434301022014271,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": -1.299038105676658,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0129903810567666
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0.04102772786884901,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -11.700961894323342,
+          "y": -9.469669914110089,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 14.299038105676658,
+          "y": -9.469669914110089,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "idle-motion",
+      "tick": 60,
+      "root_offset": [
+        0.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.35355684671070187,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": -1.299038105676658,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0129903810567666
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0.057892443794660395,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -11.700961894323342,
+          "y": -9.25,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 14.299038105676658,
+          "y": -9.25,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "idle-motion",
+      "tick": 120,
+      "root_offset": [
+        0.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.04882320119716274,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 1.2990381056766576,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 0.9870096189432335
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 8.326963285532303e-17,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -14.299038105676658,
+          "y": -10.0,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 11.700961894323342,
+          "y": -10.0,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "idle-motion",
+      "tick": 2700,
+      "root_offset": [
+        0.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.35120186566820766,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": -5.147230440238413e-15,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0.08257433870731327,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -12.999999999999995,
+          "y": -9.25,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 13.000000000000005,
+          "y": -9.25,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "walk-fixed",
+      "tick": 0,
+      "root_offset": [
+        0.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.2,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 0,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -13,
+          "y": -10,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 13,
+          "y": -10,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "walk-fixed",
+      "tick": 1,
+      "root_offset": [
+        0.8376623458519408,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.20029457395151273,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0.057306921316879755,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": -0.057306921316879755,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": -0.05234924505375145,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0005234924505375
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": -0.057306921316879755,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0.057306921316879755,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0.002143986956441816,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -12.947650754946249,
+          "y": -9.980367288769095,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 13.052349245053751,
+          "y": -9.980367288769095,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "walk-fixed",
+      "tick": 30,
+      "root_offset": [
+        22.62741699796952,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.3581285382766676,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": -0.337365886497457,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0.337365886497457,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": -1.299038105676658,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0129903810567666
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0.337365886497457,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": -0.337365886497457,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0.04102772786884901,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -11.700961894323342,
+          "y": -9.469669914110089,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 14.299038105676658,
+          "y": -9.469669914110089,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "walk-fixed",
+      "tick": 60,
+      "root_offset": [
+        32.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.31796114607200876,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": -8.572527594031472e-17,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 8.572527594031472e-17,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": -1.299038105676658,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0129903810567666
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 8.572527594031472e-17,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": -8.572527594031472e-17,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0.057892443794660395,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -11.700961894323342,
+          "y": -9.25,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 14.299038105676658,
+          "y": -9.25,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "walk-fixed",
+      "tick": 120,
+      "root_offset": [
+        1.8129724472473535e-14,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.02679346843839922,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": -2.65835012704098e-15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 2.65835012704098e-15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 1.2990381056766576,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 0.9870096189432335
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 2.65835012704098e-15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": -2.65835012704098e-15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 8.326963285532303e-17,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -14.299038105676658,
+          "y": -10.0,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 11.700961894323342,
+          "y": -10.0,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "walk-fixed",
+      "tick": 180,
+      "root_offset": [
+        -32.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.3148929879523512,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": -1.5006256154011193e-15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 1.5006256154011193e-15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 3.6739403974420594e-16,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 1.5006256154011193e-15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": -1.5006256154011193e-15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": -0.08257433870731343,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -13.0,
+          "y": -10.75,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 13.0,
+          "y": -10.75,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "walk-fixed",
+      "tick": 240,
+      "root_offset": [
+        -3.625944894494707e-14,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.026760773930457726,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": -6.5601500416621346e-15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 6.5601500416621346e-15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": -1.2990381056766587,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0129903810567666
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 6.5601500416621346e-15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": -6.5601500416621346e-15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": -6.589309932106588e-17,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -11.700961894323342,
+          "y": -10.0,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 14.299038105676658,
+          "y": -10.0,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "walk-fixed",
+      "tick": 301,
+      "root_offset": [
+        31.989034399217832,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.31011619659112616,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0.0007535811552998999,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": -0.0007535811552998999,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 1.3244213892883903,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 0.9867557861071161
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": -0.0007535811552998999,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0.0007535811552998999,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0.14494919263221248,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -14.324421389288391,
+          "y": -9.250257006268331,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 11.675578610711609,
+          "y": -9.250257006268331,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "walk-desktop",
+      "tick": 0,
+      "root_offset": [
+        0.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.2,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 0,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -13,
+          "y": -10,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 13,
+          "y": -10,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "walk-desktop",
+      "tick": 1,
+      "root_offset": [
+        0.8376623458519408,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.20029457395151273,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0.057306921316879755,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": -0.057306921316879755,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": -0.05234924505375145,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0005234924505375
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": -0.057306921316879755,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0.057306921316879755,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0.002143986956441816,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -12.947650754946249,
+          "y": -9.980367288769095,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 13.052349245053751,
+          "y": -9.980367288769095,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "walk-desktop",
+      "tick": 60,
+      "root_offset": [
+        32.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.31796114607200876,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": -8.572527594031472e-17,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 8.572527594031472e-17,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": -1.299038105676658,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0129903810567666
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 8.572527594031472e-17,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": -8.572527594031472e-17,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0.057892443794660395,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -11.700961894323342,
+          "y": -9.25,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 14.299038105676658,
+          "y": -9.25,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "walk-desktop",
+      "tick": 180,
+      "root_offset": [
+        -32.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.3148929879523512,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": -1.5006256154011193e-15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 1.5006256154011193e-15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 3.6739403974420594e-16,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 1.5006256154011193e-15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": -1.5006256154011193e-15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": -0.08257433870731343,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -13.0,
+          "y": -10.75,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 13.0,
+          "y": -10.75,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "walk-desktop",
+      "tick": 301,
+      "root_offset": [
+        31.989034399217832,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.31011619659112616,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0.0007535811552998999,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": -0.0007535811552998999,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 1.3244213892883903,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 0.9867557861071161
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": -0.0007535811552998999,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0.0007535811552998999,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0.14494919263221248,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -14.324421389288391,
+          "y": -9.250257006268331,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 11.675578610711609,
+          "y": -9.250257006268331,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "mixed-active",
+      "tick": 0,
+      "root_offset": [
+        0.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.2,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 0,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -13,
+          "y": -10,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 13,
+          "y": -10,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "mixed-active",
+      "tick": 2699,
+      "root_offset": [
+        0.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.35734398938523615,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 0.05234924505375371,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 0.9994765075494625
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0.08398536468019312,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -13.052349245053755,
+          "y": -9.250257006268333,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 12.947650754946245,
+          "y": -9.250257006268333,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "mixed-active",
+      "tick": 2700,
+      "root_offset": [
+        0.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.35120186566820766,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": -5.147230440238413e-15,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0.08257433870731327,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -12.999999999999995,
+          "y": -9.25,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 13.000000000000005,
+          "y": -9.25,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "mixed-active",
+      "tick": 2701,
+      "root_offset": [
+        0.8376623458519408,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.34480904220820097,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0.057306921316879755,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": -0.057306921316879755,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": -0.05234924505374269,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0005234924505375
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": -0.057306921316879755,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0.057306921316879755,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0.08115578491343747,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -12.947650754946258,
+          "y": -9.250257006268331,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 13.052349245053742,
+          "y": -9.250257006268331,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "mixed-active",
+      "tick": 3599,
+      "root_offset": [
+        -31.989034399217832,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.004578202148036892,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": -0.0007535811553376744,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0.0007535811553376744,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 0.05234924505376619,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 0.9994765075494624
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0.0007535811553376744,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": -0.0007535811553376744,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": -0.0022201388875742606,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -13.052349245053767,
+          "y": -10.019632711230916,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 12.947650754946233,
+          "y": -10.019632711230916,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "mixed-active",
+      "tick": 3600,
+      "root_offset": [
+        -32.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.012488910055450025,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": -2.8641774465868574e-14,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 2.8641774465868574e-14,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 7.34788079488412e-15,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 0.9999999999999999
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 2.8641774465868574e-14,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": -2.8641774465868574e-14,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": -8.982806462535907e-16,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -13.000000000000007,
+          "y": -10.000000000000009,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 12.999999999999993,
+          "y": -10.000000000000009,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "mixed-active",
+      "tick": 3601,
+      "root_offset": [
+        -32.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.020823427171433345,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": -0.052349245053751506,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0005234924505375
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0.0021439869564412366,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -12.947650754946249,
+          "y": -9.9803672887691,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 13.052349245053751,
+          "y": -9.9803672887691,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "mixed-active",
+      "tick": 6300,
+      "root_offset": [
+        -32.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.351201865668209,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 2.3516932427448712e-14,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 0.9999999999999998
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0.08257433870731405,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -13.000000000000023,
+          "y": -9.25,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 12.999999999999977,
+          "y": -9.25,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "mixed-active",
+      "tick": 6301,
+      "root_offset": [
+        -31.989034399217836,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.34464746123631196,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0.000753581155280391,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": -0.000753581155280391,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": -0.05234924505373535,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0005234924505373
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": -0.000753581155280391,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0.000753581155280391,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0.08115578491343765,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -12.947650754946265,
+          "y": -9.250257006268331,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 13.052349245053735,
+          "y": -9.250257006268331,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "mixed-rest",
+      "tick": 0,
+      "root_offset": [
+        0.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.2,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 0,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -13,
+          "y": -10,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 13,
+          "y": -10,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "mixed-rest",
+      "tick": 2399,
+      "root_offset": [
+        0.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.2,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 0,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -13,
+          "y": -10,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 13,
+          "y": -10,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "mixed-rest",
+      "tick": 2400,
+      "root_offset": [
+        0.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.2,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 0,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -13,
+          "y": -10,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 13,
+          "y": -10,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "mixed-rest",
+      "tick": 2401,
+      "root_offset": [
+        0.8376623458519408,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.20029457395151273,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0.057306921316879755,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": -0.057306921316879755,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": -0.05234924505375145,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0005234924505375
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": -0.057306921316879755,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0.057306921316879755,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0.002143986956441816,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -12.947650754946249,
+          "y": -9.980367288769095,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 13.052349245053751,
+          "y": -9.980367288769095,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "mixed-rest",
+      "tick": 3299,
+      "root_offset": [
+        -31.989034399217832,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.3192661809185086,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": -0.0007535811553376744,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0.0007535811553376744,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 0.052349245053750035,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 0.9994765075494625
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0.0007535811553376744,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": -0.0007535811553376744,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": -0.08398536468019302,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -13.05234924505375,
+          "y": -10.749742993731669,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 12.94765075494625,
+          "y": -10.749742993731669,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "mixed-rest",
+      "tick": 3300,
+      "root_offset": [
+        -32.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.3148926413918649,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": -2.8641774465868574e-14,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 2.8641774465868574e-14,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 1.83697019872103e-15,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 2.8641774465868574e-14,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": -2.8641774465868574e-14,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": -0.08257433870731347,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -13.000000000000002,
+          "y": -10.75,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 12.999999999999998,
+          "y": -10.75,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "mixed-rest",
+      "tick": 3301,
+      "root_offset": [
+        -32.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.310114043466024,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": -0.052349245053746364,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0005234924505375
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": -0.08115578491343736,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -12.947650754946254,
+          "y": -10.749742993731669,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 13.052349245053746,
+          "y": -10.749742993731669,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "mixed-rest",
+      "tick": 3599,
+      "root_offset": [
+        -32.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.04265601060756358,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 1.2720721442346357,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 0.9872792785576536
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": -0.003787259925070442,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -14.272072144234636,
+          "y": -10.019632711230907,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 11.727927855765364,
+          "y": -10.019632711230907,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "mixed-rest",
+      "tick": 3600,
+      "root_offset": [
+        -32.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.048798134325117565,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 1.2990381056766584,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 0.9870096189432335
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": -1.7999327369331356e-16,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -14.299038105676658,
+          "y": -10.000000000000002,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 11.700961894323342,
+          "y": -10.000000000000002,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "mixed-rest",
+      "tick": 3601,
+      "root_offset": [
+        -32.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.048798134325117565,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 1.2990381056766584,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 0.9870096189432335
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": -1.7999327369331356e-16,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -14.299038105676658,
+          "y": -10.000000000000002,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 11.700961894323342,
+          "y": -10.000000000000002,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "mixed-rest",
+      "tick": 6000,
+      "root_offset": [
+        -32.0,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.048798134325117565,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 1.2990381056766584,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 0.9870096189432335
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0.0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": -1.7999327369331356e-16,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -14.299038105676658,
+          "y": -10.000000000000002,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 11.700961894323342,
+          "y": -10.000000000000002,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    },
+    {
+      "scenario": "mixed-rest",
+      "tick": 6001,
+      "root_offset": [
+        -31.989034399217836,
+        0.0
+      ],
+      "parts": [
+        {
+          "id": "tail",
+          "x": -27,
+          "y": 7,
+          "rotation": 0.05535684493553203,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_left",
+          "x": -19,
+          "y": 24,
+          "rotation": 0.000753581155280391,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "rear_right",
+          "x": 19,
+          "y": 24,
+          "rotation": -0.000753581155280391,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "body",
+          "x": 0,
+          "y": 1.3244213892883896,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 0.9867557861071161
+        },
+        {
+          "id": "front_left",
+          "x": -22,
+          "y": 21,
+          "rotation": -0.000753581155280391,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "front_right",
+          "x": 22,
+          "y": 21,
+          "rotation": 0.000753581155280391,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "head",
+          "x": 0,
+          "y": -38,
+          "rotation": 0.00390557860879319,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_left",
+          "x": -20,
+          "y": -24,
+          "rotation": -0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "ear_right",
+          "x": 20,
+          "y": -24,
+          "rotation": 0.15,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_left",
+          "x": -14.32442138928839,
+          "y": -9.980367288769095,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "eye_right",
+          "x": 11.67557861071161,
+          "y": -9.980367288769095,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        },
+        {
+          "id": "muzzle",
+          "x": 0,
+          "y": 4,
+          "rotation": 0,
+          "scale_x": 1.0,
+          "scale_y": 1.0
+        }
+      ]
+    }
+  ]
+}

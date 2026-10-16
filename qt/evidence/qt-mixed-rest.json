@@ -1,0 +1,265 @@
+{
+    "after_frame_end_events": 22,
+    "after_rendering_events": 22,
+    "backend": "Software",
+    "backend_reason": "Observed rendererInterface graphicsApi at sceneGraphInitialized",
+    "build_type": "Release",
+    "device_pixel_ratio": 1,
+    "display_refresh_rate_reported_hz": 60,
+    "displayed_frames": null,
+    "displayed_frames_reason": "Qt callback timestamps do not establish physical display presentation",
+    "dropped_steps": 0,
+    "duration_seconds": 40.2,
+    "elapsed_seconds": 40.201894792,
+    "engine": "Qt",
+    "engine_version": "6.10.3",
+    "error": null,
+    "final_pose": {
+        "parts": [
+            {
+                "id": "tail",
+                "rotation": 0.25236332719095267,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": -27,
+                "y": 7
+            },
+            {
+                "id": "rear_left",
+                "rotation": 0.32621134833462967,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": -19,
+                "y": 24
+            },
+            {
+                "id": "rear_right",
+                "rotation": -0.32621134833462967,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 19,
+                "y": 24
+            },
+            {
+                "id": "body",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1.006101049646137,
+                "x": 0,
+                "y": -0.6101049646137002
+            },
+            {
+                "id": "front_left",
+                "rotation": -0.32621134833462967,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": -22,
+                "y": 21
+            },
+            {
+                "id": "front_right",
+                "rotation": 0.32621134833462967,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 22,
+                "y": 21
+            },
+            {
+                "id": "head",
+                "rotation": 0.021386394880514963,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 0,
+                "y": -38
+            },
+            {
+                "id": "ear_left",
+                "rotation": -0.15,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": -20,
+                "y": -24
+            },
+            {
+                "id": "ear_right",
+                "rotation": 0.15,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 20,
+                "y": -24
+            },
+            {
+                "id": "eye_left",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": -12.3898950353863,
+                "y": -9.76823725421879
+            },
+            {
+                "id": "eye_right",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 13.6101049646137,
+                "y": -9.76823725421879
+            },
+            {
+                "id": "muzzle",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 0,
+                "y": 4
+            }
+        ],
+        "root_offset": [
+            9.888543819998317,
+            0
+        ]
+    },
+    "frame_event_intervals_seconds": [
+        40.01895191600488,
+        0.016209166999033187,
+        0.016150957999343518,
+        0.024103249998006504,
+        0.00960958399809897,
+        0.017677208001259714,
+        0.01647212500392925,
+        0.016729332994145807,
+        0.02179733400407713,
+        0.011228124996705446,
+        0.016871666004590224
+    ],
+    "frame_event_semantics": "QQuickWindow::frameSwapped: frame queued for presentation, not proof of display; afterRendering and afterFrameEnd are separate Qt render callbacks",
+    "frame_swapped_events": 12,
+    "framebuffer_size": null,
+    "framebuffer_size_derived": [
+        256,
+        256
+    ],
+    "framebuffer_size_reason": "No readback during timed runs; derived size is window size times effectiveDevicePixelRatio",
+    "functional_equivalence_verified": false,
+    "logical_window_size": [
+        256,
+        256
+    ],
+    "measurement_clock_reset": true,
+    "measurement_elapsed_seconds": 40.201894792,
+    "measurement_start_pose": {
+        "parts": [
+            {
+                "id": "tail",
+                "rotation": 0.2,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": -27,
+                "y": 7
+            },
+            {
+                "id": "rear_left",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": -19,
+                "y": 24
+            },
+            {
+                "id": "rear_right",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 19,
+                "y": 24
+            },
+            {
+                "id": "body",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 0,
+                "y": 0
+            },
+            {
+                "id": "front_left",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": -22,
+                "y": 21
+            },
+            {
+                "id": "front_right",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 22,
+                "y": 21
+            },
+            {
+                "id": "head",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 0,
+                "y": -38
+            },
+            {
+                "id": "ear_left",
+                "rotation": -0.15,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": -20,
+                "y": -24
+            },
+            {
+                "id": "ear_right",
+                "rotation": 0.15,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 20,
+                "y": -24
+            },
+            {
+                "id": "eye_left",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": -13,
+                "y": -10
+            },
+            {
+                "id": "eye_right",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 13,
+                "y": -10
+            },
+            {
+                "id": "muzzle",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 0,
+                "y": 4
+            }
+        ],
+        "root_offset": [
+            0,
+            0
+        ]
+    },
+    "platform": "offscreen",
+    "pose_evaluations": 12,
+    "scenario": "mixed-rest",
+    "scheduler_callbacks": 13,
+    "schema_version": 1,
+    "screenshot_mode": false,
+    "simulation_overruns": 0,
+    "warmup_seconds": 0,
+    "window_exposed": false,
+    "window_position_clipped": 0,
+    "window_position_writes": 11,
+    "window_visible": false
+}

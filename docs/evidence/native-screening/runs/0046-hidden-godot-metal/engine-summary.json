@@ -1,0 +1,41 @@
+{
+	"engine": "Godot",
+	"version": "4.7.2-stable (official)",
+	"scenario": "hidden",
+	"backend": "metal",
+	"rendering_method": "mobile",
+	"backend_unavailable_reason": null,
+	"display_driver": "macOS",
+	"graphical_runtime": true,
+	"duration": 25.0,
+	"warmup_seconds": 5.0,
+	"elapsed_seconds": 25.000224,
+	"measurement_seconds": 20.000229,
+	"pose_evaluations": 0,
+	"application_process_callbacks": 0,
+	"engine_frame_post_draw_events": 1,
+	"frame_event_semantics": "RenderingServer.frame_post_draw: engine drawing finished; not physical presentation",
+	"frame_event_intervals_seconds": [],
+	"window_position_writes": 0,
+	"window_clipped_writes": 0,
+	"dropped_steps": 0,
+	"overruns": 0,
+	"logical_surface_size": [
+		256,
+		256
+	],
+	"device_pixel_ratio": 2.0,
+	"framebuffer_size": [
+		512,
+		512
+	],
+	"framebuffer_unavailable_reason": null,
+	"errors": [],
+	"screenshot_written": false,
+	"low_processor_usage_mode": true,
+	"low_processor_sleep_usec": 10000,
+	"audio_driver": "Dummy",
+	"physics_2d": "Dummy",
+	"physics_3d": "Dummy",
+	"keep_screen_on": false
+}

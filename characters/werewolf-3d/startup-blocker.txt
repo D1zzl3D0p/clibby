@@ -1,0 +1,46 @@
+Observed 2026-10-08 on installed Blender 5.2.2 LTS (d13f752e3b9c).
+
+Minimal reproduction (no authoring script involved):
+rtk proxy /opt/homebrew/bin/blender --background --factory-startup --debug-gpu --python-expr 'print(123)'
+
+Process exits 139, before print(123).
+Crash backtrace identifies:
+  _platform_strstr
+  blender::gpu::supports_barycentric_whitelist(MTLDevice)
+  blender::gpu::MTLBackend::metal_is_supported()
+  blender::GPU_backend_type_selection_detect()
+  blender::wm_homefile_read_ex(...)
+  blender::WM_init(...)
+
+Default background startup and factory-startup/debug-gpu-force-workarounds both
+show the same crash. '--gpu-backend opengl' is unsupported; this build exposes
+only 'metal'. The authoring script uses CPU Cycles for review renders but cannot
+choose its render engine before Blender's startup failure.
+
+Attempted official fallback download from download.blender.org with curl; the
+command tool cannot resolve the host here (exit 6). This is an environment
+blocker, not a confirmed authoring/export success or validation of the model.
+
+Official fallback subsequently downloaded by root agent:
+  Blender 4.5.0 macOS arm64, mirror.blender.org
+  Vendor checksum matched SHA256:
+  f03e5ae7813db62c8664176b62638e12c1413cd9d59a883bb7bfb67cbaa8c52e
+  Extracted in /private/tmp/better-pets-blender-unpacked (no system replacement).
+
+Fallback 4.5.0 (8cb6b388974a) also exits 139 before Python with the identical
+supports_barycentric_whitelist -> metal_is_supported -> GPU_backend startup
+backtrace. Explicit --gpu-backend opengl is unsupported in this build, which
+also exposes only [metal]. A pre-Metal/OpenGL compatible fallback is being
+investigated.
+
+RESOLVED FOR OFFLINE AUTHORING:
+  Blender 3.6.0 official mirror.blender.org macOS arm64 fallback,
+  vendor SHA256 verified by root:
+  ab4e1793343b3d22d7481d30d7f2817b7eb19c9dbdc505db3765336545746e63
+  Extracted in /private/tmp/better-pets-blender36-unpacked.
+  Default Metal startup also crashes, but --gpu-backend opengl works.
+  Successful command:
+  rtk proxy /private/tmp/better-pets-blender36-unpacked/Blender/Blender.app/Contents/MacOS/Blender --background --factory-startup --gpu-backend opengl --python tools/author_werewolf.py
+  Real Blender mesh/rig/GLB/Blend/atlas generation and CPU Cycles review renders
+  completed. validation.json records measured exported budgets; newer-build
+  startup failures remain relevant for rerunning with the installed binary.

@@ -1,0 +1,17 @@
+{
+  "authoring_source": "tools/author_werewolf.py",
+  "source_sha256": "c73f96ab2844baf9ba3ebfa87f6ea14b967dc506f06fdf9e36860d40df6d392a",
+  "license": "MIT",
+  "original_geometry": true,
+  "original_texture": true,
+  "reference": "https://dweller.pet/pets/howl/still.png",
+  "reference_use": "Broad brown fur / pale muzzle / torn red shirt direction only; no redistributed reference pixels or traced mesh",
+  "blender_version": "3.6.0",
+  "blender_build_hash": "c7fc78b81ecb",
+  "fallback_distribution": {
+    "source": "official mirror.blender.org Blender3.6.0 macOS arm64",
+    "vendor_sha256_verified_by_root": "ab4e1793343b3d22d7481d30d7f2817b7eb19c9dbdc505db3765336545746e63",
+    "startup_backend": "opengl",
+    "review_renderer": "CPU Cycles"
+  }
+}

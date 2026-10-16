@@ -1,0 +1,166 @@
+{
+  "kind": "candidate",
+  "pid": 48777,
+  "exit_code": 0,
+  "exit_observed_monotonic_s": 57646.222769875,
+  "exit_observation_method": "dedicated blocking wait thread; OS/thread scheduling latency remains",
+  "valid": true,
+  "process_valid": true,
+  "telemetry_complete": true,
+  "metric_scope": "process_tree",
+  "invalid_reasons": [],
+  "metrics": {
+    "physical_footprint_bytes": {
+      "value": null,
+      "reason": "physical footprint collection unavailable",
+      "coverage_fraction": 0.0
+    },
+    "wakeups_per_second": {
+      "value": null,
+      "reason": "task wakeup collection unavailable",
+      "coverage_fraction": 0.0
+    },
+    "whole_system_power_w": {
+      "value": null,
+      "reason": "validated total-system energy telemetry unavailable",
+      "coverage_fraction": 0.0
+    },
+    "cpu_power_w": {
+      "value": null,
+      "reason": "component power collection unavailable",
+      "coverage_fraction": 0.0
+    },
+    "gpu_power_w": {
+      "value": null,
+      "reason": "component power collection unavailable",
+      "coverage_fraction": 0.0
+    },
+    "system_cpu_percent": {
+      "value": 50.08489500190135,
+      "reason": null,
+      "coverage_fraction": 0.99996143544995
+    },
+    "root_cpu_percent": {
+      "value": 1.1998884213217387,
+      "reason": null,
+      "coverage_fraction": 0.99996143544995
+    },
+    "root_rss_bytes": {
+      "value": 292215978.5725769,
+      "reason": null,
+      "coverage_fraction": 0.99996143544995
+    },
+    "process_cpu_percent": {
+      "value": 1.2457542356589615,
+      "reason": null,
+      "coverage_fraction": 0.99996143544995
+    },
+    "rss_bytes": {
+      "value": 292219055.0343456,
+      "reason": null,
+      "coverage_fraction": 0.99996143544995
+    },
+    "process_count": {
+      "value": 1.0,
+      "reason": null,
+      "coverage_fraction": 0.99996143544995
+    },
+    "windowserver_cpu_percent": {
+      "value": null,
+      "reason": "WindowServer unavailable: AccessDenied",
+      "coverage_fraction": 0.0
+    },
+    "windowserver_rss_bytes": {
+      "value": null,
+      "reason": "WindowServer unavailable: AccessDenied",
+      "coverage_fraction": 0.0
+    }
+  },
+  "warmup_s": 5.0,
+  "measurement_s": 20.0,
+  "measurement_start_monotonic_s": 57626.146252125,
+  "measurement_end_monotonic_s": 57646.146252125,
+  "synchronization": {
+    "method": "atomic ready-file observation",
+    "poll_interval_s": 0.005,
+    "last_absent_monotonic_s": 57621.139804875,
+    "ready_observed_monotonic_s": 57621.146252125,
+    "observation_latency_bound_s": 0.006447250001656357,
+    "exact_phase_alignment": false,
+    "reason": "engine publishes readiness immediately before its clock starts; polling and native scheduling introduce origin uncertainty"
+  },
+  "elapsed_s": 25.076711207999324,
+  "startup_elapsed_s": 0.853582458999881,
+  "candidate": "godot-metal",
+  "argv": [
+    "/Users/dizzler/Projects/Repos/better-pets/build/godot/BetterPets-mobile.app/Contents/MacOS/Better Pets Godot",
+    "--rendering-method",
+    "mobile",
+    "--rendering-driver",
+    "metal",
+    "--",
+    "--scenario",
+    "static",
+    "--duration",
+    "25.0",
+    "--warmup",
+    "5.0",
+    "--output",
+    "/Users/dizzler/Projects/Repos/better-pets/results/native-screening/runs/0010-static-godot-metal/engine-summary.json",
+    "--assets",
+    "/Users/dizzler/Projects/Repos/better-pets/shared",
+    "--ready-file",
+    "/Users/dizzler/Projects/Repos/better-pets/results/native-screening/runs/0010-static-godot-metal/ready.json"
+  ],
+  "renderer": "Mobile/Metal requested; confirm telemetry",
+  "engine_summary": {
+    "engine": "Godot",
+    "version": "4.7.2-stable (official)",
+    "scenario": "static",
+    "backend": "metal",
+    "rendering_method": "mobile",
+    "backend_unavailable_reason": null,
+    "display_driver": "macOS",
+    "graphical_runtime": true,
+    "duration": 25.0,
+    "warmup_seconds": 5.0,
+    "elapsed_seconds": 25.012872,
+    "measurement_seconds": 20.012876,
+    "pose_evaluations": 0,
+    "application_process_callbacks": 0,
+    "engine_frame_post_draw_events": 1,
+    "frame_event_semantics": "RenderingServer.frame_post_draw: engine drawing finished; not physical presentation",
+    "frame_event_intervals_seconds": [],
+    "window_position_writes": 0,
+    "window_clipped_writes": 0,
+    "dropped_steps": 0,
+    "overruns": 0,
+    "logical_surface_size": [
+      256,
+      256
+    ],
+    "device_pixel_ratio": 2.0,
+    "framebuffer_size": [
+      512,
+      512
+    ],
+    "framebuffer_unavailable_reason": null,
+    "errors": [],
+    "screenshot_written": false,
+    "low_processor_usage_mode": true,
+    "low_processor_sleep_usec": 10000,
+    "audio_driver": "Dummy",
+    "physics_2d": "Dummy",
+    "physics_3d": "Dummy",
+    "keep_screen_on": false
+  },
+  "comparison_eligible": false,
+  "comparison_reason": "visual, functional and displayed-cadence equivalence not independently established",
+  "run_id": "0010-static-godot-metal",
+  "block_id": "block-0002",
+  "pair": [
+    "godot-metal",
+    "qt-metal"
+  ],
+  "scenario": "static"
+}

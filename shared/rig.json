@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "atlas": "atlas.png",
+  "atlas_size": [256, 192],
+  "surface_size": [256, 256],
+  "origin": [128, 144],
+  "hit_polygon": [[80, 40], [176, 40], [184, 104], [184, 208], [72, 208], [48, 176], [48, 120]],
+  "motion": {"hz": 60, "max_catchup_steps": 4, "root_amplitude": 32, "root_period_ticks": 240, "stride_distance": 32, "tail_stiffness": 36, "tail_damping": 12, "tail_angle_limit": 0.6, "tail_velocity_limit": 2},
+  "parts": [
+    {"id":"tail","parent":null,"rect":[0,0,44,20],"position":[-27,7],"pivot":[40,10],"size":[44,20],"rotation":0.2},
+    {"id":"rear_left","parent":null,"rect":[64,0,15,32],"position":[-19,24],"pivot":[7.5,5],"size":[15,32],"rotation":0},
+    {"id":"rear_right","parent":null,"rect":[128,0,15,32],"position":[19,24],"pivot":[7.5,5],"size":[15,32],"rotation":0},
+    {"id":"body","parent":null,"rect":[192,0,64,58],"position":[0,0],"pivot":[32,29],"size":[64,58],"rotation":0},
+    {"id":"front_left","parent":"body","rect":[0,64,15,30],"position":[-22,21],"pivot":[7.5,4],"size":[15,30],"rotation":0},
+    {"id":"front_right","parent":"body","rect":[64,64,15,30],"position":[22,21],"pivot":[7.5,4],"size":[15,30],"rotation":0},
+    {"id":"head","parent":"body","rect":[128,64,62,54],"position":[0,-38],"pivot":[31,35],"size":[62,54],"rotation":0},
+    {"id":"ear_left","parent":"head","rect":[192,64,23,34],"position":[-20,-24],"pivot":[11.5,30],"size":[23,34],"rotation":-0.15},
+    {"id":"ear_right","parent":"head","rect":[0,128,23,34],"position":[20,-24],"pivot":[11.5,30],"size":[23,34],"rotation":0.15},
+    {"id":"eye_left","parent":"head","rect":[64,128,10,13],"position":[-13,-10],"pivot":[5,6.5],"size":[10,13],"rotation":0},
+    {"id":"eye_right","parent":"head","rect":[128,128,10,13],"position":[13,-10],"pivot":[5,6.5],"size":[10,13],"rotation":0},
+    {"id":"muzzle","parent":"head","rect":[192,128,28,18],"position":[0,4],"pivot":[14,9],"size":[28,18],"rotation":0}
+  ]
+}

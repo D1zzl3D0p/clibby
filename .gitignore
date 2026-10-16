@@ -1,0 +1,12 @@
+/.deps/
+/.cache/
+/.venv/
+/build/
+/results/
+/.superpowers/
+__pycache__/
+*.pyc
+*.DS_Store
+bench/config.local.json
+aqtinstall.log
+/.serena/

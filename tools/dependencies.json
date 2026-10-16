@@ -1,0 +1,19 @@
+{
+  "qt": {
+    "version": "6.10.3",
+    "installer": "aqtinstall==3.3.0",
+    "archive_checksums_source": "official .sha256 sidecars; downloaded 2026-10-08",
+    "archives": [
+      {
+        "module": "qtbase",
+        "url": "https://download.qt.io/online/qtsdkrepository/mac_x64/desktop/qt6_6103/qt6_6103/qt.qt6.6103.clang_64/6.10.3-0-202603310405qtbase-MacOS-MacOS_15-Clang-MacOS-MacOS_15-X86_64-ARM64.7z",
+        "sha256": "998227b59cfa2c59b063bbfddeefff312d74fa99da1647544df87a14ffa4bb77"
+      },
+      {
+        "module": "qtdeclarative",
+        "url": "https://download.qt.io/online/qtsdkrepository/mac_x64/desktop/qt6_6103/qt6_6103/qt.qt6.6103.clang_64/6.10.3-0-202603310405qtdeclarative-MacOS-MacOS_15-Clang-MacOS-MacOS_15-X86_64-ARM64.7z",
+        "sha256": "8a612bfd083af62c56a854112201d179a824ea3cfd1551c4f2f1ea9e365b972d"
+      }
+    ]
+  }
+}

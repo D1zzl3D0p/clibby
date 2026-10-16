@@ -1,0 +1,254 @@
+{
+    "after_frame_end_events": 0,
+    "after_rendering_events": 0,
+    "backend": null,
+    "backend_reason": "Scene graph never initialized (expected for hidden)",
+    "build_type": "Release",
+    "device_pixel_ratio": 2,
+    "display_refresh_rate_reported_hz": 120,
+    "displayed_frames": null,
+    "displayed_frames_reason": "Qt callback timestamps do not establish physical display presentation",
+    "dropped_steps": 0,
+    "duration_seconds": 25,
+    "elapsed_seconds": 25.0087555,
+    "engine": "Qt",
+    "engine_version": "6.10.3",
+    "error": null,
+    "final_pose": {
+        "parts": [
+            {
+                "id": "tail",
+                "rotation": 0.2,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": -27,
+                "y": 7
+            },
+            {
+                "id": "rear_left",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": -19,
+                "y": 24
+            },
+            {
+                "id": "rear_right",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 19,
+                "y": 24
+            },
+            {
+                "id": "body",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 0,
+                "y": 0
+            },
+            {
+                "id": "front_left",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": -22,
+                "y": 21
+            },
+            {
+                "id": "front_right",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 22,
+                "y": 21
+            },
+            {
+                "id": "head",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 0,
+                "y": -38
+            },
+            {
+                "id": "ear_left",
+                "rotation": -0.15,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": -20,
+                "y": -24
+            },
+            {
+                "id": "ear_right",
+                "rotation": 0.15,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 20,
+                "y": -24
+            },
+            {
+                "id": "eye_left",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": -13,
+                "y": -10
+            },
+            {
+                "id": "eye_right",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 13,
+                "y": -10
+            },
+            {
+                "id": "muzzle",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 0,
+                "y": 4
+            }
+        ],
+        "root_offset": [
+            0,
+            0
+        ]
+    },
+    "frame_event_intervals_seconds": [
+    ],
+    "frame_event_semantics": "QQuickWindow::frameSwapped: frame queued for presentation, not proof of display; afterRendering and afterFrameEnd are separate Qt render callbacks",
+    "frame_swapped_events": 0,
+    "framebuffer_size": null,
+    "framebuffer_size_derived": [
+        512,
+        512
+    ],
+    "framebuffer_size_reason": "No readback during timed runs; derived size is window size times effectiveDevicePixelRatio",
+    "functional_equivalence_verified": false,
+    "logical_window_size": [
+        256,
+        256
+    ],
+    "measurement_clock_reset": true,
+    "measurement_elapsed_seconds": 20.00728175,
+    "measurement_start_pose": {
+        "parts": [
+            {
+                "id": "tail",
+                "rotation": 0.2,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": -27,
+                "y": 7
+            },
+            {
+                "id": "rear_left",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": -19,
+                "y": 24
+            },
+            {
+                "id": "rear_right",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 19,
+                "y": 24
+            },
+            {
+                "id": "body",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 0,
+                "y": 0
+            },
+            {
+                "id": "front_left",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": -22,
+                "y": 21
+            },
+            {
+                "id": "front_right",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 22,
+                "y": 21
+            },
+            {
+                "id": "head",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 0,
+                "y": -38
+            },
+            {
+                "id": "ear_left",
+                "rotation": -0.15,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": -20,
+                "y": -24
+            },
+            {
+                "id": "ear_right",
+                "rotation": 0.15,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 20,
+                "y": -24
+            },
+            {
+                "id": "eye_left",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": -13,
+                "y": -10
+            },
+            {
+                "id": "eye_right",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 13,
+                "y": -10
+            },
+            {
+                "id": "muzzle",
+                "rotation": 0,
+                "scale_x": 1,
+                "scale_y": 1,
+                "x": 0,
+                "y": 4
+            }
+        ],
+        "root_offset": [
+            0,
+            0
+        ]
+    },
+    "platform": "cocoa",
+    "pose_evaluations": 0,
+    "scenario": "hidden",
+    "scheduler_callbacks": 0,
+    "schema_version": 1,
+    "screenshot_mode": false,
+    "simulation_overruns": 0,
+    "warmup_seconds": 5,
+    "window_exposed": false,
+    "window_position_clipped": 0,
+    "window_position_writes": 0,
+    "window_visible": false
+}

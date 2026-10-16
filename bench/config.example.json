@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "assets": "../shared",
+  "scenarios": ["static", "idle-motion", "walk-fixed", "walk-desktop", "hidden", "mixed-active", "mixed-rest"],
+  "seed": 20261008,
+  "environment": {
+    "foreground_workload": "uncontrolled desktop; replace with controlled workload before energy trials",
+    "power_source": "unverified",
+    "display": "unverified",
+    "functional_equivalence": "unverified"
+  },
+  "candidates": [
+    {
+      "name": "qt-metal",
+      "argv": ["../build/qt/pet_qt"],
+      "renderer": "Metal requested; confirm telemetry",
+      "build_id": "Qt 6.10.3 Release",
+      "environment": {"QSG_RHI_BACKEND": "metal"}
+    }
+  ]
+}

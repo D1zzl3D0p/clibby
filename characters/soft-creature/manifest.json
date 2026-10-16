@@ -1,0 +1,471 @@
+{
+  "version": 1,
+  "id": "soft-creature",
+  "name": "Mallow",
+  "controller": "soft",
+  "width": 128,
+  "height": 144,
+  "origin": [
+    64,
+    125
+  ],
+  "atlas": "atlas.png",
+  "motionEnvelope": 16,
+  "bones": [
+    {
+      "id": "trunk",
+      "parent": null,
+      "rest": {
+        "x": 64,
+        "y": 86,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "silhouette",
+      "parent": "trunk",
+      "rest": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "face",
+      "parent": "silhouette",
+      "rest": {
+        "x": 3,
+        "y": -25,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "eyes",
+      "parent": "face",
+      "rest": {
+        "x": 0,
+        "y": 1,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "ear-l",
+      "parent": "face",
+      "rest": {
+        "x": -9,
+        "y": -13,
+        "rotation": -0.08,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "ear-r",
+      "parent": "face",
+      "rest": {
+        "x": 8,
+        "y": -13,
+        "rotation": 0.08,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "tail",
+      "parent": "silhouette",
+      "rest": {
+        "x": -16,
+        "y": 17,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "hip-l",
+      "parent": "trunk",
+      "rest": {
+        "x": -9,
+        "y": 14,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "knee-l",
+      "parent": "hip-l",
+      "rest": {
+        "x": 3,
+        "y": 11,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "foot-l",
+      "parent": "knee-l",
+      "rest": {
+        "x": -3,
+        "y": 11,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "hip-r",
+      "parent": "trunk",
+      "rest": {
+        "x": 9,
+        "y": 14,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "knee-r",
+      "parent": "hip-r",
+      "rest": {
+        "x": 3,
+        "y": 11,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "foot-r",
+      "parent": "knee-r",
+      "rest": {
+        "x": -3,
+        "y": 11,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    }
+  ],
+  "attachments": [
+    {
+      "bone": "hip-l",
+      "source": [
+        2,
+        2,
+        23,
+        19
+      ],
+      "pivot": [
+        11,
+        3
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 2
+    },
+    {
+      "bone": "knee-l",
+      "source": [
+        27,
+        2,
+        23,
+        19
+      ],
+      "pivot": [
+        11,
+        3
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 3
+    },
+    {
+      "bone": "foot-l",
+      "source": [
+        52,
+        2,
+        15,
+        7
+      ],
+      "pivot": [
+        7,
+        3
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 4
+    },
+    {
+      "bone": "hip-r",
+      "source": [
+        69,
+        2,
+        23,
+        19
+      ],
+      "pivot": [
+        11,
+        3
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 2
+    },
+    {
+      "bone": "knee-r",
+      "source": [
+        94,
+        2,
+        23,
+        19
+      ],
+      "pivot": [
+        11,
+        3
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 3
+    },
+    {
+      "bone": "foot-r",
+      "source": [
+        119,
+        2,
+        15,
+        7
+      ],
+      "pivot": [
+        7,
+        3
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 4
+    },
+    {
+      "bone": "tail",
+      "source": [
+        136,
+        2,
+        42,
+        25
+      ],
+      "pivot": [
+        35,
+        6
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 0
+    },
+    {
+      "bone": "silhouette",
+      "source": [
+        180,
+        2,
+        45,
+        56
+      ],
+      "pivot": [
+        22,
+        24
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 5
+    },
+    {
+      "bone": "ear-l",
+      "source": [
+        227,
+        2,
+        15,
+        32
+      ],
+      "pivot": [
+        7,
+        28
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 8
+    },
+    {
+      "bone": "ear-r",
+      "source": [
+        244,
+        2,
+        15,
+        28
+      ],
+      "pivot": [
+        7,
+        24
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 8
+    },
+    {
+      "bone": "face",
+      "source": [
+        261,
+        2,
+        49,
+        39
+      ],
+      "pivot": [
+        24,
+        19
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 10
+    },
+    {
+      "bone": "eyes",
+      "source": [
+        312,
+        2,
+        49,
+        39
+      ],
+      "pivot": [
+        24,
+        20
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 12
+    }
+  ],
+  "bindings": {
+    "body": "trunk",
+    "facing": "silhouette",
+    "head": "face",
+    "eyes": "eyes",
+    "earLeft": "ear-l",
+    "earRight": "ear-r",
+    "tail": "tail",
+    "footLeft": "foot-l",
+    "footRight": "foot-r"
+  },
+  "contacts": [
+    {
+      "bone": "foot-l",
+      "point": [
+        0,
+        3
+      ]
+    },
+    {
+      "bone": "foot-r",
+      "point": [
+        0,
+        3
+      ]
+    }
+  ],
+  "interaction": [
+    [
+      47,
+      40
+    ],
+    [
+      64,
+      38
+    ],
+    [
+      83,
+      41
+    ],
+    [
+      89,
+      87
+    ],
+    [
+      82,
+      128
+    ],
+    [
+      45,
+      128
+    ],
+    [
+      39,
+      92
+    ]
+  ],
+  "locomotion": {
+    "legs": [
+      {
+        "hip": "hip-l",
+        "knee": "knee-l",
+        "ankle": "foot-l",
+        "contact": [
+          0,
+          3
+        ],
+        "bend": -1
+      },
+      {
+        "hip": "hip-r",
+        "knee": "knee-r",
+        "ankle": "foot-r",
+        "contact": [
+          0,
+          3
+        ],
+        "bend": -1
+      }
+    ],
+    "groundY": 125,
+    "speed": 50,
+    "acceleration": 200,
+    "reachThreshold": 8,
+    "stride": 12,
+    "lift": 4,
+    "minStepDuration": 0.18,
+    "maxStepDuration": 0.24,
+    "secondary": {
+      "frequency": 3,
+      "damping": 0.8,
+      "response": 0
+    }
+  }
+}

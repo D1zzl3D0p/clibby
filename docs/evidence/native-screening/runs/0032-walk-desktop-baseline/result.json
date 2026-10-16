@@ -1,0 +1,93 @@
+{
+  "kind": "baseline",
+  "pid": null,
+  "exit_code": null,
+  "exit_observed_monotonic_s": null,
+  "exit_observation_method": null,
+  "valid": true,
+  "process_valid": null,
+  "telemetry_complete": null,
+  "metric_scope": "no_pet",
+  "invalid_reasons": [],
+  "metrics": {
+    "physical_footprint_bytes": {
+      "value": null,
+      "reason": "physical footprint collection unavailable",
+      "coverage_fraction": 0.0
+    },
+    "wakeups_per_second": {
+      "value": null,
+      "reason": "task wakeup collection unavailable",
+      "coverage_fraction": 0.0
+    },
+    "whole_system_power_w": {
+      "value": null,
+      "reason": "validated total-system energy telemetry unavailable",
+      "coverage_fraction": 0.0
+    },
+    "cpu_power_w": {
+      "value": null,
+      "reason": "component power collection unavailable",
+      "coverage_fraction": 0.0
+    },
+    "gpu_power_w": {
+      "value": null,
+      "reason": "component power collection unavailable",
+      "coverage_fraction": 0.0
+    },
+    "system_cpu_percent": {
+      "value": 115.30930622205341,
+      "reason": null,
+      "coverage_fraction": 0.9990265000000363
+    },
+    "process_cpu_percent": {
+      "value": null,
+      "reason": "baseline has no pet process",
+      "coverage_fraction": 0.0
+    },
+    "rss_bytes": {
+      "value": null,
+      "reason": "baseline has no pet process",
+      "coverage_fraction": 0.0
+    },
+    "root_cpu_percent": {
+      "value": null,
+      "reason": "baseline has no pet process",
+      "coverage_fraction": 0.0
+    },
+    "root_rss_bytes": {
+      "value": null,
+      "reason": "baseline has no pet process",
+      "coverage_fraction": 0.0
+    },
+    "process_count": {
+      "value": null,
+      "reason": "baseline has no pet process",
+      "coverage_fraction": 0.0
+    },
+    "windowserver_cpu_percent": {
+      "value": null,
+      "reason": "WindowServer unavailable: AccessDenied",
+      "coverage_fraction": 0.0
+    },
+    "windowserver_rss_bytes": {
+      "value": null,
+      "reason": "WindowServer unavailable: AccessDenied",
+      "coverage_fraction": 0.0
+    }
+  },
+  "warmup_s": 0,
+  "measurement_s": 5.0,
+  "measurement_start_monotonic_s": 57978.527609458,
+  "measurement_end_monotonic_s": 57983.527609458,
+  "synchronization": null,
+  "elapsed_s": 5.0007637920061825,
+  "baseline_position": "before",
+  "run_id": "0032-walk-desktop-baseline",
+  "block_id": "block-0008",
+  "pair": [
+    "godot-metal",
+    "qt-metal"
+  ],
+  "scenario": "walk-desktop"
+}

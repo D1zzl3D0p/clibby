@@ -1,0 +1,1 @@
+Original raven geometry and layered artwork authored for Better Pets. Source: tools/author_raven_2d.py. MIT license. No external artwork. Anatomy reference: Cornell Lab, Common Raven identification (https://www.allaboutbirds.org/guide/Common_Raven/id); no reference artwork copied.
