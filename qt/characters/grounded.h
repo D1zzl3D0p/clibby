@@ -4,6 +4,8 @@
 #include "motion_support.h"
 #include "drop_motion.h"
 #include <array>
+#include <stdexcept>
+#include <type_traits>
 namespace pets::character {
 struct GroundSpan {
   double minimum = 0, maximum = 0;
@@ -29,7 +31,7 @@ inline constexpr double defaultFootPlantDuration = .01;
 struct GroundedState {
   double rootX = 0, velocity = 0, targetX = 0;
   int facing = 1;
-  std::array<FootState, 2> feet;
+  LimbArray<FootState> feet;
   bool active = false;
   double facingBlend = 1;
   double verticalVelocity = 0, verticalAcceleration = 0;
@@ -37,6 +39,8 @@ struct GroundedState {
   double elevation = 0;
   std::array<WingState,2> wings{};
   bool poweredFlight = false;
+  bool anyFootSwinging() const;
+  GroundSpan soleExtent() const;
 };
 // propose stores one bounded elapsed interval; realize consumes it exactly
 // once. rootX is host-presented world anchor X. Pose coordinates stay
@@ -81,7 +85,18 @@ public:
   void setSwingAdmission(bool allowed) { swingAdmission_ = allowed; }
   void setSupportTuning(SupportTuning);
   void setSupportContacts(std::array<bool, 2> grounded);
+  // A constrained array overload keeps legacy braced two-contact calls unambiguous.
+  template<std::size_t N, std::enable_if_t<N == 4, int> = 0>
+  void setSupportContacts(std::array<bool, N> grounded) {
+    if(feet_.size()!=N) throw std::runtime_error("support contacts anatomy mismatch");
+    supportContacts_=grounded;
+  }
   void setSupportGeometry(std::array<pets::motion::SupportLeg, 2>);
+  template<std::size_t N, std::enable_if_t<N == 4, int> = 0>
+  void setSupportGeometry(std::array<pets::motion::SupportLeg, N> geometry) {
+    if(feet_.size()!=N) throw std::runtime_error("support geometry anatomy mismatch");
+    supportGeometry_=geometry; hasSupportGeometry_=true;
+  }
   // Absolute sole limits for future touchdowns; nullopt preserves desktop gait.
   // Existing stance pins are never clamped or moved by this setter.
   void setSupportBounds(std::optional<GroundSpan> absoluteSoleInterval);
@@ -93,10 +108,10 @@ private:
   Locomotion tuning_;
   SecondaryTuning secondaryTuning_;
   SupportTuning supportTuning_;
-  std::array<pets::motion::SupportLeg, 2> supportGeometry_;
+  LimbArray<pets::motion::SupportLeg> supportGeometry_;
   bool hasSupportGeometry_ = false, swingAdmission_ = true;
-  std::array<bool, 2> supportContacts_{{true,true}};
-  std::array<double, 2> supportLoad_{{1,1}};
+  LimbArray<bool> supportContacts_;
+  LimbArray<double> supportLoad_;
   double speedMultiplier_ = 1, bodyLowering_ = 0, landingLeadFraction_ = .3, footHomeRadius_ = .5;
   double vertical_ = 0, verticalVelocity_ = 0, gravity_ = 0, supportReach_ = 0, verticalAcceleration_ = 0;
   double landingBodyLift_ = 0;
@@ -106,10 +121,11 @@ private:
          lastVelocity_ = 0, intendedLean_ = 0, acceleration_ = 0;
   int facing_ = 1, requestedFacing_ = 1;
   double facingBlend_ = 1;
-  std::array<FootState, 2> feet_;
-  std::array<double, 2> restX_, lengthA_, lengthB_, springRest_;
-  std::array<Vec2, 2> swingStart_;
-  std::array<double, 2> swingTime_{}, swingDuration_{};
+  LimbArray<FootState> feet_;
+  LimbArray<double> restX_, lengthA_, lengthB_, springRest_;
+  double homeAnchorX_ = 0;
+  LimbArray<Vec2> swingStart_;
+  LimbArray<double> swingTime_, swingDuration_;
   double launchWait_ = 0, footPlantDuration_ = defaultFootPlantDuration;
   DropMotion drop_, proposedDrop_;
   WingMotion wings_, proposedWings_;
@@ -119,6 +135,11 @@ private:
   FlightStep proposedFlight_;
   bool recoveryStepStarted_ = false;
   int nextFoot_ = 0;
+  bool quadruped() const { return tuning_.gait == Gait::QuadrupedWalk; }
+  double homeX(int side) const {
+    return quadruped() ? homeAnchorX_ + facing_ * (restX_[side] - homeAnchorX_) : restX_[side];
+  }
+  int followingFoot(int side) const;
   Pose bodyPose(Action, double, Vec2) const;
   void stepSupport(double dt);
   void installDropContacts();

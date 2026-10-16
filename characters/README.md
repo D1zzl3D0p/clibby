@@ -8,6 +8,22 @@ palette, amber eyes, muzzle, chest ruff, claws and segmented digitigrade legs.
 These are first-iteration original character designs, with no third-party art.
 Each package's MIT `LICENSE` covers its art and anatomy.
 
+`marmalade` (Marmalade) is an original ginger tabby with a horizontal torso,
+four independent two-link contact chains, separate eye artwork and a curled
+tail. It is the first planar `quadrupedWalk` package. Its four named roles are
+deliberately shuffled in JSON to exercise canonical loader normalization.
+Standing, walking, turning and pickup/drop are procedural; seated poses and a
+3D version are not included. Regenerate or verify it separately:
+
+```sh
+rtk proxy .venv/bin/python tools/author_marmalade.py
+rtk proxy .venv/bin/python tools/author_marmalade.py --check
+```
+
+Launch `build/qt/character_preview --character characters/marmalade` from the
+project root, or select Marmalade from the rebuilt resident's character menu.
+The new package is copied beside the resident by the existing asset target.
+
 Regenerate both packages with the editable shape source:
 
 ```sh

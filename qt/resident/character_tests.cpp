@@ -87,6 +87,94 @@ int main(int argc, char **argv) {
       std::cerr << "FAIL " << name << ": " << e.what() << '\n';
     }
   };
+  test("quadruped selection, travel and suppression preserve four real paws", [&] {
+    QTemporaryDir state; double now=0;
+    pets::ResidentApplication shell(root+"/marmalade",state.path(),false,[&]{return now;},
+        pets::IpcMode::DisabledForTests,nullptr,false,[]{return std::optional<QPointF>{};});
+    check(shell.groundedState()->feet.size()==4,"cat exposes four active paws");
+    const auto start=shell.groundedState()->rootX;
+    shell.setGroundTarget(start+45);
+    std::array<bool,4> stepped{};
+    for(int frame=0;frame<600;++frame) {
+      now+=1./60; tick(shell);
+      const auto actual=shell.groundedState().value();
+      int swinging=0;
+      for(std::size_t i=0;i<actual.feet.size();++i) {
+        if(actual.feet[i].swing) {stepped[i]=true;++swinging;}
+      }
+      check(swinging<=1,"resident ordinary walk has at most one lifted paw");
+      if(frame>60&&!shell.groundMotionActive())break;
+    }
+    check(shell.groundedState()->rootX>start+35,"resident realizes cat travel");
+    for(bool moved:stepped)check(moved,"every cat paw participates in travel");
+    check(!shell.groundMotionActive(),"cat arrival stops motion scheduling");
+    shell.setGroundTarget(shell.groundedState()->rootX-40);
+    now+=1./60;tick(shell);
+    shell.control(pets::Control::Pause);
+    const auto before=shell.groundedState().value();
+    const auto frozen=shell.characterPose();
+    now+=50;tick(shell);
+    const auto after=shell.groundedState().value();
+    check(equalPose(frozen,shell.characterPose())&&!shell.groundMotionActive(),"pause freezes quadruped pose and motion deadlines");
+    for(std::size_t i=0;i<4;++i)check(before.feet[i].position.x==after.feet[i].position.x&&
+        before.feet[i].position.y==after.feet[i].position.y,"pause freezes every paw");
+    shell.control(pets::Control::Resume);
+    check(shell.selectCharacter(root+"/soft-creature"),"switch quadruped to biped");
+    check(shell.groundedState()->feet.size()==2,"biped selection has no phantom paws");
+    check(shell.selectCharacter(root+"/marmalade"),"switch back to quadruped");
+    check(shell.groundedState()->feet.size()==4,"cat selection restores four-paw state");
+    QTemporaryDir malformed;
+    const QString bad=malformed.path()+"/bad";
+    copyPack(root+"/marmalade",bad);
+    QFile manifest(bad+"/manifest.json");check(manifest.open(QIODevice::ReadOnly),"read malformed fixture");
+    auto object=QJsonDocument::fromJson(manifest.readAll()).object();manifest.close();
+    auto motion=object["locomotion"].toObject();auto legs=motion["legs"].toArray();legs.removeLast();
+    motion["legs"]=legs;object["locomotion"]=motion;writeManifest(bad,object);
+    QString error;
+    check(!shell.selectCharacter(bad,&error)&&!error.isEmpty(),"invalid quadruped selection rejects visibly");
+    check(shell.selectedCharacter()=="marmalade"&&shell.groundedState()->feet.size()==4,"failed selection preserves the live cat");
+  });
+  test("quadruped support requires the complete four-paw footprint", [&] {
+    for(bool wide:{false,true}) {
+      QTemporaryDir state;double now=0;
+      std::vector<pets::character::SupportSurface> surfaces;
+      pets::ResidentApplication shell(root+"/marmalade",state.path(),false,[&]{return now;},
+          pets::IpcMode::DisabledForTests,nullptr,false,[]{return std::optional<QPointF>{};},
+          [&](double time){auto observed=surfaces;for(auto& edge:observed)edge.observedAt=time;
+            return pets::WindowSurfaceSnapshot{true,std::move(observed)};});
+      const auto loaded=pets::character::loadCharacter(root+"/marmalade");
+      const auto initial=shell.groundedState().value();
+      double left=initial.feet[0].position.x,right=left;
+      const std::size_t count=wide?4:2;
+      for(std::size_t i=0;i<count;++i){left=std::min(left,initial.feet[i].position.x);right=std::max(right,initial.feet[i].position.x);}
+      const double edgeY=QGuiApplication::primaryScreen()->availableGeometry().top()+250;
+      surfaces={{"test:cat-window",edgeY,{{left-3,right+3}},now}};
+      now=.6;tick(shell);
+      const int margin=int(std::ceil(loaded.definition.motionEnvelope));QPolygon grab;
+      for(const auto p:loaded.definition.interaction)grab<<QPoint(qRound(p.x)+margin,qRound(p.y)+margin);
+      const auto hit=QRegion(grab).boundingRect().center();
+      const auto start=window()->position()+hit;
+      mouse(QEvent::MouseButtonPress,start,Qt::LeftButton,Qt::LeftButton);
+      now+=.1;
+      mouse(QEvent::MouseMove,start+QPoint(0,qRound(edgeY-initial.feet[0].position.y)),Qt::NoButton,Qt::LeftButton);
+      now+=.5;tick(shell);
+      mouse(QEvent::MouseButtonRelease,window()->position()+hit,Qt::LeftButton,Qt::NoButton);
+      const auto released=shell.groundedState().value();
+      if(wide) {
+        check(released.phase==pets::character::DropPhase::Grounded&&released.elevation==0,"wide window supports all four paws");
+        for(const auto& foot:released.feet)check(std::abs(foot.position.y-edgeY)<1,"four paws share selected window floor");
+        const auto previous=released;
+        surfaces[0].topY+=7;surfaces[0].segments[0].minimum+=9;surfaces[0].segments[0].maximum+=9;
+        now+=.6;tick(shell);
+        const auto moved=shell.groundedState().value();
+        for(std::size_t i=0;i<4;++i)check(std::abs(moved.feet[i].position.x-previous.feet[i].position.x-9)<1&&
+            std::abs(moved.feet[i].position.y-previous.feet[i].position.y-7)<1,"moving support carries every paw once");
+        surfaces.clear();now+=.6;tick(shell);
+        check(shell.groundedState()->phase!=pets::character::DropPhase::Grounded,"lost window releases quadruped to gravity");
+      } else check(released.elevation>0&&released.phase!=pets::character::DropPhase::Grounded,
+          "window fitting forepaws alone cannot support quadruped");
+    }
+  });
   test("elevated drop preserves release height and suspends without catch-up", [&] {
     QTemporaryDir state; double now=0;
     pets::ResidentApplication shell(root+"/soft-creature",state.path(),false,

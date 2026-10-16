@@ -49,9 +49,164 @@ static void write(const QString &p, const QByteArray &data) {
   check(f.open(QIODevice::WriteOnly), "write");
   check(f.write(data) == data.size(), "write data");
 }
+// A shuffled four-chain package catches loaders that preserve JSON ordering or
+// silently infer a biped from an omitted gait.
+static QJsonObject quadrupedManifest() {
+  auto doc = QJsonDocument::fromJson(manifest()).object();
+  QJsonArray bones{QJsonObject{{"id", "body"}, {"parent", QJsonValue::Null},
+                             {"rest", QJsonObject{{"x", 48}, {"y", 20}}}}};
+  QJsonArray legs;
+  for (int i : {3, 0, 2, 1}) {
+    const QString prefix = QString("leg%1").arg(i);
+    for (int j = 0; j < 3; ++j) {
+      bones.append(QJsonObject{
+          {"id", prefix + QString::number(j)},
+          {"parent", j == 0 ? QString("body") : prefix + QString::number(j - 1)},
+          {"rest", QJsonObject{{"x", j == 0 ? -18 + i * 12 : 0},
+                               {"y", j == 0 ? 0 : 12}}}});
+    }
+    legs.append(QJsonObject{
+        {"role", QStringList{"foreLeft", "foreRight", "hindLeft", "hindRight"}[i]},
+        {"hip", prefix + "0"}, {"knee", prefix + "1"}, {"ankle", prefix + "2"},
+        {"contact", QJsonArray{0, 0}}, {"bend", i % 2 ? -1 : 1}});
+  }
+  doc["bones"] = bones;
+  doc["bindings"] = QJsonObject{{"body", "body"}};
+  doc["attachments"] = QJsonArray{QJsonObject{
+      {"bone", "body"}, {"source", QJsonArray{0, 0, 8, 8}},
+      {"pivot", QJsonArray{4, 4}}, {"offset", QJsonArray{0, 0}}, {"drawOrder", 0}}};
+  doc["locomotion"] = QJsonObject{
+      {"gait", "quadrupedWalk"}, {"groundY", 44}, {"legs", legs},
+      {"reachThreshold", 6}, {"stride", 8}, {"lift", 4}};
+  return doc;
+}
+static void boundedLimbs() {
+  LimbArray<int> limbs;
+  check(limbs.size() == 2 && limbs[0] == 0 && limbs[1] == 0, "default two active limbs");
+  limbs = {3, 7}; limbs.setCount(4);
+  check(limbs[0] == 3 && limbs[1] == 7 && limbs[2] == 0 && limbs[3] == 0,
+        "activating limbs initializes only new elements");
+  limbs.fill(9);
+  auto copy = limbs;
+  check(copy.size() == 4 && copy.array<4>()[3] == 9, "copy retains four active limbs");
+  rejects([&] { copy.array<2>(); });
+  limbs.setCount(2);
+  int visits = 0; for (auto value : limbs) { check(value == 9, "active value"); ++visits; }
+  check(visits == 2, "spare limbs never iterate");
+  rejects([&] { (void)limbs[2]; });
+  limbs.setCount(4);
+  check(limbs[2] == 0 && limbs[3] == 0, "reactivation clears old spare values");
+  for (std::size_t count : {0, 1, 3, 5, 6}) rejects([&] { limbs.setCount(count); });
+  rejects([&] { limbs = {1, 2, 3}; });
+  check(limbs.size() == 4, "invalid count leaves active anatomy intact");
+  limbs = std::array<int, 2>{{4, 8}};
+  check(limbs.array<2>()[1] == 8, "legacy array assignment");
+  limbs = std::array<int, 4>{{1, 2, 3, 4}};
+  check(limbs.size() == 4 && limbs[3] == 4, "four array assignment");
+  LimbArray<int> nested{{5, 6}};
+  check(nested.size() == 2 && nested[1] == 6, "nested legacy array initializer");
+  const LimbArray<int> frozen{1, 2, 3, 4};
+  check(frozen.end() - frozen.begin() == 4 && frozen[3] == 4, "const iteration active range");
+}
+static void quadrupedPackages() {
+  QTemporaryDir dir;
+  check(dir.isValid(), "quad temp dir");
+  QImage atlas(16, 16, QImage::Format_ARGB32);
+  atlas.fill(Qt::white);
+  check(atlas.save(dir.path() + "/atlas.png"), "quad atlas");
+  auto load = [&](QJsonObject doc) {
+    write(dir.path() + "/manifest.json", QJsonDocument(doc).toJson());
+    return loadCharacter(dir.path()).definition;
+  };
+  auto doc = quadrupedManifest();
+  const auto quad = load(doc);
+  check(quad.locomotion->legs.size() == 4, "four active chains load");
+  for (int i = 0; i < 4; ++i)
+    check(quad.bones[quad.locomotion->legs[i].hip].id == "leg" + std::to_string(i) + "0",
+          "roles normalize shuffled chains");
+  for (const double value : {std::numeric_limits<double>::infinity(),
+                             std::numeric_limits<double>::quiet_NaN()}) {
+    auto invalid = quad;
+    invalid.locomotion->secondary.frequency = value;
+    rejects([&] { validateDefinition(invalid); });
+    invalid = quad; invalid.locomotion->speed = value;
+    rejects([&] { validateDefinition(invalid); });
+  }
+  auto mismatch = quad;
+  mismatch.locomotion->gait = Gait::Biped;
+  rejects([&] { validateDefinition(mismatch); });
+  mismatch = quad;
+  mismatch.locomotion->gait = static_cast<Gait>(9);
+  rejects([&] { validateDefinition(mismatch); });
+  mismatch = quad;
+  mismatch.locomotion->legs.setCount(2);
+  rejects([&] { validateDefinition(mismatch); });
+  auto bad = doc;
+  auto locomotion = bad["locomotion"].toObject();
+  locomotion.remove("gait");
+  bad["locomotion"] = locomotion;
+  rejects([&] { load(bad); });
+  for (const QString gait : {"biped", "unknown"}) {
+    locomotion = doc["locomotion"].toObject();
+    locomotion["gait"] = gait;
+    bad = doc; bad["locomotion"] = locomotion;
+    rejects([&] { load(bad); });
+  }
+  for (int count : {0, 1, 2, 3, 5, 6}) {
+    locomotion = doc["locomotion"].toObject();
+    auto malformed = locomotion["legs"].toArray();
+    while (malformed.size() > count) malformed.removeLast();
+    while (malformed.size() < count) malformed.append(malformed[0]);
+    locomotion["legs"] = malformed; bad = doc; bad["locomotion"] = locomotion;
+    rejects([&] { load(bad); });
+  }
+  for (int problem = 0; problem < 5; ++problem) {
+    locomotion = doc["locomotion"].toObject();
+    auto legs = locomotion["legs"].toArray();
+    auto chain = legs[0].toObject();
+    if (problem == 0) chain.remove("role");
+    if (problem == 1) chain["role"] = "foreLeft";
+    if (problem == 2) chain["role"] = "unknown";
+    if (problem == 3) chain.remove("knee");
+    if (problem == 4) chain["hip"] = legs[1].toObject()["hip"];
+    legs[0] = chain; locomotion["legs"] = legs;
+    bad = doc; bad["locomotion"] = locomotion;
+    rejects([&] { load(bad); });
+  }
+  // Distinct joint IDs can still overlap through ancestry.
+  bad = doc;
+  auto bones = bad["bones"].toArray();
+  auto hip = bones[4].toObject();
+  hip["parent"] = "leg32";
+  hip["rest"] = QJsonObject{{"x", -36}, {"y", -24}};
+  bones[4] = hip; bad["bones"] = bones;
+  rejects([&] { load(bad); });
+  // Explicit biped roles stay ordered and old manifests need no roles/gait.
+  locomotion = doc["locomotion"].toObject();
+  auto legs = locomotion["legs"].toArray();
+  while (legs.size() > 2) legs.removeLast();
+  for (int i = 0; i < 2; ++i) {
+    auto chain = legs[i].toObject();
+    chain["role"] = i == 0 ? "left" : "right"; legs[i] = chain;
+  }
+  locomotion["legs"] = legs; locomotion["gait"] = "biped";
+  bad = doc; bad["locomotion"] = locomotion;
+  check(load(bad).locomotion->legs.size() == 2, "explicit biped loads");
+  auto wrong = legs[0].toObject(); wrong["role"] = "right"; legs[0] = wrong;
+  locomotion["legs"] = legs; bad["locomotion"] = locomotion;
+  rejects([&] { load(bad); });
+  locomotion.remove("gait");
+  for (int i = 0; i < 2; ++i) {
+    auto chain = legs[i].toObject(); chain.remove("role"); legs[i] = chain;
+  }
+  locomotion["legs"] = legs; bad["locomotion"] = locomotion;
+  check(load(bad).locomotion->legs.size() == 2, "legacy biped loads");
+}
 int main(int argc, char **argv) {
   QCoreApplication app(argc, argv);
   try {
+    boundedLimbs();
+    quadrupedPackages();
     auto d = sample();
     validateDefinition(d);
     Controller c(d);

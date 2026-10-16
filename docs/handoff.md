@@ -1,5 +1,22 @@
 # New-session handoff
 
+## Git baseline and first walking quadruped
+
+Git now exists: `main` preserves the pre-implementation baseline `2dbd7c1`;
+the new work is on `feat/quadruped-planar`. Marmalade, an original planar cat,
+now loads through the validated four-role package path and uses a conservative
+four-beat walk, contact-preserving turns and pickup/drop/recovery. The resident
+uses every active paw for arrival and window support. Existing 3D pets remain
+two-legged; no spatial quadruped adapter is claimed.
+
+Combined Release: 42 passed/four skips; 2D-only: 31 passed/three skips; Python:
+55 passed. Review caught and verified a fix for off-center-origin reversal;
+no findings remain. Software rest/walk/reverse/held/drop captures are inspected.
+Native movement polish, desktop acceptance and energy remain open. Restart the
+rebuilt resident and select Marmalade, or use the existing character preview.
+Read the [implementation record](results/2026-10-16-planar-quadruped.md) and
+[plan](superpowers/plans/2026-10-16-planar-quadruped.md).
+
 ## Catalogue architecture and quadruped support started
 
 All 18 proposed expansion pets are mapped in the
@@ -604,8 +621,10 @@ Qt is useful for software validation only. The user successfully ran the native
 benchmark from normal Terminal. Do not bypass permission boundaries or label
 offscreen metrics as desktop results.
 
-This directory has no `.git` repository. Earlier initialization was denied by
-the environment; no commits are claimed. Files and evidence are present locally.
+Git was initialized on 2026-10-16 at the user's request. Baseline `2dbd7c1`
+preserves the project before planar quadruped implementation. New implementation
+work is isolated on `feat/quadruped-planar`; historical no-Git records describe
+the earlier environment and are not current workflow requirements.
 The user prefers substantial independent subagent work and dislikes redundant
 confirmation requests for already-authorized actions.
 

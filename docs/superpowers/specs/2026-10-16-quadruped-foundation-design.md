@@ -1,6 +1,6 @@
 # Quadruped foundation and first cat
 
-Status: builder-reviewed design, 16 October 2026. The support-dynamics substage is implemented; loader, gait and pose integration remain proposed. See the [implementation record](../../results/2026-10-16-catalogue-and-quadruped-foundation.md).
+Status: builder-reviewed design, 16 October 2026. The planar loader, gait, pose and resident slice is implemented with Marmalade. Native acceptance and the spatial adapter remain open. See the [implementation record](../../results/2026-10-16-planar-quadruped.md) and [earlier support foundation](../../results/2026-10-16-catalogue-and-quadruped-foundation.md).
 
 Parent: [catalogue architecture](2026-10-16-catalogue-architecture-design.md).
 

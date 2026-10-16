@@ -8,6 +8,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonParseError>
+#include <algorithm>
 #include <cmath>
 #include <map>
 #include <stdexcept>
@@ -190,11 +191,33 @@ LoadedCharacter loadCharacter(const QString &directory) {
     auto v = object(o["locomotion"]);
     Locomotion l;
     l.groundY = number(field(v, "groundY"));
-    auto legs = array(field(v, "legs"), 2);
-    require(legs.size() == 2, "locomotion needs two legs");
-    for (int i = 0; i < 2; i++) {
+    if (v.contains("gait")) {
+      const auto gait = string(v["gait"]);
+      require(gait == "biped" || gait == "quadrupedWalk", "unknown gait");
+      l.gait = gait == "biped" ? Gait::Biped : Gait::QuadrupedWalk;
+    }
+    const int count = l.gait == Gait::Biped ? 2 : 4;
+    auto legs = array(field(v, "legs"), 4);
+    require(legs.size() == count, "gait does not match leg count");
+    l.legs.setCount(count);
+    std::array<bool, 4> seen{};
+    const std::array<std::string, 4> roles{
+        "foreLeft", "foreRight", "hindLeft", "hindRight"};
+    for (int i = 0; i < count; i++) {
       auto a = object(legs[i]);
-      l.legs[i] = {index(field(a, "hip")), index(field(a, "knee")),
+      int destination = i;
+      if (l.gait == Gait::QuadrupedWalk) {
+        const auto role = string(field(a, "role"));
+        const auto found = std::find(roles.begin(), roles.end(), role);
+        require(found != roles.end(), "unknown leg role");
+        destination = int(found - roles.begin());
+        require(!seen[destination], "duplicate leg role");
+        seen[destination] = true;
+      } else if (a.contains("role")) {
+        require(string(a["role"]) == (i == 0 ? "left" : "right"),
+                "biped role does not match leg order");
+      }
+      l.legs[destination] = {index(field(a, "hip")), index(field(a, "knee")),
                    index(field(a, "ankle")), vec(field(a, "contact")),
                    integer(field(a, "bend"))};
     }

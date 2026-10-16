@@ -189,6 +189,9 @@ void validateDefinition(const Definition &d) {
                 range(l.secondary.damping, .1, 4) &&
                 range(l.secondary.response, -4, 4),
             "invalid secondary tuning");
+    require((l.gait == Gait::Biped && l.legs.size() == 2) ||
+                (l.gait == Gait::QuadrupedWalk && l.legs.size() == 4),
+            "gait does not match leg count");
     std::set<int> used;
     for (auto leg : l.legs) {
       for (int bone : {leg.hip, leg.knee, leg.ankle})
@@ -244,6 +247,12 @@ void validateDefinition(const Definition &d) {
                       length + std::hypot(leg.contact.x, leg.contact.y),
               "invalid ground anchor for chain");
     }
+    // Shared non-joint branches are fine; a joint of one chain must never
+    // drive another chain's proximal attachment.
+    for (const auto &leg : l.legs)
+      for (int ancestor = d.bones[leg.hip].parent; ancestor >= 0;
+           ancestor = d.bones[ancestor].parent)
+        require(used.count(ancestor) == 0, "ancestor-overlapping leg chains");
   }
 }
 std::vector<WorldTransform> worldTransforms(const Definition &d,

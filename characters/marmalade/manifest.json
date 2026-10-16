@@ -1,0 +1,690 @@
+{
+  "version": 1,
+  "id": "marmalade",
+  "name": "Marmalade",
+  "controller": "articulated",
+  "width": 192,
+  "height": 128,
+  "origin": [
+    96,
+    112
+  ],
+  "atlas": "atlas.png",
+  "motionEnvelope": 16,
+  "bones": [
+    {
+      "id": "body",
+      "parent": null,
+      "rest": {
+        "x": 96,
+        "y": 69,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "silhouette",
+      "parent": "body",
+      "rest": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "head",
+      "parent": "silhouette",
+      "rest": {
+        "x": 42,
+        "y": -13,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "eyes",
+      "parent": "head",
+      "rest": {
+        "x": 9,
+        "y": -3,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "ear-far",
+      "parent": "head",
+      "rest": {
+        "x": -8,
+        "y": -14,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "ear-near",
+      "parent": "head",
+      "rest": {
+        "x": 8,
+        "y": -14,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "tail",
+      "parent": "silhouette",
+      "rest": {
+        "x": -40,
+        "y": -6,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "hindRight-hip",
+      "parent": "body",
+      "rest": {
+        "x": -24,
+        "y": 10,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "hindRight-knee",
+      "parent": "hindRight-hip",
+      "rest": {
+        "x": 6,
+        "y": 14,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "hindRight-ankle",
+      "parent": "hindRight-knee",
+      "rest": {
+        "x": -6,
+        "y": 14,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "foreRight-hip",
+      "parent": "body",
+      "rest": {
+        "x": 22,
+        "y": 10,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "foreRight-knee",
+      "parent": "foreRight-hip",
+      "rest": {
+        "x": -6,
+        "y": 14,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "foreRight-ankle",
+      "parent": "foreRight-knee",
+      "rest": {
+        "x": 6,
+        "y": 14,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "hindLeft-hip",
+      "parent": "body",
+      "rest": {
+        "x": -32,
+        "y": 10,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "hindLeft-knee",
+      "parent": "hindLeft-hip",
+      "rest": {
+        "x": 6,
+        "y": 14,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "hindLeft-ankle",
+      "parent": "hindLeft-knee",
+      "rest": {
+        "x": -6,
+        "y": 14,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "foreLeft-hip",
+      "parent": "body",
+      "rest": {
+        "x": 31,
+        "y": 10,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "foreLeft-knee",
+      "parent": "foreLeft-hip",
+      "rest": {
+        "x": -6,
+        "y": 14,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    },
+    {
+      "id": "foreLeft-ankle",
+      "parent": "foreLeft-knee",
+      "rest": {
+        "x": 6,
+        "y": 14,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+      }
+    }
+  ],
+  "attachments": [
+    {
+      "bone": "hindRight-hip",
+      "source": [
+        2,
+        2,
+        29,
+        24
+      ],
+      "pivot": [
+        14,
+        4
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 1
+    },
+    {
+      "bone": "hindRight-knee",
+      "source": [
+        33,
+        2,
+        29,
+        23
+      ],
+      "pivot": [
+        14,
+        4
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 2
+    },
+    {
+      "bone": "hindRight-ankle",
+      "source": [
+        64,
+        2,
+        19,
+        10
+      ],
+      "pivot": [
+        8,
+        3
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 3
+    },
+    {
+      "bone": "foreRight-hip",
+      "source": [
+        85,
+        2,
+        29,
+        24
+      ],
+      "pivot": [
+        14,
+        4
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 1
+    },
+    {
+      "bone": "foreRight-knee",
+      "source": [
+        116,
+        2,
+        29,
+        23
+      ],
+      "pivot": [
+        14,
+        4
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 2
+    },
+    {
+      "bone": "foreRight-ankle",
+      "source": [
+        147,
+        2,
+        19,
+        10
+      ],
+      "pivot": [
+        8,
+        3
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 3
+    },
+    {
+      "bone": "hindLeft-hip",
+      "source": [
+        168,
+        2,
+        29,
+        24
+      ],
+      "pivot": [
+        14,
+        4
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 4
+    },
+    {
+      "bone": "hindLeft-knee",
+      "source": [
+        199,
+        2,
+        29,
+        23
+      ],
+      "pivot": [
+        14,
+        4
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 6
+    },
+    {
+      "bone": "hindLeft-ankle",
+      "source": [
+        230,
+        2,
+        19,
+        10
+      ],
+      "pivot": [
+        8,
+        3
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 8
+    },
+    {
+      "bone": "foreLeft-hip",
+      "source": [
+        251,
+        2,
+        29,
+        24
+      ],
+      "pivot": [
+        14,
+        4
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 4
+    },
+    {
+      "bone": "foreLeft-knee",
+      "source": [
+        282,
+        2,
+        29,
+        23
+      ],
+      "pivot": [
+        14,
+        4
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 6
+    },
+    {
+      "bone": "foreLeft-ankle",
+      "source": [
+        313,
+        2,
+        19,
+        10
+      ],
+      "pivot": [
+        8,
+        3
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 8
+    },
+    {
+      "bone": "tail",
+      "source": [
+        334,
+        2,
+        48,
+        64
+      ],
+      "pivot": [
+        42,
+        56
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 0
+    },
+    {
+      "bone": "silhouette",
+      "source": [
+        384,
+        2,
+        96,
+        48
+      ],
+      "pivot": [
+        48,
+        23
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 5
+    },
+    {
+      "bone": "ear-far",
+      "source": [
+        482,
+        2,
+        22,
+        29
+      ],
+      "pivot": [
+        10,
+        24
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 9
+    },
+    {
+      "bone": "ear-near",
+      "source": [
+        2,
+        68,
+        22,
+        29
+      ],
+      "pivot": [
+        10,
+        24
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 9
+    },
+    {
+      "bone": "head",
+      "source": [
+        26,
+        68,
+        54,
+        43
+      ],
+      "pivot": [
+        25,
+        21
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 10
+    },
+    {
+      "bone": "eyes",
+      "source": [
+        82,
+        68,
+        23,
+        13
+      ],
+      "pivot": [
+        11,
+        6
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "drawOrder": 12
+    }
+  ],
+  "bindings": {
+    "body": "body",
+    "facing": "silhouette",
+    "head": "head",
+    "eyes": "eyes",
+    "earLeft": "ear-far",
+    "earRight": "ear-near",
+    "tail": "tail"
+  },
+  "contacts": [
+    {
+      "bone": "hindRight-ankle",
+      "point": [
+        0,
+        5
+      ]
+    },
+    {
+      "bone": "foreRight-ankle",
+      "point": [
+        0,
+        5
+      ]
+    },
+    {
+      "bone": "hindLeft-ankle",
+      "point": [
+        0,
+        5
+      ]
+    },
+    {
+      "bone": "foreLeft-ankle",
+      "point": [
+        0,
+        5
+      ]
+    }
+  ],
+  "interaction": [
+    [
+      51,
+      48
+    ],
+    [
+      112,
+      41
+    ],
+    [
+      129,
+      25
+    ],
+    [
+      158,
+      34
+    ],
+    [
+      169,
+      68
+    ],
+    [
+      143,
+      87
+    ],
+    [
+      139,
+      114
+    ],
+    [
+      57,
+      114
+    ],
+    [
+      48,
+      85
+    ]
+  ],
+  "locomotion": {
+    "gait": "quadrupedWalk",
+    "legs": [
+      {
+        "role": "hindRight",
+        "hip": "hindRight-hip",
+        "knee": "hindRight-knee",
+        "ankle": "hindRight-ankle",
+        "contact": [
+          0,
+          5
+        ],
+        "bend": -1
+      },
+      {
+        "role": "foreRight",
+        "hip": "foreRight-hip",
+        "knee": "foreRight-knee",
+        "ankle": "foreRight-ankle",
+        "contact": [
+          0,
+          5
+        ],
+        "bend": 1
+      },
+      {
+        "role": "hindLeft",
+        "hip": "hindLeft-hip",
+        "knee": "hindLeft-knee",
+        "ankle": "hindLeft-ankle",
+        "contact": [
+          0,
+          5
+        ],
+        "bend": -1
+      },
+      {
+        "role": "foreLeft",
+        "hip": "foreLeft-hip",
+        "knee": "foreLeft-knee",
+        "ankle": "foreLeft-ankle",
+        "contact": [
+          0,
+          5
+        ],
+        "bend": 1
+      }
+    ],
+    "groundY": 112,
+    "speed": 36,
+    "acceleration": 150,
+    "reachThreshold": 6,
+    "stride": 9,
+    "lift": 4,
+    "minStepDuration": 0.16,
+    "maxStepDuration": 0.24,
+    "secondary": {
+      "frequency": 3,
+      "damping": 0.8,
+      "response": 0
+    }
+  }
+}

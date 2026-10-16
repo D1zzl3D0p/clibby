@@ -150,8 +150,17 @@ desktop units and seconds. Grounded pose coordinates remain canvas-local.
 }
 ```
 
-`groundY` and exactly two legs are required. Chain bones must be distinct across
-both legs, with knee parent=hip and ankle parent=knee. Both hips descend from
+`groundY` is required. Omitted `gait`, or explicit `"gait":"biped"`, requires
+exactly two legs in the existing left/right order. An optional biped `role` must
+match that order (`left`, `right`). `"gait":"quadrupedWalk"` instead requires
+exactly four legs, each with a unique `role`: `foreLeft`, `foreRight`, `hindLeft`,
+`hindRight`. JSON order is immaterial for quadrupeds: the loader normalizes to
+that canonical order. Unknown gaits, other counts, missing/duplicate/unknown
+roles and mismatched gait/count reject. Older runtimes reject the new four-leg
+arrays; version 1 does not promise backward reader support for new anatomy.
+
+Chain bones must be distinct across all legs, with knee parent=hip and ankle
+parent=knee. A chain joint cannot also be another chain's ancestor. All hips descend from
 the root body binding. Chain joints must permit the full [-pi,pi] rotation range;
 restricted joint limits are unsupported by this analytical solver. Rest knee/ankle translation
 lengths define the segments (0.1–256); all chain ancestors must have unit scales.
@@ -235,6 +244,30 @@ from realized navigation intent/body lean and stop at rest; no gait clock drives
 their motion.
 
 ## Visual facing for grounded characters
+
+### Quadruped walk
+
+Marmalade is the first planar four-leg example. Its forelegs use the same
+`hip`/`knee`/`ankle` keys, with `hip` denoting the proximal shoulder attachment.
+Ordinary movement uses hindLeft → foreLeft → hindRight → foreRight, with at most
+one swing and three confirmed supporting paws before a new swing. Comfortable
+contacts may be skipped during resting stance realignment. Existing biped
+alternation remains unchanged. Four-leg hopping and powered flight are currently
+unsupported and return rejection rather than launching an incomplete motion.
+
+The shared force solver normalizes stiffness/damping by 2/N and contact fraction
+by N, with neutral weight gravity/N. Extra legs therefore do not double aggregate
+spring response. All four contacts participate in pickup/drop, recovery,
+settling, resident arrival and support footprint. Body and proximal limb offsets
+turn about the authored body anchor while world soles remain pinned until
+toe-off; placement `origin` may differ from that body anchor.
+
+The first implementation is layered 2D. Existing 3D characters still have two
+legs; no spatial quadruped rig/import adapter is provided. Seated poses, flops,
+trot/run and independent spine physics remain later work. See the
+[implementation record](results/2026-10-16-planar-quadruped.md).
+
+### Shared facing branch
 
 The optional `facing` semantic binding identifies a visual-only branch below
 the body. Attach body artwork, head, ears and tail there; IK legs remain outside

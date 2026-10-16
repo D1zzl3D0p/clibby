@@ -1,5 +1,6 @@
 #pragma once
 #include "expression.h"
+#include "limb_array.h"
 #include <array>
 #include <map>
 #include <optional>
@@ -40,8 +41,10 @@ struct LegChain {
   Vec2 contact;
   int bend = 1;
 };
+enum class Gait { Biped, QuadrupedWalk };
 struct Locomotion {
-  std::array<LegChain, 2> legs;
+  LimbArray<LegChain> legs;
+  Gait gait = Gait::Biped;
   double groundY = 0, speed = 38, acceleration = 150;
   double reachThreshold = 10, stride = 14, lift = 6;
   double minStepDuration = .12, maxStepDuration = .28;

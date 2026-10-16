@@ -64,11 +64,29 @@ double predictedRoot(double root, double velocity, double acceleration,
   return root;
 }
 } // namespace
+bool GroundedState::anyFootSwinging() const {
+  return std::any_of(feet.begin(),feet.end(),[](const FootState &foot){return foot.swing;});
+}
+GroundSpan GroundedState::soleExtent() const {
+  GroundSpan extent{feet[0].position.x,feet[0].position.x};
+  for(const auto &foot:feet) {extent.minimum=std::min(extent.minimum,foot.position.x);extent.maximum=std::max(extent.maximum,foot.position.x);}
+  return extent;
+}
+int GroundedController::followingFoot(int side) const {
+  if(!quadruped())return 1-side;
+  constexpr int next[]={3,2,0,1};
+  return next[side];
+}
 GroundedController::GroundedController(Definition d)
     : definition_(d), legacy_(expressive(d)) {
   if (!d.locomotion)
     throw std::runtime_error("locomotion required");
   tuning_ = *d.locomotion;
+  const auto count = tuning_.legs.size();
+  feet_.setCount(count); restX_.setCount(count); lengthA_.setCount(count);
+  lengthB_.setCount(count); springRest_.setCount(count); swingStart_.setCount(count);
+  swingTime_.setCount(count); swingDuration_.setCount(count);
+  supportGeometry_.setCount(count); supportContacts_.setCount(count); supportLoad_.setCount(count);
   // A comfortable resting stance need not reproduce subpixel home positions.
   footHomeRadius_ = tuning_.stride * .35;
   setSecondaryTuning(tuning_.secondary);
@@ -76,7 +94,8 @@ GroundedController::GroundedController(Definition d)
   for (auto b : d.bones)
     p.bones.push_back(b.rest);
   auto w = worldTransforms(d, p);
-  for (int i = 0; i < 2; i++) {
+  homeAnchorX_ = w[d.bindings.at("body")].tx - d.origin.x;
+  for (int i = 0; i < int(feet_.size()); i++) {
     auto l = tuning_.legs[i];
     restX_[i] = w[l.ankle].apply(l.contact).x - d.origin.x;
     auto a = d.bones[l.knee].rest, b = d.bones[l.ankle].rest;
@@ -84,7 +103,8 @@ GroundedController::GroundedController(Definition d)
     lengthB_[i] = std::hypot(b.x, b.y);
 
   }
-  supportReach_ = std::min(lengthA_[0]+lengthB_[0], lengthA_[1]+lengthB_[1]);
+  supportReach_ = 1e9;
+  for(int i=0;i<int(feet_.size());++i) supportReach_=std::min(supportReach_,lengthA_[i]+lengthB_[i]);
   flightReach_=supportReach_;
   if(flightCapable()) {
     double minimum=1e9;
@@ -134,6 +154,7 @@ void GroundedController::setSpeedMultiplier(double value) {
 
 }
 void GroundedController::setSupportGeometry(std::array<pets::motion::SupportLeg,2> geometry) {
+  if(geometry.size()!=feet_.size()) throw std::runtime_error("support geometry anatomy mismatch");
   supportGeometry_ = geometry;
   hasSupportGeometry_ = true;
 }
@@ -148,6 +169,7 @@ double GroundedController::touchdownX(double desired) const {
   return supportBounds_ ? std::clamp(desired,supportBounds_->minimum,supportBounds_->maximum) : desired;
 }
 void GroundedController::setSupportContacts(std::array<bool,2> grounded) {
+  if(grounded.size()!=feet_.size()) throw std::runtime_error("support contacts anatomy mismatch");
   supportContacts_ = grounded;
 }
 void GroundedController::setSupportTuning(SupportTuning t) {
@@ -166,17 +188,17 @@ void GroundedController::setSupportTuning(SupportTuning t) {
   // compliant spring rest length at that stance; both adapters use this law.
   gravity_ = t.gravityPerReach*supportReach_;
   bodyLowering_ = 0;
-  for (int i = 0; i < 2; ++i) {
+  for (int i = 0; i < int(feet_.size()); ++i) {
     auto leg = tuning_.legs[i];
     double dx = w[leg.ankle].tx-w[leg.hip].tx;
     double reach = lengthA_[i]+lengthB_[i];
     double length = std::min(reach*(1-t.stanceReserveFraction),reach-.05);
     double dy = std::sqrt(std::max(.001,length*length-dx*dx));
-    springRest_[i] = pets::motion::neutralRestLength({0,0,0},{dx,dy,0},gravity_*.5,t.stiffness);
-    bodyLowering_ += .5*(tuning_.groundY-leg.contact.y-w[leg.hip].ty-dy);
+    springRest_[i] = pets::motion::neutralSupportRestLength({0,0,0},{dx,dy,0},gravity_,t.stiffness,feet_.size());
+    bodyLowering_ += (1./feet_.size())*(tuning_.groundY-leg.contact.y-w[leg.hip].ty-dy);
   }
   landingBodyLift_=supportReach_;
-  for(int side=0;side<2;++side) {
+  for(int side=0;side<int(feet_.size());++side) {
     const auto leg=tuning_.legs[side];
     const double dx=w[leg.ankle].tx-w[leg.hip].tx;
     const double reach=(lengthA_[side]+lengthB_[side])*.995;
@@ -214,13 +236,13 @@ void GroundedController::reset(double x, GroundSpan s, double y,
   requestedFacing_ = facing_;
   ground_ = y;
   velocity_ = lastVelocity_ = pending_ = intendedLean_ = acceleration_ = 0;
-  swingTime_ = {};
-  supportLoad_ = {{1,1}};
+  swingTime_.fill(0);
+  supportLoad_.fill(1);
   verticalAcceleration_ = 0;
   hasSupportGeometry_ = false;
-  supportContacts_ = {{true,true}};
-  swingDuration_ = {};
-  nextFoot_ = 0;
+  supportContacts_.fill(true);
+  swingDuration_.fill(0);
+  nextFoot_ = quadruped() ? 2 : 0;
   launchWait_ = 0;
   swingAdmission_ = true;
   if (!preserveSecondary) {
@@ -232,8 +254,8 @@ void GroundedController::reset(double x, GroundSpan s, double y,
     tail_.reset();
     legacy_.resetDynamics();
   }
-  for (int i = 0; i < 2; i++)
-    feet_[i] = {{rootX_ + restX_[i], y}, {rootX_ + restX_[i], y}, false};
+  for (int i = 0; i < int(feet_.size()); i++)
+    feet_[i] = {{rootX_ + homeX(i), y}, {rootX_ + homeX(i), y}, false};
 }
 void GroundedController::pickup(double x, double elevation) {
   finite(x); finite(elevation);
@@ -243,11 +265,11 @@ void GroundedController::pickup(double x, double elevation) {
   recoveryStepStarted_=false;
   rootX_=target_=std::clamp(x,span_.minimum,span_.maximum);
   pending_=velocity_=lastVelocity_=acceleration_=verticalVelocity_=verticalAcceleration_=0;
-  intendedLean_=0; hasSupportGeometry_=false; swingTime_={}; swingDuration_={};
-  supportLoad_={{0,0}}; supportContacts_={{false,false}};
+  intendedLean_=0; hasSupportGeometry_=false; swingTime_.fill(0); swingDuration_.fill(0);
+  supportLoad_.fill(0); supportContacts_.fill(false);
   legacy_.setAction(Action::Rest); legacy_.expressions().clear();
-  for(int side=0;side<2;++side)
-    feet_[side]={{rootX_+restX_[side],ground_-drop_.elevation()}, {}, true};
+  for(int side=0;side<int(feet_.size());++side)
+    feet_[side]={{rootX_+homeX(side),ground_-drop_.elevation()}, {}, true};
 }
 void GroundedController::hold(double x, double elevation) {
   finite(x); finite(elevation);
@@ -255,17 +277,17 @@ void GroundedController::hold(double x, double elevation) {
   intendedLean_=std::clamp((x-rootX_)/supportReach_*.5,-.1,.1);
   rootX_=target_=std::clamp(x,span_.minimum,span_.maximum);
   pending_=0; drop_.hold(elevation);
-  for(int side=0;side<2;++side)
-    feet_[side].position={rootX_+restX_[side],ground_-drop_.elevation()};
+  for(int side=0;side<int(feet_.size());++side)
+    feet_[side].position={rootX_+homeX(side),ground_-drop_.elevation()};
 }
 void GroundedController::installDropContacts() {
   poweredFlight_=false;wings_.goal(0,0,0);
   recoveryStepStarted_=false;
-  for(int side=0;side<2;++side)
-    feet_[side]={{rootX_+restX_[side],ground_},{rootX_+restX_[side],ground_},false};
+  for(int side=0;side<int(feet_.size());++side)
+    feet_[side]={{touchdownX(rootX_+homeX(side)),ground_},{touchdownX(rootX_+homeX(side)),ground_},false};
   target_=rootX_; requestedFacing_=facing_; velocity_=lastVelocity_=acceleration_=0;
-  supportContacts_={{true,true}}; supportLoad_={{0,0}}; hasSupportGeometry_=false;
-  swingTime_={}; swingDuration_={}; launchWait_=footPlantDuration_;
+  supportContacts_.fill(true); supportLoad_.fill(0); hasSupportGeometry_=false;
+  swingTime_.fill(0); swingDuration_.fill(0); launchWait_=footPlantDuration_;
 }
 void GroundedController::release(Vec2 velocity) {
   finite(velocity.x); finite(velocity.y);
@@ -308,9 +330,9 @@ void GroundedController::reconcile(double x, GroundSpan span, double floor, doub
       target_=rootX_; velocity_=acceleration_=verticalVelocity_=0;
       legacy_.setAction(Action::Rest); legacy_.expressions().clear();
     }
-    supportLoad_={{0,0}}; supportContacts_={{false,false}}; hasSupportGeometry_=false;
-    for(int side=0;side<2;++side)
-      feet_[side]={{rootX_+restX_[side],ground_-drop_.elevation()}, {}, true};
+    supportLoad_.fill(0); supportContacts_.fill(false); hasSupportGeometry_=false;
+    for(int side=0;side<int(feet_.size());++side)
+      feet_[side]={{rootX_+homeX(side),ground_-drop_.elevation()}, {}, true};
   } else if(phase==DropPhase::Airborne) {
     installDropContacts(); vertical_=presentedVertical;
     lean_.reset(presentedLean); intendedLean_=0;
@@ -319,7 +341,7 @@ void GroundedController::reconcile(double x, GroundSpan span, double floor, doub
     // Display repair moves the presented root into a different world span;
     // obsolete monitor pins move with that one explicit placement repair.
     const double rootDelta=rootX_-previousRoot;
-    for(int side=0;side<2;++side) {
+    for(int side=0;side<int(feet_.size());++side) {
       auto &foot=feet_[side];
       foot.position.x+=rootDelta; foot.landing.x+=rootDelta;
       foot.position.y+=floorDelta; foot.landing.y+=floorDelta;
@@ -348,12 +370,12 @@ void GroundedController::stepDropFollowers(double dt) {
     intendedLean_=0;
     if(drop_.phase()==DropPhase::Recovering && !recoveryStepStarted_ && drop_.impactStrength()>.35) {
       recoveryStepStarted_=true;
-      const int side=facing_>0 ? 0 : 1;
+      const int side=quadruped() ? 2 : (facing_>0 ? 0 : 1);
       auto &foot=feet_[side]; foot.swing=true; foot.recovering=true;
       swingStart_[side]=foot.position; swingTime_[side]=0;
       swingDuration_[side]=tuning_.maxStepDuration;
       foot.landing={touchdownX(foot.position.x+facing_*.12*supportReach_*drop_.impactStrength()),ground_};
-      nextFoot_=1-side;
+      nextFoot_=followingFoot(side);
     }
     stepSupport(dt);
     const auto body=definition_.bindings.at("body");
@@ -362,11 +384,11 @@ void GroundedController::stepDropFollowers(double dt) {
     lean_.step(dt,landingLean);
     head_.step(dt,-landingLean*.35); ears_.step(dt,-lean_.value()*.7);
     tail_.step(dt,-landingLean*.5);
-    for(int side=0;side<2;++side) if(feet_[side].swing) stepSwing(side,dt);
+    for(int side=0;side<int(feet_.size());++side) if(feet_[side].swing) stepSwing(side,dt);
   }
   legacy_.step(dt);
   if(!drop_.detached()) { wings_.goal(0,0,0); wings_.step(dt); }
-  if(!drop_.detached()) drop_.recover(dt,dynamicsSettled() && !feet_[0].swing && !feet_[1].swing);
+  if(!drop_.detached()) drop_.recover(dt,dynamicsSettled() && !std::any_of(feet_.begin(),feet_.end(),[](const FootState &foot){return foot.swing;}));
 }
 void GroundedController::stepSwing(int side, double dt) {
   auto &foot=feet_[side];
@@ -382,17 +404,18 @@ void GroundedController::stepSwing(int side, double dt) {
   }
 }
 bool GroundedController::hop(double height) {
+ if(quadruped())return false;
  finite(height);if(height<=0||height>4*supportReach_)throw std::runtime_error("hop height outside anatomy bounds");
  if(drop_.phase()!=DropPhase::Grounded)return false;
  cancelFlight();const double horizontal=velocity_;
  // Capture presented root, clear gait, and launch without a held phase.
  drop_.launch({horizontal,-std::sqrt(2*18*supportReach_*height)});
- pending_=0;supportContacts_={{false,false}};supportLoad_={{0,0}};hasSupportGeometry_=false;
- swingTime_={};swingDuration_={};verticalVelocity_=verticalAcceleration_=0;
- for(int i=0;i<2;++i)feet_[i]={{rootX_+restX_[i],ground_},{},true};
+ pending_=0;supportContacts_.fill(false);supportLoad_.fill(0);hasSupportGeometry_=false;
+ swingTime_.fill(0);swingDuration_.fill(0);verticalVelocity_=verticalAcceleration_=0;
+ for(int i=0;i<int(feet_.size());++i)feet_[i]={{rootX_+homeX(i),ground_},{},true};
  return true;
 }
-bool GroundedController::flightCapable() const { return definition_.bindings.count("wingShoulderLeft")&&definition_.bindings.count("wingShoulderRight"); }
+bool GroundedController::flightCapable() const { return !quadruped() && definition_.bindings.count("wingShoulderLeft")&&definition_.bindings.count("wingShoulderRight"); }
 bool GroundedController::flyTo(double x,double elevation) {
  finite(x);finite(elevation);if(elevation<0||elevation>1e6)throw std::runtime_error("invalid flight destination");
  if(!flightCapable()||drop_.phase()==DropPhase::Held||drop_.phase()==DropPhase::Landing||drop_.phase()==DropPhase::Recovering)return false;
@@ -511,8 +534,8 @@ void GroundedController::realize(double x, bool blocked, std::optional<double> e
       ears_.impulse(.8*drop_.impactStrength());
       tail_.impulse(-facing_*.7*drop_.impactStrength());
     } else if(drop_.detached()) {
-      for(int side=0;side<2;++side) {
-        feet_[side].position={rootX_+restX_[side],ground_-drop_.elevation()};
+      for(int side=0;side<int(feet_.size());++side) {
+        feet_[side].position={rootX_+homeX(side),ground_-drop_.elevation()};
         feet_[side].swing=true;
       }
     }
@@ -576,14 +599,27 @@ void GroundedController::realize(double x, bool blocked, std::optional<double> e
   }
   return interval;
   };
-  for (int i = 0; i < 2; ++i) {
+  // Visit quad candidates in the same cyclic order during travel and a rest turn.
+  // Comfortable homes may be skipped at rest without starving later contacts.
+  int candidate = nextFoot_;
+  for (int ordinal = 0; ordinal < int(feet_.size()); ++ordinal) {
+    const int i = quadruped() ? candidate : ordinal;
+    if(quadruped()) candidate = followingFoot(candidate);
     auto &f = feet_[i];
     f.recovering = false;
     auto reach = footReach(i, ground_);
     double future = predictedRoot(rootX_, velocity_, acceleration_, target_, tuning_,
                                   tuning_.maxStepDuration);
-    bool neutral = std::abs(f.position.x - rootX_ - restX_[i]) > footHomeRadius_;
-    bool routine = swingAdmission_ && !feet_[1-i].swing && launchWait_ == 0 &&
+    const double boundedHome = quadruped() ? touchdownX(rootX_+homeX(i)) : rootX_+homeX(i);
+    bool neutral = std::abs(f.position.x - boundedHome) > footHomeRadius_;
+    bool supportsReady = quadruped() ? true : !feet_[1-i].swing;
+    if(quadruped()) {
+      supportsReady = true;
+      for(int j=0;j<int(feet_.size());++j) if(j!=i)
+        supportsReady = supportsReady && !feet_[j].swing && supportContacts_[j] &&
+            std::abs(feet_[j].position.y-ground_)<1e-7 && supportLoad_[j]>=1.;
+    }
+    bool routine = swingAdmission_ && supportsReady && launchWait_ == 0 &&
         ((moving && i == nextFoot_ && (std::abs(target_-rootX_) > footHomeRadius_ || neutral)) ||
          (!moving && neutral));
     if (!f.swing && routine) {
@@ -593,8 +629,8 @@ void GroundedController::realize(double x, bool blocked, std::optional<double> e
       swingDuration_[i] = tuning_.maxStepDuration;
       // Aim ahead of the future hip, inside the real horizontal reach interval.
       double ahead = moving ? std::copysign((reach.maximum-reach.minimum)*landingLeadFraction_, velocity_) : 0;
-      f.landing = {touchdownX(future + restX_[i] + ahead), ground_};
-      nextFoot_ = 1-i;
+      f.landing = {touchdownX(future + homeX(i) + ahead), ground_};
+      nextFoot_ = followingFoot(i);
       launchWait_ = tuning_.maxStepDuration + footPlantDuration_;
     }
     if (f.swing) {
@@ -606,8 +642,9 @@ void GroundedController::realize(double x, bool blocked, std::optional<double> e
 }
 void GroundedController::stepSupport(double dt) {
   const auto hips = worldTransforms(definition_, bodyPose(Action::Rest,0,{}));
-  std::array<pets::motion::SupportLeg,2> legs;
-  for (int i = 0; i < 2; ++i) {
+  LimbArray<pets::motion::SupportLeg> legs;
+  legs.setCount(feet_.size());
+  for (int i = 0; i < int(feet_.size()); ++i) {
     auto leg = tuning_.legs[i];
     bool grounded = hasSupportGeometry_ ? supportGeometry_[i].load > 0 :
         !feet_[i].swing && std::abs(feet_[i].position.y-ground_) < 1e-7;
@@ -626,7 +663,8 @@ void GroundedController::stepSupport(double dt) {
   pets::motion::SupportDynamics dynamics{supportTuning_.stiffness,supportTuning_.damping,gravity_,
       supportTuning_.uprightStiffness,supportTuning_.uprightDamping,0,
       supportTuning_.contactLossGravityScale,supportTuning_.airborneDamping};
-  pets::motion::stepSupport(state,legs,dt,dynamics);
+  if(quadruped()) pets::motion::stepSupport(state,legs.array<4>(),dt,dynamics);
+  else pets::motion::stepSupport(state,legs.array<2>(),dt,dynamics);
   vertical_ = state.offset; verticalVelocity_ = state.velocity; verticalAcceleration_ = state.acceleration;
 }
 Pose GroundedController::bodyPose(Action action, double time, Vec2 gaze) const {
@@ -665,13 +703,27 @@ Pose GroundedController::bodyPose(Action action, double time, Vec2 gaze) const {
   for (auto l : tuning_.legs)
     for (int i : {l.hip, l.knee, l.ankle})
       p.bones[i] = definition_.bones[i].rest;
+  if(quadruped()) {
+    const auto authored = worldTransforms(definition_,p);
+    const auto anchor = authored[body];
+    for(const auto &leg:tuning_.legs) {
+      const auto old=authored[leg.hip];
+      const double x=anchor.tx+(old.tx-anchor.tx)*facingBlend_;
+      const double y=old.ty;
+      const int parent=definition_.bones[leg.hip].parent;
+      const auto frame=parent<0 ? WorldTransform{} : authored[parent];
+      const double determinant=frame.m00*frame.m11-frame.m01*frame.m10;
+      p.bones[leg.hip].x=(frame.m11*(x-frame.tx)-frame.m01*(y-frame.ty))/determinant;
+      p.bones[leg.hip].y=(-frame.m10*(x-frame.tx)+frame.m00*(y-frame.ty))/determinant;
+    }
+  }
   return p;
 }
 Pose GroundedController::pose(Action action, double time, Vec2 gaze) const {
   if(drop_.phase()!=DropPhase::Grounded) { action=Action::Rest; time=0; gaze={}; }
   auto p = bodyPose(action, time, gaze);
   auto w = worldTransforms(definition_, p);
-  for (int i = 0; i < 2; i++) {
+  for (int i = 0; i < int(feet_.size()); i++) {
     auto l = tuning_.legs[i];
     Vec2 hip{w[l.hip].tx, w[l.hip].ty};
     Vec2 target{feet_[i].position.x - rootX_ + definition_.origin.x,
@@ -682,9 +734,9 @@ Pose GroundedController::pose(Action action, double time, Vec2 gaze) const {
     if(drop_.detached()) {
       const double reach=lengthA_[i]+lengthB_[i];
       const double prepare=landingPreparation(drop_,supportReach_);
-      const Vec2 hanging{hip.x+reach*(airborneSway_.value()+(i==0 ? -.08 : .08)),
+      const Vec2 hanging{hip.x+reach*(airborneSway_.value()+(quadruped() ? 0 : (i==0 ? -.08 : .08))),
                          hip.y+reach*std::clamp(airborneReach_.value(),.65,.995)};
-      const Vec2 contact{definition_.origin.x+restX_[i]-l.contact.x,
+      const Vec2 contact{definition_.origin.x+homeX(i)-l.contact.x,
                          tuning_.groundY-l.contact.y};
       target={hanging.x+(contact.x-hanging.x)*prepare,
               hanging.y+(contact.y-hanging.y)*prepare};
@@ -751,7 +803,7 @@ bool GroundedController::settled() const {
     return dynamicsSettled() && vertical_==0 && intendedLean_==0 &&
            airborneReach_.settled(.82) && airborneSway_.settled(0);
   if(drop_.phase()!=DropPhase::Grounded) return false;
-  return std::abs(target_-rootX_)<.02 && velocity_==0 && !feet_[0].swing && !feet_[1].swing && dynamicsSettled();
+  return std::abs(target_-rootX_)<.02 && velocity_==0 && !std::any_of(feet_.begin(),feet_.end(),[](const FootState &foot){return foot.swing;}) && dynamicsSettled();
 }
 GroundedState GroundedController::state() const {
   return {rootX_, velocity_, target_, facing_, feet_, !settled(), facingBlend_,

@@ -180,10 +180,12 @@ The [catalogue expansion design](superpowers/specs/2026-10-16-catalogue-architec
 maps 18 concepts onto explicit body families and staged actions. Its
 [quadruped slice](superpowers/specs/2026-10-16-quadruped-foundation-design.md)
 starts with four named contacts and a conservative planar walk. Shared support
-math now has two/four-contact overloads and normalized neutral calibration;
-the live loader, planner and spatial adapters still require their subsequent
-quadruped integration. This mathematical foundation alone is not a new walking
-body capability. See the [implementation status](results/2026-10-16-catalogue-and-quadruped-foundation.md).
+math has two/four-contact overloads and normalized neutral calibration. The
+live loader and planar planner now support four canonical leg roles, conservative
+single-paw gait and all-contact host aggregation, with Marmalade as the reference.
+Spatial adapters remain two-legged. See the
+[planar implementation status](results/2026-10-16-planar-quadruped.md) and the
+[earlier foundation record](results/2026-10-16-catalogue-and-quadruped-foundation.md).
 
 The initial directory-based production format and the original Mallow/Bramble
 examples are implemented. Editable Pillow shape recipes draw a few raster pieces,

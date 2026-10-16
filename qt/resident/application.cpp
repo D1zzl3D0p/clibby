@@ -814,7 +814,7 @@ void ResidentApplication::advanceCuriosity(double now) {
     observation.rootX = state->rootX;
     const auto span = host_->groundSpan(); observation.spanMin = span.minimum; observation.spanMax = span.maximum;
     observation.arrived = std::abs(state->rootX-state->targetX) < .05 && std::abs(state->velocity) < .02
-        && !state->feet[0].swing && !state->feet[1].swing;
+        && !state->anyFootSwinging();
     if (manualNavigation_ && observation.arrived && now >= manualUntil_) manualNavigation_ = false;
   }
   observation.manualBusy = manualNavigation_;
@@ -1095,8 +1095,8 @@ void ResidentApplication::configureSupportFootprint() {
     host_->setSupportFootprint(footprint.first,footprint.second);
   } else {
     const auto s=groundedController_->state();
-    host_->setSupportFootprint(std::min(s.feet[0].position.x,s.feet[1].position.x)-s.rootX-2,
-        std::max(s.feet[0].position.x,s.feet[1].position.x)-s.rootX+2);
+    const auto soles=s.soleExtent();
+    host_->setSupportFootprint(soles.minimum-s.rootX-2,soles.maximum-s.rootX+2);
     groundedController_->setSupportBounds(soleBounds(*host_));
   }
 }
