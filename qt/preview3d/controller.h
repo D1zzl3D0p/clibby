@@ -109,7 +109,7 @@ private:
  std::vector<QString> legRoles_;
  pets::character::Gait gait_=pets::character::Gait::Biped;
  std::array<pets::character3d::Arm,2> arms_;
- bool wings_=false,hasArms_=false;
+ bool wings_=false,hasArms_=false,catalogueStyle_=false;
  std::uint32_t expressionRoles_=0;
  std::optional<pets::behavior::Personality> personality_;
  double eyeOpenness_=1;

@@ -6,7 +6,7 @@
 #include <stdexcept>
 using namespace pets::character3d;
 namespace {
-constexpr std::array<const char*,14> assets{{"marmalade","pip","biscuit","clover","mossback","rivet","paper-heron","acorn-custodian","puddle","pocket-observatory","night-librarian","sprig","hearthling","crumb-golem"}};
+constexpr std::array<const char*,20> assets{{"marmalade","pip","biscuit","clover","mossback","rivet","paper-heron","acorn-custodian","puddle","pocket-observatory","night-librarian","sprig","hearthling","crumb-golem","nell","alden","saffron","tess","rowan","vesper"}};
 void check(bool b,const char* m){if(!b)throw std::runtime_error(m);}
 double norm(pets::motion::Vec3 v){return std::hypot(std::hypot(v.x,v.y),v.z);}
 double delta(const std::vector<SignatureOffset>& a,const std::vector<SignatureOffset>& b){
@@ -76,6 +76,52 @@ void timeAndReadPurity(){for(const char* asset:assets){
  const auto before=s.offsets();s.advance(1e-5);const auto last=s.offsets();s.advance(2e-5);
  check(delta(before,last)<1e-8&&delta(last,s.offsets())<1e-8,"natural end derivative discontinuity");zero(s.offsets());}
 }
+// Solve the authored shoulder/elbow/wrist geometry, independently of the
+// timeline, to catch gestures that merely extend a waist-height prop forward.
+void humanoidInspectionHeight(){
+ using V=pets::motion::Vec3;
+ auto rotate=[](V v,V r){
+  const V z{v.x*std::cos(r.z)-v.y*std::sin(r.z),v.x*std::sin(r.z)+v.y*std::cos(r.z),v.z};
+  const V x{z.x,z.y*std::cos(r.x)-z.z*std::sin(r.x),z.y*std::sin(r.x)+z.z*std::cos(r.x)};
+  return V{x.x*std::cos(r.y)+x.z*std::sin(r.y),x.y,-x.x*std::sin(r.y)+x.z*std::cos(r.y)};
+ };
+ const std::array<std::pair<const char*,double>,5> bodies{{{"nell",.34},{"saffron",.275},{"tess",.365},{"rowan",.26},{"vesper",.26}}};
+ for(const auto& body:bodies){
+  SignatureMotion action(body.first);action.start();action.advance(2.);
+  V upper{},fore{};
+  for(const auto& o:action.offsets()){
+   if(o.joint=="upper_arm_left")upper=o.rotation;
+   if(o.joint=="forearm_left")fore=o.rotation;
+  }
+  // These are actual glTF rest-chain displacements: the elbow drops .33 m,
+  // the forearm drops .24 m and the hand begins .255 m ahead of the shoulder.
+  const auto elbow=rotate({.065,-.33,.035},upper);
+  const auto wrist=rotate(rotate({-.035,-.24,.22},upper),fore);
+  const V hand{body.second+.035+elbow.x+wrist.x,elbow.y+wrist.y,elbow.z+wrist.z};
+  check(hand.y-(-.57)>=.25,"inspection leaves actual hand near waist");
+  check(hand.z>.355,"inspection fails front-of-torso clearance");
+  check(hand.x>.2,"inspection brings held prop into the central face region");
+ }
+}
+void humanoidIntent(){
+ for(const char* asset:{"nell","alden","saffron","tess","rowan","vesper"}){
+  SignatureMotion s(asset);s.start();s.advance(2.);
+  bool head=false,upperArm=false,forearm=false,prop=false;
+  const bool fastening=std::string_view(asset)=="alden";
+  for(const auto& o:s.offsets()){
+   head=head||o.joint=="head";
+   upperArm=upperArm||o.joint==(fastening?"upper_arm_right":"upper_arm_left");
+   forearm=forearm||o.joint==(fastening?"forearm_right":"forearm_left");
+   prop=prop||o.joint==(fastening?"fastening":"held_prop");
+   check(norm(o.translation)==0,"humanoid signature detaches a prop with translation");
+   check(norm(o.rotation)<1.2,"humanoid signature exceeds restrained joint range");
+   if(o.joint=="prop_hinge")check(o.rotation.y<-.6,"book or watch does not open its actual hinge");
+  }
+  check(head&&upperArm&&forearm&&prop,"humanoid action lacks articulated arm or bound-prop intent");
+  s.advance(3.);check(s.active(),"humanoid inspection ends before five seconds");
+  s.advance(2.);check(!s.active(),"humanoid inspection exceeds seven seconds");zero(s.offsets());
+ }
+}
 void rivetDirection(){
  SignatureMotion rivet("rivet");rivet.start();rivet.advance(2);
  const auto pose=rivet.offsets();bool antenna=false,salute=false;
@@ -98,4 +144,4 @@ void rivetDirection(){
  check(antenna&&salute,"missing Rivet signature joints");
 }
 }
-int main(){try{allProfiles();cancellation();continuity();absentAnatomy();timeAndReadPurity();rivetDirection();std::cout<<"Fourteen bounded signature actions, cancellation, exact rest and support isolation passed\n";return 0;}catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}
+int main(){try{allProfiles();cancellation();continuity();absentAnatomy();timeAndReadPurity();humanoidIntent();humanoidInspectionHeight();rivetDirection();std::cout<<"Twenty bounded signature actions, cancellation, exact rest and support isolation passed\n";return 0;}catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

@@ -6,7 +6,8 @@ Item {
  width: ravenModel ? 512 : 384; height: ravenModel ? 448 : 384
  property real logicalPixelsPerMeter: ravenModel || catalogueModel ? 80 : 120
  property real cameraTiltDegrees: catalogueModel ? 15.4 : 12
- property real facingBiasDegrees: catalogueModel ? catalogueFacingBias : -35
+ // Human faces need a more frontal three-quarter view at the same pixel density.
+ property real facingBiasDegrees: catalogueModel ? (motion.reachSupported ? -55 : catalogueFacingBias) : -35
  property point rootFloorAnchor: Qt.point(width/2,height/2+1.1*logicalPixelsPerMeter)
  property bool renderingEnabled: true
  function refresh() { pixelOutput.scheduleUpdate() }

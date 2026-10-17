@@ -168,7 +168,7 @@ ResidentApplication::ResidentApplication(const QString &assets,
     if (spatialCharacter_) {
       control(Control::Hide);
       if (characterErrorAction_) {
-        characterErrorAction_->setText("3D renderer failed; choose a 2D character: " + message.left(100));
+        characterErrorAction_->setText("3D renderer failed; choose a 2D companion: " + message.left(100));
         characterErrorAction_->setVisible(true);
       }
       return; // Keep tray, toolbox, preferences and sessions available.
@@ -223,7 +223,7 @@ ResidentApplication::ResidentApplication(const QString &assets,
   toolbox_->addControl(landAction,"toolboxLand"); toolbox_->addControl(perchAction,"toolboxPerch");
   left->setEnabled(hasGroundMotion()); right->setEnabled(hasGroundMotion()); stop->setEnabled(hasGroundMotion());
   if (characterController_) {
-    auto *characters = menu_->addMenu("Character");
+    auto *characters = menu_->addMenu("Companions");
     const QDir root(characterRoot_);
     for (const auto &info :
          root.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name)) {
@@ -237,12 +237,12 @@ ResidentApplication::ResidentApplication(const QString &assets,
                 QString error;
                 if (!selectCharacter(path, &error)) {
                   characterErrorAction_->setText(
-                      "Character could not be loaded: " + error.left(120));
+                      "Companion could not be loaded: " + error.left(120));
                   characterErrorAction_->setVisible(true);
                 }
               });
     }
-    characterErrorAction_ = addAction("Character could not be loaded");
+    characterErrorAction_ = addAction("Companion could not be loaded");
     characterErrorAction_->setEnabled(false);
     characterErrorAction_->setVisible(false);
     menu_->addSeparator();

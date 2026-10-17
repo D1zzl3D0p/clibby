@@ -127,7 +127,8 @@ if(EXISTS "${WOLF_SOURCE}" AND EXISTS "${WOLF_RIG}")
   foreach(ASSET_TYPE IN ITEMS "pip:Pip" "biscuit:Biscuit" "clover:Clover" "mossback:Mossback"
       "rivet:Rivet" "paper-heron:PaperHeron" "acorn-custodian:AcornCustodian" "puddle:Puddle"
       "pocket-observatory:PocketObservatory" "night-librarian:NightLibrarian" "sprig:Sprig"
-      "hearthling:Hearthling" "crumb-golem:CrumbGolem")
+      "hearthling:Hearthling" "crumb-golem:CrumbGolem"
+      "nell:Nell" "alden:Alden" "saffron:Saffron" "tess:Tess" "rowan:Rowan" "vesper:Vesper")
     string(REPLACE ":" ";" ASSET_PARTS "${ASSET_TYPE}")
     list(GET ASSET_PARTS 0 ASSET)
     list(GET ASSET_PARTS 1 ASSET_TYPE_NAME)

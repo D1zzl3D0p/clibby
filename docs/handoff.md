@@ -1,5 +1,22 @@
 # New-session handoff
 
+## Latest: six original humanoid companions (2026-10-17)
+
+Nell, Alden, Saffron, Tess, Rowan and Vesper are implemented and selectable in
+**Companions**, with original low-poly assets, distinct adult silhouettes/faces,
+real arms and attached props. Each has a finite signature; hand-owned offsets
+apply after arm realization while the support solver retains foot ownership.
+Human faces use a more frontal resting angle at the same 96×96 native density.
+The full approved eighteen-companion catalogue and the remaining twelve are in
+[the design](superpowers/specs/2026-10-17-humanoid-companions-design.md).
+
+Fresh combined Release checks: 76 passed, two environment skips, no failures.
+Final native action evidence covers 630 unclipped frames and includes
+`results/humanoid-companions-2026-10-17/humanoid-signatures.gif`.
+Use the fresh `build/qt-humanoids/Clibby.app` after the repository rename.
+Read [the delivery record](results/2026-10-17-humanoid-companions.md) for checks,
+reproduction paths and the limits of the first signature vignettes.
+
 ## Latest: first signature-action pass
 
 All fourteen live catalogue-style pets now have finite planted-feet signature

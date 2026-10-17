@@ -53,6 +53,7 @@ int main(int argc,char** argv){
    require(shell.selectCharacter(root+"/marmalade",&error),"switch back to planar cat");
    require(shell.groundedState()->feet.size()==4,"planar cat retains four feet after spatial switch");
    require(shell.selectCharacter(root+"/marmalade-3d",&error),"switch back to spatial cat");
+   int selectedCatalogue=0;
    for(const auto& asset:pets::character3d::builtinAssets){
     if(!asset.catalogueStyle||QString(asset.asset)=="marmalade")continue;
     const auto directory=root+"/"+QString::fromLatin1(asset.id);
@@ -60,7 +61,9 @@ int main(int argc,char** argv){
     require(shell.selectCharacter(directory,&error),error.toUtf8().constData());
     require(shell.selectedCharacter()==QLatin1String(asset.id),"new catalogue identity not selected");
     require(shell.groundedState()->feet.size()==(asset.quadruped?4:2),"new catalogue selected wrong anatomy");
+    ++selectedCatalogue;
    }
+   require(selectedCatalogue==19,"resident did not exercise all thirteen creatures and six humanoid companions");
    require(shell.selectCharacter(root+"/marmalade-3d",&error),"restore spatial cat after catalogue selection");
   }
   {

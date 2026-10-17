@@ -72,6 +72,7 @@ WolfMotion::WolfMotion(const QString& path,QObject* parent,std::function<double(
  if(rig.contains("skin"))skinName_=rig["skin"].toString();
  const auto* asset=pets::character3d::builtinSkin(skinName_);
  if(!asset||asset->quadruped!=quadruped)throw std::runtime_error("rig skin does not match trusted anatomy");
+ catalogueStyle_=asset->catalogueStyle;
  personality_=pets::behavior::personalityFor(asset->disposition);
  signature_=pets::character3d::SignatureMotion(asset->asset);
  signatureBound_=signature_.supported();
@@ -93,6 +94,8 @@ WolfMotion::WolfMotion(const QString& path,QObject* parent,std::function<double(
   // Side-aware outward/downward elbow bend keeps the thick sleeve clear of
   // torso and cheek during the preview's hold and semantic gestures.
   for(auto role:{"upper_arm_","forearm_","hand_"})if(!heads.count(QString(role)+side))throw std::runtime_error("missing arm joint");
+  if(joints_.at("forearm_"+side).parent!="upper_arm_"+side||joints_.at("hand_"+side).parent!="forearm_"+side)
+   throw std::runtime_error("invalid arm chain hierarchy");
   arms_[i++]={heads.at("upper_arm_"+side),heads.at("forearm_"+side),heads.at("hand_"+side),{0,-.08,0},{heads.at("upper_arm_"+side).x>0?1.:-1.,-.4,.2}};
  }
  for(auto& arm:arms_)arm.torsoPivot=heads.at("spine");
@@ -311,8 +314,16 @@ void WolfMotion::apply(){
   auto& joint=found->second;joint.node->setProperty("rotation",QVariant::fromValue(joint.restRotation*rotation(named.second)));
  }
  // Convert neutral model-axis action offsets through the current parent frame.
- // Apply before solving legs: signatures cannot translate the support chains.
+ // Arm IK realizes its baseline before additive arm and attached-prop offsets.
+ // Other appendages remain ahead of support realization. Classify by actual
+ // ancestry rather than aliases, so a hand's bound prop follows the same pass.
+ auto applySignature=[&](bool afterArms){
  if(signatureBound_&&signature_.active())for(const auto& offset:signature_.offsets()){
+  const auto name=QString::fromStdString(offset.joint);
+  bool armChannel=false;
+  for(auto ancestor=name;!ancestor.isEmpty();ancestor=joints_.at(ancestor).parent)
+   if(ancestor=="upper_arm_left"||ancestor=="upper_arm_right"){armChannel=true;break;}
+  if(armChannel!=afterArms)continue;
   auto& joint=joints_.at(QString::fromStdString(offset.joint));
   const auto parent=joint.parent.isEmpty()?avatar_:joints_.at(joint.parent).node;
   const auto parentWorld=parent->property("sceneRotation").value<QQuaternion>();
@@ -323,6 +334,8 @@ void WolfMotion::apply(){
   const auto position=joint.node->property("position").value<QVector3D>();
   joint.node->setProperty("position",QVariant::fromValue(position+frame.rotatedVector(vector(offset.translation))));
  }
+ };
+ applySignature(false);
  // Parent expressions are applied first; every leg endpoint is then placed
  // from the solved model snapshot, including forelegs below a leaning spine.
  for(std::size_t i=0;i<legRoles_.size();++i){
@@ -375,6 +388,7 @@ void WolfMotion::apply(){
   }
   ++sideIndex;
  }
+ applySignature(true);
 }
 bool WolfMotion::verifyDeformation(){
  if(eyeBlinkSupported()){
@@ -398,7 +412,7 @@ bool WolfMotion::verifyDeformation(){
   }
  }
 
- if(gait_==pets::character::Gait::QuadrupedWalk||(!hasArms_&&!wings_)){
+ if(gait_==pets::character::Gait::QuadrupedWalk||(!hasArms_&&!wings_)||(catalogueStyle_&&hasArms_)){
   std::array<std::optional<QVector3D>,4> previousSole;
   std::array<bool,4> previousGrounded{},articulated{};
   bool moved=false;
@@ -437,7 +451,7 @@ bool WolfMotion::verifyDeformation(){
   for(auto semantic:{QString("look"),QString("wave"),QString("failure")}){
    gesture(semantic);for(int frame=0;frame<900&&!settled();++frame){advance(1./120);check();}
    if(!settled())throw std::runtime_error("quadruped expression failed to settle");
-   if(motion_->pose().arms[0]||motion_->pose().arms[1])throw std::runtime_error("quadruped expression activated arms");
+   if(!hasArms_&&(motion_->pose().arms[0]||motion_->pose().arms[1]))throw std::runtime_error("armless expression activated arms");
   }
   return true;
  }

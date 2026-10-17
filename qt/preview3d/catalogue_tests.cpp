@@ -43,6 +43,24 @@ int main(int argc,char** argv){
    const auto bias=stage->property("facingBiasDegrees").toDouble()*3.141592653589793/180;
    motion.motion().setFacingBias(bias);motion.motion().setCameraFacingTurns(true);motion.motion().reset(0,{-120,120});motion.setWalkingSpeed(1);motion.advancePresentation(0);
    QFile f(residentRigPath(name));check(f.open(QIODevice::ReadOnly),"rig missing");const auto rig=QJsonDocument::fromJson(f.readAll()).object();
+   const bool hasArms=rig.value("arms").toBool(false);
+   check(motion.reachSupported()==hasArms,name+": advertised reach differs from authored arms");
+   for(const auto* side:{"left","right"})for(const auto* part:{"upper_arm_","forearm_","hand_"})
+    if(hasArms)check(stage->findChild<QObject*>(QString::fromLatin1(part)+QLatin1String(side)),name+": live articulated arm joint missing");
+   struct Attachment {QObject* node;QObject* parent;QVector3D localPivot;};
+   std::vector<Attachment> attachments;
+   for(const auto value:rig["joints"].toArray()){
+    const auto joint=value.toObject();const auto jointName=joint["name"].toString();const auto parentName=joint["parent"].toString();
+    if(jointName!="held_prop"&&jointName!="fastening"&&parentName!="held_prop")continue;
+    auto node=stage->findChild<QObject*>(jointName);auto parent=stage->findChild<QObject*>(parentName);
+    check(node&&parent&&node->parent()==parent,name+": owned prop is outside its authored parent hierarchy");
+    if(jointName=="held_prop")check(parentName=="hand_left",name+": held prop is not attached to its real hand");
+    if(jointName=="fastening")check(parentName=="spine",name+": fastening is not attached to torso");
+    bool invertible=false;const auto inverse=parent->property("sceneTransform").value<QMatrix4x4>().inverted(&invertible);
+    check(invertible,name+": attachment parent transform is singular");
+    attachments.push_back({node,parent,inverse.map(node->property("scenePosition").value<QVector3D>())});
+   }
+   if(hasArms)check(!attachments.empty(),name+": humanoid signature has no actual owned prop binding");
    std::vector<QString> roles=asset.quadruped?std::vector<QString>{"foreLeft","foreRight","hindLeft","hindRight"}:std::vector<QString>{"left","right"};
    std::vector<QObject*> feet;std::vector<QVector3D> offsets;const auto basis=QQuaternion::fromAxisAndAngle(0,1,0,90);
    for(std::size_t i=0;i<roles.size();++i){
@@ -59,12 +77,18 @@ int main(int argc,char** argv){
      check((actual-expected).length()<.0004,name+": rendered sole differs from actual contact");supported+=pose.grounded[i];
     }
     if(walking)check(supported>=int(roles.size())-1,name+": insufficient stance support");
-    check(!pose.arms[0]&&!pose.arms[1],name+": decorative arms acquired reach");
+    check(bool(pose.arms[0])==hasArms&&bool(pose.arms[1])==hasArms,name+": solved arm anatomy differs from rig capability");
+    for(const auto& attachment:attachments){
+     bool invertible=false;const auto inverse=attachment.parent->property("sceneTransform").value<QMatrix4x4>().inverted(&invertible);
+     check(invertible&&(inverse.map(attachment.node->property("scenePosition").value<QVector3D>())-attachment.localPivot).length()<.0001,
+       name+": owned prop pivot detached during movement");
+    }
    };
    using pets::character::Role;
    check(motion.motion().expressions().supports(Role::Tail)==bool(stage->findChild<QObject*>("tail_base")),name+": tail capability does not match anatomy");
    check(motion.motion().expressions().supports(Role::EarLeft)==bool(stage->findChild<QObject*>("ear_left")),name+": ear capability does not match anatomy");
-   check(!motion.motion().reach(0,{.2,.5,.1}),name+": unsupported reach accepted");
+   check(motion.motion().reach(0,{.2,.5,.1})==hasArms,name+": reach admission differs from actual anatomy");
+   motion.motion().clearArmGoal(0);motion.motion().reset(0,{-120,120});motion.advancePresentation(0);
    check(!motion.motion().flightCapable(),name+": decorative wings claim powered flight");
    inspect(true);check(!motion.projectedVisualRegion(stage.get()).isEmpty(),name+": visual mask missing");
    std::unique_ptr<QQuickWindow> window;
@@ -92,10 +116,28 @@ int main(int argc,char** argv){
    motion.motion().reset(0,{-120,120});
    for(int i=0;i<600;++i){motion.advance(1./120);inspect(true);}
    const auto resting=actionPose();
+   // A global transform change can come solely from an expressive ancestor.
+   // Record the arm's own local rotation to prove its additive action survives IK.
+   std::vector<std::pair<QObject*,QQuaternion>> restingActionArms;
+   if(hasArms){
+    pets::character3d::SignatureMotion definition(asset.asset);
+    for(const auto required:definition.requiredJoints()){
+     const auto jointName=QString::fromUtf8(required.data(),int(required.size()));
+     if(!jointName.startsWith("upper_arm_")&&!jointName.startsWith("forearm_"))continue;
+     auto node=stage->findChild<QObject*>(jointName);check(node,name+": missing signature arm joint");
+     restingActionArms.push_back({node,node->property("rotation").value<QQuaternion>()});
+    }
+    check(restingActionArms.size()>=2,name+": humanoid signature lacks upper and lower arm channels");
+   }
    check(motion.signature()&&!motion.signature(),name+": signature admission failed");
    check(!motion.settled(),name+": action failed to wake");
    for(int i=0;i<180;++i){motion.advance(1./120);inspect(true);}
    const auto expressive=actionPose();check(expressive!=resting,name+": signature does not deform actual joints");
+   for(const auto& arm:restingActionArms){
+    const auto current=arm.first->property("rotation").value<QQuaternion>().normalized();
+    const auto alignment=std::fmin(1.,std::abs(double(QQuaternion::dotProduct(arm.second.normalized(),current))));
+    check(2*std::acos(alignment)>.0087,name+": signature arm offset was overwritten by IK: "+arm.first->objectName());
+   }
    motion.pause(true);for(int i=0;i<90;++i)motion.advance(1./120);check(actionPose()==expressive&&motion.signatureActive(),name+": pause did not freeze action");motion.pause(false);
    for(int i=0;i<1200&&!motion.settled();++i){motion.advance(1./120);inspect(true);}
    check(motion.settled()&&!motion.signatureActive(),name+": signature never settles");

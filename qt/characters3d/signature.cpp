@@ -22,7 +22,7 @@ struct Profile {
 };
 // Authored intent amplitudes, independent of renderer, host, timers and limbs.
 // Continuous envelopes shape bounded movement; no pose keys or clip playback.
-const std::array<Profile,14> profiles{{
+const std::array<Profile,20> profiles{{
  {"marmalade","Tail-tip inspection",5.2,{
   {"head",{-.12,-.28,.06}},
   {"tail_base",{0,.32,0},{0,.035,0},{},.6},
@@ -71,7 +71,39 @@ const std::array<Profile,14> profiles{{
   {"tail_tip",{.22,.58,.04},{0,.04,0},{},.65}}},
  {"crumb-golem","Careful balancing gesture",4.8,{
   {"head",{.10,0,-.10},{0,0,.025},{},.7},
-  {"signature_arm_left",{0,0,-.72},{0,0,.045},{},.7}}}
+  {"signature_arm_left",{0,0,-.72},{0,0,.045},{},.7}}},
+ {"nell","A passage to consider",6.2,{
+  {"head",{.40,-.08,.035}},
+  {"upper_arm_left",{-.55,0,-.035}},
+  {"forearm_left",{-.80,0,0}},
+  {"held_prop",{-.08,.06,0}},
+  {"prop_hinge",{0,-.72,0}}}},
+ {"alden","Fastening check",5.8,{
+  {"head",{.20,-.08,.025}},
+  {"upper_arm_right",{-.50,0,1.00}},
+  {"forearm_right",{-.15,0,.30}},
+  {"fastening",{0,0,.07}}}},
+ {"saffron","Vial inspection",6.0,{
+  {"head",{.40,.14,-.035}},
+  {"upper_arm_left",{-.70,0,.035}},
+  {"forearm_left",{-1.00,0,.035}},
+  {"held_prop",{.12,0,-.16},{0,0,.035},{},.35}}},
+ {"tess","Mechanism inspection",5.6,{
+  {"head",{.35,.09,-.04}},
+  {"upper_arm_left",{-.45,0,.04}},
+  {"forearm_left",{-.70,0,0}},
+  {"held_prop",{0,.48,.12},{0,.11,0},{},.45}}},
+ {"rowan","Seed study",6.4,{
+  {"head",{.45,.12,.035}},
+  {"upper_arm_left",{-.60,0,.025}},
+  {"forearm_left",{-.95,0,0}},
+  {"held_prop",{0,.24,-.08},{0,.07,0},{},.28}}},
+ {"vesper","Pocket-watch inspection",6.3,{
+  {"head",{.40,.10,-.025}},
+  {"upper_arm_left",{-.50,0,.025}},
+  {"forearm_left",{-.85,0,0}},
+  {"held_prop",{-.08,.12,0}},
+  {"prop_hinge",{0,-.88,0}}}}
 }};
 Vec3 add(Vec3 a,Vec3 b){return {a.x+b.x,a.y+b.y,a.z+b.z};}
 Vec3 scale(Vec3 a,double f){return {a.x*f,a.y*f,a.z*f};}
