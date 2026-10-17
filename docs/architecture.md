@@ -1,5 +1,13 @@
 # Architecture direction
 
+Update, 2026-10-16: the trusted spatial adapter now supports bounded two/four-leg
+anatomy. Marmalade 3D uses the shared quadruped planner, measured spatial IK,
+skinned woodland artwork and existing timerless resident path. Contact yaw,
+support/load calibration, projected masks and host footprint include all active
+paws; arm capabilities remain separate. The 96-pixel nearest stage preserves
+the selected art density. See the
+[spatial quadruped record](results/2026-10-16-spatial-quadruped.md).
+
 Update, 2026-10-10: the trusted built-in 3D werewolf now uses the same resident
 host, controls, sessions and timer through a timerless `SpatialCharacter` adapter.
 Motion proposes model-world travel and accepts host-realized placement; projected

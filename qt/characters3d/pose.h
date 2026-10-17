@@ -6,6 +6,7 @@
 #include <optional>
 namespace pets::character3d {
 using Vec3 = pets::motion::Vec3;
+using pets::character::LimbArray;
 struct Leg { Vec3 hip,knee,ankle,contact; };
 struct LegPose { Vec3 hip,knee,ankle; };
 // Rest geometry is model-axis aligned. Expressive wrists rotate the grip offset
@@ -18,21 +19,23 @@ struct Pose {
  Vec3 head{}, tail{};
  std::array<Vec3,2> ears{}, wrists{};
  std::array<pets::character::WingState,2> wings{};
- std::array<LegPose,2> legs;
+ LimbArray<LegPose> legs;
  std::array<std::optional<ArmPose>,2> arms;
  // Authoritative world support points and absolute foot yaw (radians).
- std::array<Vec3,2> contacts;
- std::array<double,2> footYaw{};
+ LimbArray<Vec3> contacts;
+ LimbArray<double> footYaw{};
  // Independent ankle pitch; supported paws remain flat.
- std::array<double,2> footPitch{};
- std::array<bool,2> swing{};
+ LimbArray<double> footPitch{};
+ LimbArray<bool> swing{};
  // Physical support is independent of lifted/recovering animation flags.
- std::array<bool,2> grounded{};
+ LimbArray<bool> grounded{};
 };
 LegPose solveLeg(Vec3 hip,Vec3 target,double upper,double lower,Vec3 bend,bool preserveTarget=false);
 class Motion {
 public:
- explicit Motion(std::array<Leg,2>, std::optional<std::array<Arm,2>> arms = {}, bool wings = false, double wingReferenceReach = 0);
+ // Quadruped legs use canonical foreLeft, foreRight, hindLeft, hindRight order.
+ // Pair arrays retain the legacy biped constructor semantics through LimbArray.
+ explicit Motion(LimbArray<Leg>, std::optional<std::array<Arm,2>> arms = {}, bool wings = false, double wingReferenceReach = 0, pets::character::Gait gait = pets::character::Gait::Biped);
  void armGoal(int side, Vec3 modelGripTarget);
  void clearArmGoal(int side);
  bool reach(int side, Vec3 normalizedGripTarget);
@@ -78,7 +81,7 @@ public:
  pets::character::GroundedState state() const;
  bool settled() const;
 private:
- std::array<Leg,2> legs_;
+ LimbArray<Leg> legs_;
  std::optional<std::array<Arm,2>> arms_;
  std::array<std::optional<Vec3>,2> armGoals_;
  std::array<std::array<pets::character::SecondOrderTracker,3>,2> reach_;
@@ -89,11 +92,11 @@ private:
  std::optional<pets::character::GroundedController> pendingPlanner_;
  double pendingDelta_=0;
  pets::character::SecondOrderTracker yaw_, follower_;
- std::array<Vec3,2> contacts_;
- std::array<double,2> footYaw_{};
- std::array<double,2> swingStartYaw_{}, swingEndYaw_{};
- std::array<Vec3,2> swingContactOffset_{};
- std::array<double,2> supportRestLength_{};
+ LimbArray<Vec3> contacts_;
+ LimbArray<double> footYaw_{};
+ LimbArray<double> swingStartYaw_{}, swingEndYaw_{};
+ LimbArray<Vec3> swingContactOffset_{};
+ LimbArray<double> supportRestLength_{};
 
  Vec3 turnStart_;
  int turningFoot_=-1;
@@ -103,6 +106,9 @@ private:
  bool cameraFacingTurns_=false, facingLeft_=false;
  double supportFloor_=0;
  std::optional<pets::character::GroundSpan> supportBounds_;
+ bool quadruped() const { return legs_.size()==4; }
+ double yawStepGoal(int foot, double increment) const;
+ bool feetTurning() const;
  void boundTouchdown(Vec3&) const;
  void retargetYaw();
  void clearPickupMotion();

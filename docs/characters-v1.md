@@ -262,10 +262,15 @@ settling, resident arrival and support footprint. Body and proximal limb offsets
 turn about the authored body anchor while world soles remain pinned until
 toe-off; placement `origin` may differ from that body anchor.
 
-The first implementation is layered 2D. Existing 3D characters still have two
-legs; no spatial quadruped rig/import adapter is provided. Seated poses, flops,
-trot/run and independent spine physics remain later work. See the
-[implementation record](results/2026-10-16-planar-quadruped.md).
+The first implementation is layered 2D; the trusted built-in **Marmalade 3D** now
+also supports four spatial chains. Its separate original GLB/rig uses explicit
+`quadrupedWalk`, canonical role contacts and `thigh_ROLE`/`shin_ROLE`/`foot_ROLE`
+joints. This trusted built-in path is not a general downloaded 3D pack format.
+Spatial IK preserves each authored fore/hind knee plane, independently yawed
+paw contacts and all-foot host footprints. Existing 3D bipeds retain their
+defaults. Seated poses, flops, trot/run and independent spine physics remain later
+work. See the [planar record](results/2026-10-16-planar-quadruped.md) and
+[spatial record](results/2026-10-16-spatial-quadruped.md).
 
 ### Shared facing branch
 

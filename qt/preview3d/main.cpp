@@ -18,7 +18,7 @@
 int main(int argc,char**argv){
  QQuickWindow::setDefaultAlphaBuffer(true);
  QGuiApplication app(argc,argv);QCommandLineParser parser;parser.addHelpOption();
- parser.addOption({"character","Built-in character: werewolf or raven.","name","werewolf"});
+ parser.addOption({"character","Built-in character: werewolf, raven or marmalade.","name","werewolf"});
  parser.addOption({"hop","Procedural hop height.","height"});
  parser.addOption({"fly","Flight target x,elevation.","point"});
  parser.addOption({"land-at","Begin landing after seconds.","seconds"});
@@ -42,6 +42,12 @@ int main(int argc,char**argv){
 #else
    throw std::runtime_error("Raven 3D asset unavailable");
 #endif
+  } else if(parser.value("character")=="marmalade") {
+#ifdef MARMALADE_RIG_PATH
+   rigPath=QStringLiteral(MARMALADE_RIG_PATH);qmlDir=QStringLiteral(MARMALADE_QML_DIR);assetType="Marmalade";
+#else
+   throw std::runtime_error("Marmalade 3D asset unavailable");
+#endif
   } else if(parser.value("character")!="werewolf")throw std::runtime_error("Unknown 3D character");
   WolfMotion motion(rigPath);QQmlApplicationEngine engine;
   bool speedOkay=false;double speed=parser.value("speed").toDouble(&speedOkay);
@@ -52,6 +58,7 @@ int main(int argc,char**argv){
   // Generated assets are a trusted local module, never downloaded at runtime.
   engine.rootContext()->setContextProperty("motion",&motion);
   engine.rootContext()->setContextProperty("ravenModel",parser.value("character")=="raven");
+  engine.rootContext()->setContextProperty("marmaladeModel",parser.value("character")=="marmalade");
   engine.rootContext()->setContextProperty("captureTransparent",parser.isSet("transparent"));
   engine.rootContext()->setContextProperty("previewVisible",!parser.isSet("verify-presentation"));
   if(parser.isSet("verify-joints")){
@@ -76,7 +83,7 @@ int main(int argc,char**argv){
    std::cerr<<"GPU unavailable: software Qt Quick cannot render View3D\n";return 77;
   }
   QFile stage(QStringLiteral(WOLF_STAGE_PATH));if(!stage.open(QIODevice::ReadOnly))throw std::runtime_error("3D stage missing");
-  auto source=stage.readAll();if(assetType=="Raven")source.replace("Werewolf {","Raven {");source.replace("import WolfAsset",QByteArray("import \"")+QUrl::fromLocalFile(qmlDir).toString().toUtf8()+"\"");
+  auto source=stage.readAll();if(assetType!="Werewolf")source.replace("Werewolf {",assetType.toUtf8()+" {");source.replace("import WolfAsset",QByteArray("import \"")+QUrl::fromLocalFile(qmlDir).toString().toUtf8()+"\"");
   engine.loadData(source,QUrl::fromLocalFile(QStringLiteral(WOLF_STAGE_PATH)));
   if(engine.rootObjects().isEmpty())throw std::runtime_error("3D stage QML failed");
   auto window=qobject_cast<QQuickWindow*>(engine.rootObjects().first());if(!window)throw std::runtime_error("3D stage not window");

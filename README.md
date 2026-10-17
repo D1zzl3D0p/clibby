@@ -96,7 +96,18 @@ and actual sleep/wake still require the [manual checklist](docs/results/2026-10-
 The real coding-tool adapter is not implemented. The new art is an editable first
 iteration. Autonomous wandering remains deferred.
 
-The live werewolf is now selectable through Character → werewolf-3d in a
+Marmalade 3D adds the selected woodland cat art with four procedural legs,
+continuous skinned limbs and a 96×96 nearest-rendered source. Select it from
+Character or start the rebuilt resident with:
+
+```sh
+rtk proxy build/qt/better_pets --character "$PWD/characters/marmalade-3d"
+```
+
+See the [spatial quadruped record](docs/results/2026-10-16-spatial-quadruped.md)
+for verification and the remaining desktop acceptance work.
+
+The live werewolf is selectable through Character → werewolf-3d in a
 Quick3D-enabled build. To start it explicitly:
 
 ```sh

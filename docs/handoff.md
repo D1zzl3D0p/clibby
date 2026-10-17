@@ -1,5 +1,18 @@
 # New-session handoff
 
+## Latest: live spatial quadruped woodland cat
+
+The selected B cat is now **Marmalade 3D**, selectable in the rebuilt Qt resident.
+Four-leg spatial motion/binding uses the shared gait, actual skinned limbs and
+all-foot support footprint. Fore/hind knee planes preserve authored anatomy;
+old bipeds remain compatible. Final combined Release: 48 passed/four skips;
+2D-only: 31 passed/three skips; Python: 57 passed. Independent review has no
+remaining findings. Native Qt rest/walk/turn/held/drop/landing and an eight-second
+motion capture are inspected under `results/marmalade-live-3d-2026-10-16/`.
+Restart and choose Marmalade 3D to use it. Everyday desktop/monitor/Spaces polish
+and energy remain unverified. Read the
+[implementation record](results/2026-10-16-spatial-quadruped.md).
+
 ## Current art direction: pixel-rendered 3D cat
 
 The user prefers the 3D motion probe and requested art-direction work at the
@@ -8,8 +21,9 @@ proportions and excessive detail. Three editable model studies (lean tabby,
 woodland cat, graphic copper) share the procedural gait and 96×96 grid under
 ignored `results/marmalade-3d-art-direction-2026-10-16/`. The user selected **B,
 woodland cat**, for its strong feline outline and broader applicability. Preserve
-its body/tail silhouette; refine small-scale facial readability next. Production
-integration has not changed. Read the
+its body/tail silhouette; the small facial refinement is preserved alongside the
+original B source in `art-studies/marmalade/`. This art selection preceded the
+production integration recorded above. Read the
 [art-direction record](results/2026-10-16-marmalade-art-direction.md).
 
 ## Git baseline and first walking quadruped

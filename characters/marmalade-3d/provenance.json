@@ -1,0 +1,10 @@
+{
+  "authoring_source": "tools/author_marmalade_3d.py",
+  "source_sha256": "45c08413902d25cc78f1576e7e76c2d14ab3b3c051b6cbb68b6b71d538cd4696",
+  "license": "MIT",
+  "original_geometry": true,
+  "original_texture": true,
+  "art_direction": "Approved B woodland-refined study; original geometry and palette",
+  "reference": "art-studies/marmalade/woodland-refined/author_render.py",
+  "blender_version": "5.2.2 LTS"
+}

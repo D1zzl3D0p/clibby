@@ -11,15 +11,39 @@
 #include <cmath>
 #include <algorithm>
 #include <chrono>
+#include <set>
 namespace {
-pets::character3d::Vec3 point(QJsonArray a){if(a.size()!=3)throw std::runtime_error("invalid rig point");return {a[0].toDouble(),a[2].toDouble(),-a[1].toDouble()};}
+pets::character3d::Vec3 point(QJsonArray a){
+ if(a.size()!=3)throw std::runtime_error("invalid rig point");
+ for(auto value:a)if(!value.isDouble()||!std::isfinite(value.toDouble())||std::abs(value.toDouble())>10)throw std::runtime_error("invalid rig coordinate");
+ return {a[0].toDouble(),a[2].toDouble(),-a[1].toDouble()};
+}
 QVector3D vector(pets::character3d::Vec3 p){return {float(p.x),float(p.y),float(p.z)};}
 }
 WolfMotion::WolfMotion(const QString& path,QObject* parent,std::function<double()> clock):QObject(parent),behaviorClock_(std::move(clock)){
  if(!behaviorClock_)behaviorClock_=[] {return std::chrono::duration<double>(std::chrono::steady_clock::now().time_since_epoch()).count();};
  QFile f(path);if(!f.open(QIODevice::ReadOnly))throw std::runtime_error("3D rig missing");
- auto rig=QJsonDocument::fromJson(f.readAll()).object();std::map<QString,pets::character3d::Vec3> heads;
- for(auto value:rig["joints"].toArray()){auto j=value.toObject();QString name=j["name"].toString();heads[name]=point(j["head"].toArray());Joint entry;entry.parent=j["parent"].toString();joints_[name]=entry;}
+ auto document=QJsonDocument::fromJson(f.readAll());
+ if(!document.isObject())throw std::runtime_error("invalid 3D rig document");
+ auto rig=document.object();std::map<QString,pets::character3d::Vec3> heads;
+ const auto gait=rig.value("gait");
+ if(gait.isUndefined()||gait.toString()=="biped")gait_=pets::character::Gait::Biped;
+ else if(gait.toString()=="quadrupedWalk")gait_=pets::character::Gait::QuadrupedWalk;
+ else throw std::runtime_error("unsupported 3D gait");
+ const bool quadruped=gait_==pets::character::Gait::QuadrupedWalk;
+ const auto declaredJoints=rig["joints"].toArray();
+ if(declaredJoints.isEmpty()||declaredJoints.size()>128)throw std::runtime_error("invalid 3D joint count");
+ for(auto value:declaredJoints){auto j=value.toObject();QString name=j["name"].toString();
+  if(name.isEmpty()||heads.count(name))throw std::runtime_error("invalid or duplicate rig joint");
+  heads[name]=point(j["head"].toArray());Joint entry;entry.parent=j["parent"].toString();joints_[name]=entry;
+ }
+ for(const auto& [name,joint]:joints_){
+  std::set<QString> ancestry{name};auto parent=joint.parent;
+  while(!parent.isEmpty()){
+   if(!joints_.count(parent)||!ancestry.insert(parent).second)throw std::runtime_error("invalid rig hierarchy");
+   parent=joints_.at(parent).parent;
+  }
+ }
  for(const auto groupValue:rig["skinBounds"].toArray()) {
   const auto group=groupValue.toArray();
   if(group.isEmpty()||group.size()>4||skinBounds_.size()>=64)throw std::runtime_error("invalid skin bound group");
@@ -38,13 +62,23 @@ WolfMotion::WolfMotion(const QString& path,QObject* parent,std::function<double(
   }skinBounds_.push_back(std::move(bounds));
  }
  wings_=heads.count("wing_shoulder_left")&&heads.count("wing_shoulder_right");
- skinName_=wings_?"RavenSkin":"WerewolfSkin";
+ if(quadruped&&wings_)throw std::runtime_error("unsupported quadruped wings");
+ hasArms_=!wings_&&!quadruped;
+ skinName_=quadruped?"MarmaladeSkin":wings_?"RavenSkin":"WerewolfSkin";
+ if(rig.contains("skin")&&rig["skin"].toString()!=skinName_)throw std::runtime_error("rig skin does not match anatomy");
  for(const auto* role:{"pelvis","spine","head","tail_base"})if(!heads.count(role))throw std::runtime_error("missing body joint");
- int i=0;for(auto side:{QString("left"),QString("right")}){
+ legRoles_=quadruped?std::vector<QString>{"foreLeft","foreRight","hindLeft","hindRight"}:std::vector<QString>{"left","right"};
+ legs_.setCount(legRoles_.size());
+ const auto contacts=rig["contacts"].toObject();
+ if(contacts.size()!=int(legRoles_.size()))throw std::runtime_error("rig contact count does not match gait");
+ int i=0;for(const auto& side:legRoles_){
   for(auto role:{"thigh_","shin_","foot_"})if(!heads.count(QString(role)+side))throw std::runtime_error("missing leg joint");
-  legs_[i++]={heads.at("thigh_"+side),heads.at("shin_"+side),heads.at("foot_"+side),point(rig["contacts"].toObject()[side].toArray())};
+  if(joints_.at("shin_"+side).parent!="thigh_"+side||joints_.at("foot_"+side).parent!="shin_"+side)throw std::runtime_error("invalid leg chain hierarchy");
+  auto leg=pets::character3d::Leg{heads.at("thigh_"+side),heads.at("shin_"+side),heads.at("foot_"+side),point(contacts[side].toArray())};
+  if((vector(leg.knee)-vector(leg.hip)).length()<1e-5||(vector(leg.ankle)-vector(leg.knee)).length()<1e-5)throw std::runtime_error("degenerate leg chain");
+  legs_[i++]=leg;
  }
- i=0;if(!wings_)for(auto side:{QString("left"),QString("right")}) {
+ i=0;if(hasArms_)for(auto side:{QString("left"),QString("right")}) {
   // Side-aware outward/downward elbow bend keeps the thick sleeve clear of
   // torso and cheek during the preview's hold and semantic gestures.
   for(auto role:{"upper_arm_","forearm_","hand_"})if(!heads.count(QString(role)+side))throw std::runtime_error("missing arm joint");
@@ -60,8 +94,8 @@ WolfMotion::WolfMotion(const QString& path,QObject* parent,std::function<double(
    wingReferenceReach=std::min(wingReferenceReach,100*(distance(heads.at("wing_shoulder_"+side),heads.at("wing_elbow_"+side))+distance(heads.at("wing_elbow_"+side),heads.at("wing_wrist_"+side))));
   }
  }
- motion_=std::make_unique<pets::character3d::Motion>(legs_,wings_?std::optional<std::array<pets::character3d::Arm,2>>{}:std::optional<std::array<pets::character3d::Arm,2>>{arms_},wings_,wingReferenceReach);
- behaviorNow_=behaviorTime();curiosity_.reset(behaviorNow_,pets::behavior::Profile::Werewolf,{63,true,true});
+ motion_=std::make_unique<pets::character3d::Motion>(legs_,hasArms_?std::optional<std::array<pets::character3d::Arm,2>>{arms_}:std::optional<std::array<pets::character3d::Arm,2>>{},wings_,wingReferenceReach,gait_);
+ behaviorNow_=behaviorTime();curiosity_.reset(behaviorNow_,pets::behavior::Profile::Werewolf,{63,hasArms_,true});
  motion_->setSpeedMultiplier(2);
  // Scheduling belongs to the preview wrapper or resident application.
 }
@@ -114,7 +148,7 @@ QVector3D WolfMotion::headAnchor()const {
 QVector3D WolfMotion::cardAnchor()const{return headAnchor()+QVector3D(0,.42,0);}
 QVector3D WolfMotion::effectAnchor()const{return headAnchor()+QVector3D(0,.3,0);}
 QVector3D WolfMotion::grip(int side)const {
- if(wings_)return headAnchor();
+ if(!hasArms_||side<0||side>1)return headAnchor();
  const auto& hand=joints_.at(side==0?"hand_left":"hand_right");
  if(!hand.node)return {};
  auto local=hand.restWorldRotation.conjugated().rotatedVector(vector(arms_[side].gripOffset));
@@ -122,6 +156,7 @@ QVector3D WolfMotion::grip(int side)const {
 }
 void WolfMotion::reach(int side,QVector3D target) {
  if(side<0||side>1||!std::isfinite(target.x())||!std::isfinite(target.y())||!std::isfinite(target.z()))throw std::runtime_error("invalid grip goal");
+ if(!hasArms_)return;
  manualInput();motion_->armGoal(side,{target.x(),target.y(),target.z()});emit changed();
 }
 void WolfMotion::release(int side) {
@@ -144,7 +179,7 @@ void WolfMotion::submitReaction(){
  expression.goal(Role::Head,{gesture_=="failure"?.26:gesture_=="nod"?.2:-.14,0,0});
  if(gesture_=="look")expression.look({.45,.15,1});
  if(gesture_=="failure")expression.goal(Role::EarLeft,{0,0,-.22});
- if(wings_)return;
+ if(!hasArms_)return;
  if(gesture_=="wave"||gesture_=="success"){
   motion_->armGoal(0,{.79,1.94,.3});expression.goal(Role::WristLeft,{3.141592653589793,0,0});
  }else if(gesture_=="point")motion_->armGoal(0,{.72,1.55,.4});
@@ -157,9 +192,9 @@ void WolfMotion::setAutonomous(bool enabled){
  behaviorNow_=behaviorTime();
  if(autonomous_&&!enabled)motion_->target(motion_->state().rootX);
  autonomous_=enabled;motion_->expressions().clear();motion_->clearArmGoal(0);motion_->clearArmGoal(1);
- curiosity_.reset(behaviorNow_,pets::behavior::Profile::Werewolf,{63,true,true});emit changed();
+ curiosity_.reset(behaviorNow_,pets::behavior::Profile::Werewolf,{63,hasArms_,true});emit changed();
 }
-void WolfMotion::setSeed(quint32 seed){behaviorNow_=behaviorTime();seed_=seed;curiosity_=pets::behavior::Curiosity(seed);curiosity_.reset(behaviorNow_,pets::behavior::Profile::Werewolf,{63,true,true});emit changed();}
+void WolfMotion::setSeed(quint32 seed){behaviorNow_=behaviorTime();seed_=seed;curiosity_=pets::behavior::Curiosity(seed);curiosity_.reset(behaviorNow_,pets::behavior::Profile::Werewolf,{63,hasArms_,true});emit changed();}
 std::optional<double> WolfMotion::nextBehaviorDeadline()const{return autonomous_&&!paused_?curiosity_.nextDeadline():std::nullopt;}
 void WolfMotion::advanceBehavior(double now){
  behaviorNow_=now;if(!autonomous_)return;
@@ -175,7 +210,7 @@ void WolfMotion::advanceBehavior(double now){
    case Kind::Clear:expression.clear(command.role);break;
    case Kind::StopNavigation:motion_->target(s.rootX);break;
    case Kind::Navigate:motion_->target(command.targetX);break;
-   case Kind::Reach:motion_->reach(command.side,command.value);break;
+   case Kind::Reach:if(hasArms_)motion_->reach(command.side,command.value);break;
    case Kind::ReleaseReach:motion_->clearArmGoal(command.side);break;
   }
  }emit changed();
@@ -193,6 +228,15 @@ void WolfMotion::aim(const QString& name,QVector3D from,QVector3D to){
  QQuaternion body=avatar_?avatar_->property("sceneRotation").value<QQuaternion>():QQuaternion();
  QQuaternion desired=body*delta*j.restWorldRotation;
  j.node->setProperty("rotation",QVariant::fromValue(parentWorld.conjugated()*desired));
+}
+void WolfMotion::place(const QString& name,QVector3D modelPosition){
+ auto& joint=joints_.at(name);
+ const auto world=avatar_->property("sceneTransform").value<QMatrix4x4>().map(modelPosition);
+ const auto parent=joint.parent.isEmpty()?avatar_:joints_.at(joint.parent).node;
+ bool invertible=false;
+ const auto inverse=parent->property("sceneTransform").value<QMatrix4x4>().inverted(&invertible);
+ if(!invertible)throw std::runtime_error("noninvertible live joint parent");
+ joint.node->setProperty("position",QVariant::fromValue(inverse.map(world)));
 }
 void WolfMotion::setEyeOpenness(double value){
  if(!std::isfinite(value))return;
@@ -215,24 +259,6 @@ void WolfMotion::apply(){
  // Pelvis follows grounded support; ankle articulation retains world soles.
  auto& pelvis=joints_.at("pelvis");QVector3D shift(0,p.legs[0].hip.y-legs_[0].hip.y,0);
  pelvis.node->setProperty("position",QVariant::fromValue(pelvis.restPosition+shift));
- int i=0;for(auto side:{QString("left"),QString("right")}){
-  const auto& l=legs_[i];const auto& posed=p.legs[i];
-  aim("thigh_"+side,vector({l.knee.x-l.hip.x,l.knee.y-l.hip.y,l.knee.z-l.hip.z}),vector({posed.knee.x-posed.hip.x,posed.knee.y-posed.hip.y,posed.knee.z-posed.hip.z}));
-  const double upperScale=vector({posed.knee.x-posed.hip.x,posed.knee.y-posed.hip.y,posed.knee.z-posed.hip.z}).length()/
-                          vector({l.knee.x-l.hip.x,l.knee.y-l.hip.y,l.knee.z-l.hip.z}).length();
-  auto& shin=joints_.at("shin_"+side);
-  shin.node->setProperty("position",QVariant::fromValue(shin.restPosition*float(upperScale)));
-  aim("shin_"+side,vector({l.ankle.x-l.knee.x,l.ankle.y-l.knee.y,l.ankle.z-l.knee.z}),vector({posed.ankle.x-posed.knee.x,posed.ankle.y-posed.knee.y,posed.ankle.z-posed.knee.z}));
-  auto& foot=joints_.at("foot_"+side);const double lowerScale=vector({posed.ankle.x-posed.knee.x,posed.ankle.y-posed.knee.y,posed.ankle.z-posed.knee.z}).length()/
-                          vector({l.ankle.x-l.knee.x,l.ankle.y-l.knee.y,l.ankle.z-l.knee.z}).length();
-  foot.node->setProperty("position",QVariant::fromValue(foot.restPosition*float(lowerScale)));
-  auto parentRotation=joints_.at(foot.parent).node->property("sceneRotation").value<QQuaternion>();
-  auto footOrientation=QQuaternion::fromAxisAndAngle(0,1,0,float(p.footYaw[i]*180/3.141592653589793))*
-                       QQuaternion::fromAxisAndAngle(1,0,0,float(p.footPitch[i]*180/3.141592653589793));
-  const auto basis=avatar_->property("sceneRotation").value<QQuaternion>()*QQuaternion::fromAxisAndAngle(0,1,0,float(-yaw()));
-  foot.node->setProperty("rotation",QVariant::fromValue(parentRotation.conjugated()*basis*footOrientation*foot.restWorldRotation));
-  ++i;
- }
  // The renderer applies only solved snapshots from the procedural core.
  auto rotation=[](pets::motion::Vec3 r){
   constexpr double degrees=180/3.141592653589793;
@@ -245,6 +271,22 @@ void WolfMotion::apply(){
  for(const auto& named:std::array<std::pair<QString,pets::motion::Vec3>,4>{{{"head",p.head},{"ear_left",p.ears[0]},{"ear_right",p.ears[1]},{"tail_base",p.tail}}}){
   auto found=joints_.find(named.first);if(found==joints_.end())continue;
   auto& joint=found->second;joint.node->setProperty("rotation",QVariant::fromValue(joint.restRotation*rotation(named.second)));
+ }
+ // Parent expressions are applied first; every leg endpoint is then placed
+ // from the solved model snapshot, including forelegs below a leaning spine.
+ for(std::size_t i=0;i<legRoles_.size();++i){
+  const auto& side=legRoles_[i];const auto& l=legs_[i];const auto& posed=p.legs[i];
+  place("thigh_"+side,vector(posed.hip));
+  aim("thigh_"+side,vector(l.knee)-vector(l.hip),vector(posed.knee)-vector(posed.hip));
+  place("shin_"+side,vector(posed.knee));
+  aim("shin_"+side,vector(l.ankle)-vector(l.knee),vector(posed.ankle)-vector(posed.knee));
+  place("foot_"+side,vector(posed.ankle));
+  auto& foot=joints_.at("foot_"+side);
+  const auto parentRotation=joints_.at(foot.parent).node->property("sceneRotation").value<QQuaternion>();
+  const auto footOrientation=QQuaternion::fromAxisAndAngle(0,1,0,float(p.footYaw[i]*180/3.141592653589793))*
+                             QQuaternion::fromAxisAndAngle(1,0,0,float(p.footPitch[i]*180/3.141592653589793));
+  const auto basis=avatar_->property("sceneRotation").value<QQuaternion>()*QQuaternion::fromAxisAndAngle(0,1,0,float(-yaw()));
+  foot.node->setProperty("rotation",QVariant::fromValue(parentRotation.conjugated()*basis*footOrientation*foot.restWorldRotation));
  }
  if(wings_){
   const auto body=avatar_->property("sceneRotation").value<QQuaternion>();
@@ -268,6 +310,7 @@ void WolfMotion::apply(){
    }++index;
   }return;
  }
+ if(!hasArms_)return;
  const auto body=avatar_->property("sceneRotation").value<QQuaternion>();
  int sideIndex=0;
  for(auto side:{QString("left"),QString("right")}){
@@ -304,6 +347,49 @@ bool WolfMotion::verifyDeformation(){
   }
  }
 
+ if(gait_==pets::character::Gait::QuadrupedWalk){
+  std::array<std::optional<QVector3D>,4> previousSole;
+  std::array<bool,4> previousGrounded{},articulated{};
+  bool moved=false;
+  auto check=[&]{
+   const auto pose=motion_->pose();
+   const auto avatarTransform=avatar_->property("sceneTransform").value<QMatrix4x4>();
+   int supportCount=0;
+   for(std::size_t i=0;i<legRoles_.size();++i){
+    const auto& role=legRoles_[i];const auto& rest=legs_[i];const auto& solved=pose.legs[i];
+    const auto& foot=joints_.at("foot_"+role);
+    const auto offset=foot.restWorldRotation.conjugated().rotatedVector(vector(rest.contact)-vector(rest.ankle));
+    const auto actual=foot.node->property("scenePosition").value<QVector3D>()+foot.node->property("sceneRotation").value<QQuaternion>().rotatedVector(offset);
+    if((actual-vector(pose.contacts[i])).length()>3e-4f)throw std::runtime_error(("quadruped live contact disagrees with solver: "+role).toStdString());
+    if(previousSole[i]&&previousGrounded[i]&&pose.grounded[i]&&(actual-*previousSole[i]).length()>3e-4f)
+     throw std::runtime_error("quadruped grounded paw slid before toe-off");
+    previousSole[i]=actual;previousGrounded[i]=pose.grounded[i];
+    if(actual.y()<=3e-4f)++supportCount;
+    const std::array<std::pair<QString,QVector3D>,3> endpoints{{{"thigh_"+role,vector(solved.hip)},{"shin_"+role,vector(solved.knee)},{"foot_"+role,vector(solved.ankle)}}};
+    for(const auto& endpoint:endpoints){
+     const auto actualPosition=joints_.at(endpoint.first).node->property("scenePosition").value<QVector3D>();
+     if((actualPosition-avatarTransform.map(endpoint.second)).length()>3e-4f)throw std::runtime_error("quadruped live chain lost solved endpoint");
+    }
+    articulated[i]=articulated[i]||std::abs(pose.footPitch[i])>.01;
+    moved=moved||pose.swing[i];
+   }
+   if(supportCount<3)throw std::runtime_error("quadruped walking lost three-paw support");
+  };
+  check();
+  for(double targetX:{60.,-60.,0.}){
+   target(targetX);
+   for(int frame=0;frame<3000&&!settled();++frame){advance(1./120);check();}
+   if(!settled())throw std::runtime_error("quadruped live navigation failed to settle");
+  }
+  if(!moved)throw std::runtime_error("quadruped live chains never moved");
+  for(auto didArticulate:articulated)if(!didArticulate)throw std::runtime_error("quadruped paw never articulated");
+  for(auto semantic:{QString("look"),QString("wave"),QString("failure")}){
+   gesture(semantic);for(int frame=0;frame<900&&!settled();++frame){advance(1./120);check();}
+   if(!settled())throw std::runtime_error("quadruped expression failed to settle");
+   if(motion_->pose().arms[0]||motion_->pose().arms[1])throw std::runtime_error("quadruped expression activated arms");
+  }
+  return true;
+ }
  if(wings_){
   if(!motion_->hop(20))throw std::runtime_error("raven hop unavailable");
   for(int i=0;i<500;++i)advance(1./120);

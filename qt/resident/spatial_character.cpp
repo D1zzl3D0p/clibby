@@ -25,7 +25,8 @@ bool isSpatialPackage(const QString &directory) {
   const auto object = QJsonDocument::fromJson(file.read(1024*1024+1)).object();
   if (object.value("kind").toString() != "builtin-3d") return false;
   if (object.value("version").toInt() != 1 || !((object.value("id").toString() == "werewolf-3d" && object.value("asset").toString() == "werewolf") ||
-           (object.value("id").toString() == "raven-3d" && object.value("asset").toString() == "raven")))
+           (object.value("id").toString() == "raven-3d" && object.value("asset").toString() == "raven") ||
+           (object.value("id").toString() == "marmalade-3d" && object.value("asset").toString() == "marmalade")))
     throw std::runtime_error("Unsupported built-in 3D character descriptor");
   return true;
 }
@@ -110,7 +111,7 @@ void SpatialCharacter::setSupportFrame(const DesktopHost& host) {
 std::pair<double,double> SpatialCharacter::supportFootprint()const {
  const auto pose=impl_->binding.motion().pose();
  double left=0,right=0;
- for(int side=0;side<2;++side) {
+ for(std::size_t side=0;side<pose.contacts.size();++side) {
   // Resident basis maps the motion Z travel plane to scene X. The camera's
   // pitch changes vertical calibration but leaves this lateral axis exact.
   const double offset=(pose.contacts[side].z*100-pose.rootX)*impl_->pixelsPerCentimeter;

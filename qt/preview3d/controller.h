@@ -95,9 +95,11 @@ private:
  std::map<QString,Joint> joints_;
  struct SkinBound { QString joint; QVector3D minimum,maximum; };
  std::vector<std::vector<SkinBound>> skinBounds_;
- std::array<pets::character3d::Leg,2> legs_;
+ pets::character::LimbArray<pets::character3d::Leg> legs_;
+ std::vector<QString> legRoles_;
+ pets::character::Gait gait_=pets::character::Gait::Biped;
  std::array<pets::character3d::Arm,2> arms_;
- bool wings_=false;
+ bool wings_=false,hasArms_=false;
  double eyeOpenness_=1;
  QString skinName_="WerewolfSkin";
  QString gesture_;
@@ -117,4 +119,5 @@ private:
  bool paused_=false;
  void wake();
  void aim(const QString&,QVector3D from,QVector3D to);
+ void place(const QString&,QVector3D modelPosition);
 };

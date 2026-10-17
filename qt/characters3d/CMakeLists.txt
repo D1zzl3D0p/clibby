@@ -11,6 +11,12 @@ add_executable(character3d_expression_tests expression_tests.cpp)
 target_link_libraries(character3d_expression_tests PRIVATE pet_character3d_core)
 add_test(NAME character3d_expression COMMAND character3d_expression_tests)
 
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/quadruped_tests.cpp")
+  add_executable(character3d_quadruped_tests quadruped_tests.cpp)
+  target_link_libraries(character3d_quadruped_tests PRIVATE pet_character3d_core)
+  add_test(NAME character3d_quadruped COMMAND character3d_quadruped_tests)
+endif()
+
 if(NOT TARGET Qt6::Quick3D OR NOT TARGET Qt6::ShaderTools OR NOT TARGET Qt6::QuickTimeline)
   message(STATUS "Optional Quick3D/ShaderTools/QuickTimeline unavailable; 3D motion tests only")
   return()
@@ -36,6 +42,10 @@ if(EXISTS "${WOLF_SOURCE}" AND EXISTS "${WOLF_RIG}")
   add_library(pet_character3d_render ../preview3d/controller.cpp ../preview3d/controller.h ../preview3d/resident_scene.cpp ../preview3d/resident_scene.h)
   target_link_libraries(pet_character3d_render PUBLIC pet_behavior pet_character3d_core Qt6::Quick3D Qt6::Quick Qt6::Qml Qt6::Gui)
   add_dependencies(pet_character3d_render werewolf_qt_asset)
+  add_executable(quadruped_binding_tests ../preview3d/quadruped_binding_tests.cpp)
+  target_link_libraries(quadruped_binding_tests PRIVATE pet_character3d_render)
+  add_test(NAME quadruped3d_binding COMMAND quadruped_binding_tests)
+  set_tests_properties(quadruped3d_binding PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
   # Trusted converted resources travel beside either executable. Blender/Balsam
   # are build tools only, and no source-directory paths reach resident code.
   add_custom_target(werewolf_resident_resources ALL
@@ -74,6 +84,35 @@ if(EXISTS "${WOLF_SOURCE}" AND EXISTS "${WOLF_RIG}")
     add_test(NAME raven3d_joint_binding COMMAND character_preview_3d --character raven --verify-joints)
     add_test(NAME raven3d_presentation COMMAND character_preview_3d --character raven --verify-presentation)
     set_tests_properties(raven3d_joint_binding raven3d_presentation PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+  endif()
+  set(MARMALADE_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/../../characters/marmalade-3d/marmalade.glb")
+  set(MARMALADE_RIG "${CMAKE_CURRENT_SOURCE_DIR}/../../characters/marmalade-3d/rig.json")
+  if(EXISTS "${MARMALADE_SOURCE}" AND EXISTS "${MARMALADE_RIG}")
+    set(MARMALADE_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/converted-marmalade")
+    add_custom_command(OUTPUT "${MARMALADE_OUTPUT}/Marmalade.qml" "${MARMALADE_OUTPUT}/conversion.json"
+      COMMAND ${Python3_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/../../tools/convert_marmalade_qt.py"
+        --source "${MARMALADE_SOURCE}" --output "${MARMALADE_OUTPUT}" --balsam "${PET_BALSAM}"
+      DEPENDS "${MARMALADE_SOURCE}" "${MARMALADE_RIG}" "${CMAKE_CURRENT_SOURCE_DIR}/../../tools/convert_marmalade_qt.py"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../tools/png_metadata.py")
+    add_custom_target(marmalade_qt_asset DEPENDS "${MARMALADE_OUTPUT}/Marmalade.qml")
+    add_custom_target(marmalade_resident_resources ALL
+      COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/better-pets-3d/marmalade"
+      COMMAND ${CMAKE_COMMAND} -E copy_directory "${MARMALADE_OUTPUT}" "${CMAKE_BINARY_DIR}/better-pets-3d/marmalade/MarmaladeAsset"
+      COMMAND ${CMAKE_COMMAND} -E copy "${MARMALADE_RIG}" "${CMAKE_BINARY_DIR}/better-pets-3d/marmalade/rig.json"
+      DEPENDS marmalade_qt_asset)
+    add_dependencies(pet_character3d_render marmalade_resident_resources)
+    add_dependencies(character_preview_3d marmalade_qt_asset)
+    target_compile_definitions(character_preview_3d PRIVATE MARMALADE_QML_DIR="${MARMALADE_OUTPUT}" MARMALADE_RIG_PATH="${MARMALADE_RIG}")
+    install(DIRECTORY "${MARMALADE_OUTPUT}/" DESTINATION bin/better-pets-3d/marmalade/MarmaladeAsset)
+    install(FILES "${MARMALADE_RIG}" DESTINATION bin/better-pets-3d/marmalade)
+    add_test(NAME marmalade3d_joint_binding COMMAND character_preview_3d --character marmalade --verify-joints)
+    add_test(NAME marmalade3d_presentation COMMAND character_preview_3d --character marmalade --verify-presentation)
+    set_tests_properties(marmalade3d_joint_binding marmalade3d_presentation PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+    add_executable(quadruped_resident_tests ../preview3d/quadruped_resident_tests.cpp)
+    target_link_libraries(quadruped_resident_tests PRIVATE pet_character3d_render)
+    set_target_properties(quadruped_resident_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+    add_test(NAME marmalade3d_resident_presentation COMMAND quadruped_resident_tests)
+    set_tests_properties(marmalade3d_resident_presentation PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
   endif()
   add_executable(character3d_resident_tests ../preview3d/resident_tests.cpp)
   target_link_libraries(character3d_resident_tests PRIVATE pet_character3d_render)
