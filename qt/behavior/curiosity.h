@@ -3,11 +3,21 @@
 #include <cstdint>
 #include <optional>
 #include <random>
+#include <string_view>
 #include <vector>
 namespace pets::behavior {
 enum class Profile { Fallback, Mallow, Bramble, Werewolf };
 enum class Activity { Rest, Survey, EarTwitch, TailSwish, Stretch, Explore, Attention };
 struct Capabilities { std::uint32_t roles=0; bool reach=false, navigation=false; };
+// Rest bounds: 8..120 seconds, min <= max. Weights: 0..100 (0 disables).
+// Exploration probability: 0..0.25; cooldown: 45..600 seconds.
+// reset rejects nonfinite or out-of-range tuning before changing state.
+struct Personality {
+    double restMin=8, restMax=20;
+    int surveyWeight=3, earWeight=1, tailWeight=2, stretchWeight=1;
+    double exploreProbability=.25, exploreCooldown=45;
+};
+std::optional<Personality> personalityFor(std::string_view disposition);
 struct Observation {
     double rootX=0, spanMin=0, spanMax=0, width=1;
     bool suppressed=false, manualBusy=false, reactionBusy=false, blocked=false, arrived=false;
@@ -25,7 +35,7 @@ struct Command {
 class Curiosity {
 public:
     explicit Curiosity(std::uint32_t seed=1);
-    void reset(double now, Profile profile, Capabilities capabilities);
+    void reset(double now, Profile profile, Capabilities capabilities, std::optional<Personality> personality = {});
     std::vector<Command> advance(double now, const Observation& observation);
     std::optional<double> nextDeadline() const { return deadline_; }
     Activity activity() const { return activity_; }
@@ -41,6 +51,7 @@ private:
     std::mt19937 rng_;
     Profile profile_=Profile::Fallback;
     Capabilities capabilities_{};
+    std::optional<Personality> personality_;
     Activity activity_=Activity::Rest, previous_=Activity::Rest;
     std::optional<double> deadline_;
     double lastNow_=0, lastExplore_=-1e100, activityEnd_=0;

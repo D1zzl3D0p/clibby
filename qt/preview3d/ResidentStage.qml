@@ -4,9 +4,9 @@ Item {
  id: stage
  objectName: "resident3dStage"
  width: ravenModel ? 512 : 384; height: ravenModel ? 448 : 384
- property real logicalPixelsPerMeter: ravenModel || marmaladeModel ? 80 : 120
- property real cameraTiltDegrees: marmaladeModel ? 15.4 : 12
- property real facingBiasDegrees: marmaladeModel ? -10.8 : -35
+ property real logicalPixelsPerMeter: ravenModel || catalogueModel ? 80 : 120
+ property real cameraTiltDegrees: catalogueModel ? 15.4 : 12
+ property real facingBiasDegrees: catalogueModel ? catalogueFacingBias : -35
  property point rootFloorAnchor: Qt.point(width/2,height/2+1.1*logicalPixelsPerMeter)
  property bool renderingEnabled: true
  function refresh() { pixelOutput.scheduleUpdate() }
@@ -16,7 +16,7 @@ Item {
  }
  View3D {
   id: view; objectName: "view3d"
-  width: marmaladeModel ? 96 : 128; height: marmaladeModel ? 96 : ravenModel ? 112 : 128
+  width: catalogueModel ? 96 : 128; height: catalogueModel ? 96 : ravenModel ? 112 : 128
   camera: residentCamera
   renderMode: View3D.Offscreen
   explicitTextureWidth: width; explicitTextureHeight: height
@@ -36,10 +36,10 @@ Item {
   }
   DirectionalLight {
    eulerRotation: Qt.vector3d(-35,-30,0)
-   brightness: marmaladeModel ? 1.4 : .8
-   ambientColor: marmaladeModel ? "#888888" : "#000000"
+   brightness: catalogueModel ? 1.4 : .8
+   ambientColor: catalogueModel ? "#888888" : "#000000"
   }
-  DirectionalLight { visible: marmaladeModel; eulerRotation: Qt.vector3d(-25,145,0); brightness: .65 }
+  DirectionalLight { visible: catalogueModel; eulerRotation: Qt.vector3d(-25,145,0); brightness: .65 }
   Node {
    id: basis
    eulerRotation.y: 90

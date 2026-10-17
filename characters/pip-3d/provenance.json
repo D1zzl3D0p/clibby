@@ -1,0 +1,10 @@
+{
+  "authoring_source": "tools/author_catalogue_quadrupeds.py",
+  "source_sha256": "9979d437d6bdd6b8b0678b47a42364da75ded7811ea26c68d0745425fbc60d63",
+  "helper_sha256": "de52ece6f24a0fa2905f09afac7dcaeec3a76e608e50acd37f8a3933b9a2a1d9",
+  "license": "MIT",
+  "original_geometry": true,
+  "original_texture": true,
+  "art_direction": "Refined pixel-rendered low-poly catalogue; original authored forms",
+  "blender_version": "5.2.2 LTS"
+}

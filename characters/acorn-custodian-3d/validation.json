@@ -1,0 +1,32 @@
+{
+  "triangles": 802,
+  "exported_vertices": 1672,
+  "materials": 1,
+  "deform_joints": 12,
+  "max_influences": 2,
+  "atlas": [
+    256,
+    256
+  ],
+  "animation_clips": 0,
+  "embedded_images": 1,
+  "joint_order": [
+    "root",
+    "pelvis",
+    "spine",
+    "head",
+    "eye_left",
+    "eye_right",
+    "thigh_left",
+    "shin_left",
+    "foot_left",
+    "thigh_right",
+    "shin_right",
+    "foot_right"
+  ],
+  "blender_version": "5.2.2 LTS",
+  "armature_deformation_test_max_distance_meters": 0.23462850202685806,
+  "eye_closure_test_max_distance_meters": 0.027265071497794266,
+  "eye_closure_vertex_count": 52,
+  "continuous_weighted_legs": 2
+}

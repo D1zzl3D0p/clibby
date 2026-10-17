@@ -6,12 +6,118 @@
 #include <cmath>
 #include <iostream>
 #include <limits>
+#include <stdexcept>
 using namespace pets::behavior;
 using pets::character::Role;
 using pets::character::roleBit;
 static Capabilities all() { return {63,true,true}; }
 static Observation space() { return {0,-10,10,1}; }
+static void personalityTests() {
+    assert(!personalityFor("legacy") && !personalityFor("unknown"));
+    const char* names[]={"calm","friendly","cautious","reserved","curious"};
+    const double minima[]={24,8,14,18,10}, maxima[]={45,18,28,36,22};
+    for(int n=0;n<5;++n) {
+        const auto tuning=personalityFor(names[n]); assert(tuning);
+        for(std::uint32_t seed=0;seed<100;++seed) {
+            Curiosity c(seed); c.reset(100,Profile::Fallback,{},tuning);
+            double now=100;
+            for(int i=0;i<20;++i) {
+                const double due=*c.nextDeadline();
+                assert(due-now>=minima[n]-1e-9 && due-now<=maxima[n]+1e-9);
+                assert(c.advance(due-.001,space()).empty());
+                assert(c.advance(due,space()).empty());
+                now=due;
+            }
+        }
+        // Anatomy still bounds every personality; no wrists means no reach.
+        for(auto role:{Role::Head,Role::EarLeft,Role::Tail}) {
+            Curiosity c(41); c.reset(0,Profile::Fallback,{roleBit(role),false,false},tuning);
+            for(int i=0;i<300;++i) {
+                for(auto command:c.advance(*c.nextDeadline(),space())) {
+                    assert(command.kind!=Command::Kind::Navigate && command.kind!=Command::Kind::Reach);
+                    assert(command.role==role);
+                }
+            }
+        }
+        Curiosity held(2); held.reset(0,Profile::Fallback,all(),tuning);
+        auto near=space(); near.cursorOffset=pets::motion::Vec3{1,.5,0};
+        assert(!held.advance(.1,near).empty() && !held.nextDeadline());
+        for(int i=0;i<100;++i) assert(held.advance(.2+i,near).empty());
+        near.suppressed=true; held.advance(101,near);
+        assert(!held.nextDeadline() && held.advance(10000,near).empty());
+        // Exploring is still sparse and obeys each personality's cooldown.
+        Curiosity traveler(4); traveler.reset(0,Profile::Fallback,all(),tuning);
+        double last=-1e100; int explores=0;
+        for(int i=0;i<3000;++i) {
+            const double now=*traveler.nextDeadline();
+            for(auto command:traveler.advance(now,space())) if(command.kind==Command::Kind::Navigate) {
+                assert(now-last>=tuning->exploreCooldown); last=now; ++explores;
+            }
+        }
+        assert(explores>0);
+    }
+    const auto friendly=*personalityFor("friendly"), curious=*personalityFor("curious");
+    assert(friendly.tailWeight>friendly.surveyWeight);
+    assert(curious.surveyWeight>curious.tailWeight);
+    assert(personalityFor("cautious")->earWeight>personalityFor("friendly")->earWeight);
+    assert(personalityFor("reserved")->surveyWeight>personalityFor("reserved")->tailWeight);
+    // Zero weights disable even anatomically available actions.
+    auto disabled=friendly;
+    disabled.surveyWeight=disabled.earWeight=disabled.tailWeight=disabled.stretchWeight=0;
+    disabled.exploreProbability=0;
+    Curiosity quiet; quiet.reset(0,Profile::Werewolf,all(),disabled);
+    for(int i=0;i<300;++i) {
+        assert(quiet.advance(*quiet.nextDeadline(),space()).empty());
+        assert(quiet.activity()==Activity::Rest);
+    }
+    // The biases affect choices across identical seeds, not just metadata.
+    int friendlyTails=0, curiousTails=0, friendlyHeads=0, curiousHeads=0;
+    for(auto name:{"friendly","curious"}) {
+        Curiosity c(91);
+        c.reset(0,Profile::Fallback,{roleBit(Role::Head)|roleBit(Role::Tail)|roleBit(Role::EarLeft),false,false},personalityFor(name));
+        int tails=0,heads=0;
+        for(int i=0;i<10000;++i) {
+            const auto before=c.activity(); c.advance(*c.nextDeadline(),space());
+            if(before==Activity::Rest) { tails+=c.activity()==Activity::TailSwish; heads+=c.activity()==Activity::Survey; }
+        }
+        if(std::string_view(name)=="friendly") { friendlyTails=tails; friendlyHeads=heads; }
+        else { curiousTails=tails; curiousHeads=heads; }
+    }
+    assert(friendlyTails>curiousTails && curiousHeads>friendlyHeads);
+    // Rejected resets must preserve the ongoing state and random sequence.
+    for(int field=0;field<12;++field) {
+        Curiosity c(6),reference(6); c.reset(0,Profile::Mallow,all()); reference.reset(0,Profile::Mallow,all());
+        auto bad=friendly;
+        switch(field) {
+        case 0: bad.restMin=0; break;
+        case 1: bad.restMax=bad.restMin-1; break;
+        case 2: bad.restMin=std::numeric_limits<double>::quiet_NaN(); break;
+        case 3: bad.restMax=std::numeric_limits<double>::infinity(); break;
+        case 4: bad.surveyWeight=-1; break;
+        case 5: bad.earWeight=101; break;
+        case 6: bad.tailWeight=-1; break;
+        case 7: bad.stretchWeight=-1; break;
+        case 8: bad.exploreProbability=-.1; break;
+        case 9: bad.exploreProbability=.26; break;
+        case 10: bad.exploreCooldown=44; break;
+        case 11: bad.exploreCooldown=std::numeric_limits<double>::quiet_NaN(); break;
+        }
+        bool rejected=false;
+        try { c.reset(100,Profile::Werewolf,{},bad); } catch(const std::invalid_argument&) { rejected=true; }
+        assert(rejected && c.nextDeadline()==reference.nextDeadline() && c.activity()==reference.activity());
+        for(int i=0;i<100;++i) {
+            assert(c.nextDeadline()==reference.nextDeadline());
+            const auto left=c.advance(*c.nextDeadline(),space()),right=reference.advance(*reference.nextDeadline(),space());
+            assert(left.size()==right.size() && c.activity()==reference.activity());
+            for(size_t j=0;j<left.size();++j)
+                assert(left[j].kind==right[j].kind && left[j].role==right[j].role &&
+                       left[j].value.x==right[j].value.x && left[j].value.y==right[j].value.y &&
+                       left[j].value.z==right[j].value.z && left[j].targetX==right[j].targetX);
+        }
+    }
+}
 int main() {
+    personalityTests();
     Curiosity a(123),b(123); a.reset(0,Profile::Werewolf,all()); b.reset(0,Profile::Werewolf,all());
     assert(*a.nextDeadline()>=8 && *a.nextDeadline()<=20);
     Activity previous=Activity::Rest; double lastExplore=-1000; int explores=0, choices=0;

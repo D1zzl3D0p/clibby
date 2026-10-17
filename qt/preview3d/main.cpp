@@ -1,4 +1,5 @@
 #include "controller.h"
+#include "characters3d/builtin_assets.h"
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlComponent>
@@ -18,7 +19,7 @@
 int main(int argc,char**argv){
  QQuickWindow::setDefaultAlphaBuffer(true);
  QGuiApplication app(argc,argv);QCommandLineParser parser;parser.addHelpOption();
- parser.addOption({"character","Built-in character: werewolf, raven or marmalade.","name","werewolf"});
+ parser.addOption({"character","Built-in 3D character asset name.","name","werewolf"});
  parser.addOption({"hop","Procedural hop height.","height"});
  parser.addOption({"fly","Flight target x,elevation.","point"});
  parser.addOption({"land-at","Begin landing after seconds.","seconds"});
@@ -48,7 +49,16 @@ int main(int argc,char**argv){
 #else
    throw std::runtime_error("Marmalade 3D asset unavailable");
 #endif
-  } else if(parser.value("character")!="werewolf")throw std::runtime_error("Unknown 3D character");
+  } else if(parser.value("character")!="werewolf") {
+#ifdef CATALOGUE_RESOURCE_ROOT
+   const auto* asset=pets::character3d::builtinAsset(parser.value("character"));
+   if(!asset)throw std::runtime_error("Unknown 3D character");
+   const auto directory=QStringLiteral(CATALOGUE_RESOURCE_ROOT)+"/"+QString::fromLatin1(asset->asset);
+   assetType=QString::fromLatin1(asset->type);rigPath=directory+"/rig.json";qmlDir=directory+"/"+assetType+"Asset";
+#else
+   throw std::runtime_error("Catalogue 3D assets unavailable");
+#endif
+  }
   WolfMotion motion(rigPath);QQmlApplicationEngine engine;
   bool speedOkay=false;double speed=parser.value("speed").toDouble(&speedOkay);
   if(!speedOkay)throw std::runtime_error("invalid walking speed");
@@ -59,6 +69,10 @@ int main(int argc,char**argv){
   engine.rootContext()->setContextProperty("motion",&motion);
   engine.rootContext()->setContextProperty("ravenModel",parser.value("character")=="raven");
   engine.rootContext()->setContextProperty("marmaladeModel",parser.value("character")=="marmalade");
+  const auto* previewAsset=pets::character3d::builtinAsset(parser.value("character"));
+  engine.rootContext()->setContextProperty("catalogueModel",previewAsset&&previewAsset->catalogueStyle);
+  engine.rootContext()->setContextProperty("catalogueQuadruped",previewAsset&&previewAsset->quadruped);
+  engine.rootContext()->setContextProperty("previewCharacterName",parser.value("character"));
   engine.rootContext()->setContextProperty("captureTransparent",parser.isSet("transparent"));
   engine.rootContext()->setContextProperty("previewVisible",!parser.isSet("verify-presentation"));
   if(parser.isSet("verify-joints")){

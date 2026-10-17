@@ -1,4 +1,5 @@
 #include "controller.h"
+#include "characters3d/builtin_assets.h"
 #include <QCoreApplication>
 #include <QFile>
 #include <QJsonArray>
@@ -44,6 +45,20 @@ int main(int argc,char** argv){
   require(legacyFile.open(QIODevice::ReadOnly),"legacy biped fixture unavailable");
   auto legacyRig=QJsonDocument::fromJson(legacyFile.readAll()).object();legacyRig.remove("gait");save(path,legacyRig);
   WolfMotion legacy(path);require(legacy.motion().pose().legs.size()==2,"omitted gait no longer defaults to legacy biped");
+  auto objectRig=legacyRig;objectRig["arms"]=false;objectRig["skin"]="SprigSkin";
+  QJsonArray objectJoints;
+  for(const auto value:objectRig["joints"].toArray()){
+   const auto name=value.toObject()["name"].toString();
+   if(name.startsWith("upper_arm_")||name.startsWith("forearm_")||name.startsWith("hand_")||name.startsWith("ear_")||name.startsWith("tail_"))continue;
+   objectJoints.append(value);
+  }
+  objectRig["joints"]=objectJoints;save(path,objectRig);WolfMotion object(path);
+  require(!object.motion().expressions().supports(pets::character::Role::EarLeft)&&!object.motion().expressions().supports(pets::character::Role::Tail),"absent object anatomy advertised as expressive capabilities");
+  require(!object.motion().reach(0,{.2,.5,.1}),"armless biped acquired reach");
+  object.gesture("wave");for(int i=0;i<300;++i)object.advance(1./120);
+  require(!object.motion().pose().arms[0],"object gesture activated absent arm");
+  require(pets::character3d::builtinAsset("pip")&&pets::character3d::builtinIdentity("rivet-3d"),"trusted catalogue identity missing");
+  require(!pets::character3d::builtinAsset("../rivet")&&!pets::character3d::builtinIdentity("velvet-3d"),"path or experimental family admitted as production built-in");
   auto explicitNull=rig;explicitNull["gait"]=QJsonValue::Null;rejects(path,explicitNull,"explicit null gait accepted");
   auto invalid=rig;invalid["gait"]="crawl";rejects(path,invalid,"unknown gait accepted");
   invalid=rig;auto contacts=invalid["contacts"].toObject();contacts.remove("hindRight");invalid["contacts"]=contacts;rejects(path,invalid,"missing support role accepted");

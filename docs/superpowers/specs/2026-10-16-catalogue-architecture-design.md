@@ -1,6 +1,16 @@
 # Better Pets catalogue architecture
 
-Status: proposed design for review, 16 October 2026. Product code has not been changed by this design work.
+Implementation update, 16 October 2026: the user's chosen pixel-rendered 3D
+direction supersedes the original 2D-first delivery recommendation below.
+Marmalade now proves the live spatial quadruped. Thirteen further biped/quadruped
+base pets are implemented; Pebblekin, Margin, Lantern Snail and Velvet have
+working experimental motion-family code outside the resident. Signature actions
+and prototype promotion remain staged. See the
+[current delivery record](../../results/2026-10-16-catalogue-base-implementation.md).
+
+Original design status: proposed architecture, 16 October 2026. The following
+sections record the initial capability gaps and recommendations before those
+implementation stages, rather than the current completed-feature inventory.
 
 ## Intent and decisions
 

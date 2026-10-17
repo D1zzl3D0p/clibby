@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <stdexcept>
 #include <utility>
 namespace pets::behavior {
 using character::Role;
@@ -12,8 +13,28 @@ double Curiosity::random(double lo,double hi) {
     return lo+(hi-lo)*(static_cast<double>(rng_())/4294967296.0);
 }
 bool Curiosity::supports(Role role) const { return (capabilities_.roles & roleBit(role))!=0; }
-void Curiosity::reset(double now,Profile profile,Capabilities capabilities) {
+std::optional<Personality> personalityFor(std::string_view disposition) {
+    if(disposition=="calm") return Personality{24,45,5,1,2,1,.08,90};
+    if(disposition=="friendly") return Personality{8,18,3,1,8,1,.20,45};
+    if(disposition=="cautious") return Personality{14,28,6,5,1,1,.08,90};
+    if(disposition=="reserved") return Personality{18,36,9,1,1,1,.04,120};
+    if(disposition=="curious") return Personality{10,22,8,3,2,1,.25,45};
+    return {};
+}
+void Curiosity::reset(double now,Profile profile,Capabilities capabilities,std::optional<Personality> personality) {
+    if(personality) {
+        const auto& p=*personality;
+        const auto validWeight=[](int weight) { return weight>=0 && weight<=100; };
+        if(!std::isfinite(p.restMin) || !std::isfinite(p.restMax) ||
+           p.restMin<8 || p.restMax<p.restMin || p.restMax>120 ||
+           !validWeight(p.surveyWeight) || !validWeight(p.earWeight) ||
+           !validWeight(p.tailWeight) || !validWeight(p.stretchWeight) ||
+           !std::isfinite(p.exploreProbability) || p.exploreProbability<0 || p.exploreProbability>.25 ||
+           !std::isfinite(p.exploreCooldown) || p.exploreCooldown<45 || p.exploreCooldown>600)
+            throw std::invalid_argument("personality tuning is outside supported bounds");
+    }
     if(!std::isfinite(now)) return;
+    personality_=personality;
     rng_.seed(seed_); profile_=profile; capabilities_=capabilities;
     previous_=Activity::Rest; lastExplore_=-1e100; lastNow_=now; choicesSinceExplore_=3;
     ownedRoles_=0; ownsReach_=false; suspended_=false;
@@ -21,7 +42,7 @@ void Curiosity::reset(double now,Profile profile,Capabilities capabilities) {
 }
 void Curiosity::rest(double now) {
     activity_=Activity::Rest; phase_=0;
-    double next=now+random(8,20);
+    double next=now+random(personality_?personality_->restMin:8,personality_?personality_->restMax:20);
     if(next<=now) next=std::nextafter(now,std::numeric_limits<double>::infinity());
     if(std::isfinite(next)) deadline_=next; else deadline_.reset();
 }
@@ -40,14 +61,20 @@ bool Curiosity::canExplore(const Observation& o) const {
 }
 Activity Curiosity::choose(double now,const Observation& o) {
     std::vector<std::pair<Activity,int>> candidates;
-    if(supports(Role::Head)) candidates.push_back({Activity::Survey,profile_==Profile::Mallow?6:3});
-    if(supports(Role::EarLeft)||supports(Role::EarRight)) candidates.push_back({Activity::EarTwitch,profile_==Profile::Mallow?2:1});
-    if(supports(Role::Tail)) candidates.push_back({Activity::TailSwish,profile_==Profile::Bramble?5:2});
-    if(capabilities_.reach && (supports(Role::WristLeft)||supports(Role::WristRight))) candidates.push_back({Activity::Stretch,profile_==Profile::Werewolf?4:1});
-    const bool exploration=canExplore(o) && choicesSinceExplore_>=3 && now-lastExplore_>=45 &&
+    const auto add=[&](Activity activity,bool supported,int weight) {
+        if(supported && weight>0) candidates.push_back({activity,weight});
+    };
+    add(Activity::Survey,supports(Role::Head),personality_?personality_->surveyWeight:(profile_==Profile::Mallow?6:3));
+    add(Activity::EarTwitch,supports(Role::EarLeft)||supports(Role::EarRight),personality_?personality_->earWeight:(profile_==Profile::Mallow?2:1));
+    add(Activity::TailSwish,supports(Role::Tail),personality_?personality_->tailWeight:(profile_==Profile::Bramble?5:2));
+    add(Activity::Stretch,capabilities_.reach && (supports(Role::WristLeft)||supports(Role::WristRight)),
+        personality_?personality_->stretchWeight:(profile_==Profile::Werewolf?4:1));
+    const double cooldown=personality_?personality_->exploreCooldown:45;
+    const double probability=personality_?personality_->exploreProbability:.25;
+    const bool exploration=canExplore(o) && choicesSinceExplore_>=3 && now-lastExplore_>=cooldown &&
         (previous_!=Activity::Explore || candidates.empty());
-    // One dedicated quarter-probability draw caps exploration independently of anatomy.
-    if(exploration && random(0,1)<.25) return Activity::Explore;
+    // One dedicated draw caps exploration independently of anatomy.
+    if(exploration && random(0,1)<probability) return Activity::Explore;
     if(candidates.size()>1 || (exploration && !candidates.empty())) {
         candidates.erase(std::remove_if(candidates.begin(),candidates.end(),[this](auto c){return c.first==previous_;}),candidates.end());
     }
@@ -104,7 +131,7 @@ std::vector<Command> Curiosity::advance(double now,const Observation& o) {
     std::vector<Command> out;
     if(!std::isfinite(now)) return out;
     if(now<lastNow_ && lastExplore_>-1e90)
-        lastExplore_=now-std::clamp(lastNow_-lastExplore_,0.0,45.0);
+        lastExplore_=now-std::clamp(lastNow_-lastExplore_,0.0,personality_?personality_->exploreCooldown:45.0);
     const bool busy=o.suppressed||o.manualBusy||o.reactionBusy;
     if(busy) {
         if(!suspended_) { clear(out); activity_=Activity::Rest; deadline_.reset(); suspended_=true; }

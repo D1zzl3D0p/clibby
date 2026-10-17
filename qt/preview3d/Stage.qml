@@ -14,7 +14,7 @@ Window {
   return Math.max(-120,Math.min(120,-120+240*(screenX-start)/(end-start)))
  }
  width: 768; height: 680; visible: previewVisible; color: "transparent"
- title: "Better Pets — live low-poly werewolf"
+ title: "Better Pets — " + previewCharacterName
  Rectangle { anchors.fill: parent; color: "#18222e"; visible: !captureTransparent }
  View3D {
   id: view; objectName: "view3d"
@@ -88,7 +88,7 @@ Window {
    Button { text: "Normal 1×"; onClicked: motion.walkingSpeed=1 }
   }
   Text { color: "white"; text: motion.status }
-  Text { color: "#b9c7d5"; text: "Click to move • W wave • H hold • R release • L look • E ear • T tail • C clear" }
+  Text { color: "#b9c7d5"; text: motion.reachSupported ? "Click to move • W wave • H hold • R release • L look • E ear • T tail • C clear" : "Click to move • L look • C clear" }
   Text { color: "#b9c7d5"; text: "192×128 GPU composition • nearest atlas/output • ground / hop / powered flight" }
  }
  property bool paused: false

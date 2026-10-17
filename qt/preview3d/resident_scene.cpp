@@ -1,4 +1,5 @@
 #include "resident_scene.h"
+#include "characters3d/builtin_assets.h"
 #include <QCoreApplication>
 #include <QDir>
 #include <QQmlComponent>
@@ -14,15 +15,19 @@ namespace {
 QString resources() { return QCoreApplication::applicationDirPath()+"/better-pets-3d"; }
 }
 QString residentRigPath(QString asset) {
- if(asset!="werewolf"&&asset!="raven"&&asset!="marmalade")throw std::runtime_error("Unknown built-in 3D asset");
+ if(!pets::character3d::builtinAsset(asset))throw std::runtime_error("Unknown built-in 3D asset");
  return resources()+(asset=="werewolf"?QString():"/"+asset)+"/rig.json";
 }
 QQuickItem* createResidentStage(QQmlEngine& engine,WolfMotion& motion,QString* error,QString asset) {
  engine.rootContext()->setContextProperty("motion",&motion);
  engine.rootContext()->setContextProperty("ravenModel",asset=="raven");
  engine.rootContext()->setContextProperty("marmaladeModel",asset=="marmalade");
- if(asset!="werewolf"&&asset!="raven"&&asset!="marmalade")throw std::runtime_error("Unknown built-in 3D asset");
- const QString source=asset=="raven"?"/raven/RavenAsset/Raven.qml":asset=="marmalade"?"/marmalade/MarmaladeAsset/Marmalade.qml":"/WolfAsset/Werewolf.qml";
+ const auto* info=pets::character3d::builtinAsset(asset);
+ if(!info)throw std::runtime_error("Unknown built-in 3D asset");
+ engine.rootContext()->setContextProperty("catalogueModel",info->catalogueStyle);
+ engine.rootContext()->setContextProperty("catalogueFacingBias",info->quadruped?-10.8:-35.);
+ const auto type=QString::fromLatin1(info->type);
+ const QString source=asset=="werewolf"?"/WolfAsset/Werewolf.qml":"/"+asset+"/"+type+"Asset/"+type+".qml";
  engine.rootContext()->setContextProperty("assetSource",QUrl::fromLocalFile(resources()+source));
  QQmlComponent component(&engine,QUrl::fromLocalFile(resources()+"/ResidentStage.qml"));
  auto item=qobject_cast<QQuickItem*>(component.create());
@@ -40,7 +45,7 @@ QRegion WolfMotion::projectedVisualRegion(QQuickItem* stage) const {
  if(!stage)return {};
  const double ppm=stage->property("logicalPixelsPerMeter").toDouble();
  QRegion result;
- if((wings_||gait_==pets::character::Gait::QuadrupedWalk)&&!skinBounds_.empty()) {
+ if(!skinBounds_.empty()) {
   // Blended vertices lie in the convex hull of their influence boxes. A group
   // hull includes the skin bridges without a false all-directions wing radius.
   for(const auto& group:skinBounds_){

@@ -61,6 +61,7 @@ if(EXISTS "${WOLF_SOURCE}" AND EXISTS "${WOLF_RIG}")
   target_link_libraries(character_preview_3d PRIVATE pet_character3d_render)
   target_compile_definitions(character_preview_3d PRIVATE WOLF_QML_DIR="${WOLF_OUTPUT}" WOLF_RIG_PATH="${WOLF_RIG}" WOLF_STAGE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/../preview3d/Stage.qml")
   add_dependencies(character_preview_3d werewolf_qt_asset)
+  target_compile_definitions(character_preview_3d PRIVATE CATALOGUE_RESOURCE_ROOT="${CMAKE_BINARY_DIR}/better-pets-3d")
   set(RAVEN_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/../../characters/raven-3d/raven.glb")
   set(RAVEN_RIG "${CMAKE_CURRENT_SOURCE_DIR}/../../characters/raven-3d/rig.json")
   if(EXISTS "${RAVEN_SOURCE}" AND EXISTS "${RAVEN_RIG}")
@@ -115,6 +116,37 @@ if(EXISTS "${WOLF_SOURCE}" AND EXISTS "${WOLF_RIG}")
     set_tests_properties(marmalade3d_resident_presentation PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
   endif()
   add_executable(character3d_resident_tests ../preview3d/resident_tests.cpp)
+  add_executable(catalogue3d_tests ../preview3d/catalogue_tests.cpp)
+  target_link_libraries(catalogue3d_tests PRIVATE pet_character3d_render)
+  set_target_properties(catalogue3d_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+  foreach(ASSET_TYPE IN ITEMS "pip:Pip" "biscuit:Biscuit" "clover:Clover" "mossback:Mossback"
+      "rivet:Rivet" "paper-heron:PaperHeron" "acorn-custodian:AcornCustodian" "puddle:Puddle"
+      "pocket-observatory:PocketObservatory" "night-librarian:NightLibrarian" "sprig:Sprig"
+      "hearthling:Hearthling" "crumb-golem:CrumbGolem")
+    string(REPLACE ":" ";" ASSET_PARTS "${ASSET_TYPE}")
+    list(GET ASSET_PARTS 0 ASSET)
+    list(GET ASSET_PARTS 1 ASSET_TYPE_NAME)
+    set(ASSET_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../characters/${ASSET}-3d")
+    set(ASSET_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/converted-${ASSET}")
+    if(EXISTS "${ASSET_DIR}/${ASSET}.glb" AND EXISTS "${ASSET_DIR}/rig.json")
+      add_custom_command(OUTPUT "${ASSET_OUTPUT}/${ASSET_TYPE_NAME}.qml" "${ASSET_OUTPUT}/conversion.json"
+        COMMAND ${Python3_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/../../tools/convert_catalogue_qt.py"
+          --source "${ASSET_DIR}/${ASSET}.glb" --output "${ASSET_OUTPUT}" --balsam "${PET_BALSAM}" --type "${ASSET_TYPE_NAME}"
+        DEPENDS "${ASSET_DIR}/${ASSET}.glb" "${ASSET_DIR}/rig.json"
+          "${CMAKE_CURRENT_SOURCE_DIR}/../../tools/convert_catalogue_qt.py" "${CMAKE_CURRENT_SOURCE_DIR}/../../tools/png_metadata.py")
+      add_custom_target(${ASSET}_qt_asset DEPENDS "${ASSET_OUTPUT}/${ASSET_TYPE_NAME}.qml")
+      add_custom_target(${ASSET}_resident_resources ALL
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/better-pets-3d/${ASSET}"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${ASSET_OUTPUT}" "${CMAKE_BINARY_DIR}/better-pets-3d/${ASSET}/${ASSET_TYPE_NAME}Asset"
+        COMMAND ${CMAKE_COMMAND} -E copy "${ASSET_DIR}/rig.json" "${CMAKE_BINARY_DIR}/better-pets-3d/${ASSET}/rig.json"
+        DEPENDS ${ASSET}_qt_asset)
+      add_dependencies(pet_character3d_render ${ASSET}_resident_resources)
+      install(DIRECTORY "${ASSET_OUTPUT}/" DESTINATION bin/better-pets-3d/${ASSET}/${ASSET_TYPE_NAME}Asset)
+      install(FILES "${ASSET_DIR}/rig.json" DESTINATION bin/better-pets-3d/${ASSET})
+      add_test(NAME catalogue3d_${ASSET} COMMAND catalogue3d_tests --asset "${ASSET}")
+      set_tests_properties(catalogue3d_${ASSET} PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+    endif()
+  endforeach()
   target_link_libraries(character3d_resident_tests PRIVATE pet_character3d_render)
   set_target_properties(character3d_resident_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
   add_test(NAME character3d_resident_presentation COMMAND character3d_resident_tests)

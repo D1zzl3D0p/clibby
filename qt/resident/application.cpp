@@ -1,5 +1,6 @@
 #include "application.h"
 #include "spatial_character.h"
+#include "characters3d/builtin_assets.h"
 #include "characters/loader.h"
 #include "characters/fixtures.h"
 #include "desktop_host.h"
@@ -778,7 +779,8 @@ void ResidentApplication::resetCuriosity() {
   if (preferences_.character == "soft-creature") profile = behavior::Profile::Mallow;
   else if (preferences_.character == "werewolf-3d") profile = behavior::Profile::Werewolf;
   else if (preferences_.character == "werewolf") profile = behavior::Profile::Bramble;
-  curiosity_.reset(now, profile, capabilities);
+  const auto* builtin=character3d::builtinIdentity(preferences_.character);
+  curiosity_.reset(now, profile, capabilities, builtin?behavior::personalityFor(builtin->disposition):std::nullopt);
   blink_.reset(now);
   blinkSupported_ = spatialCharacter_ ? spatialCharacter_->blinkSupported()
       : characterController_ && characterController_->definition().bindings.count("eyes");

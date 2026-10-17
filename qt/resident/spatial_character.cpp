@@ -1,5 +1,6 @@
 #include "spatial_character.h"
 #include "desktop_host.h"
+#include "characters3d/builtin_assets.h"
 #include <QFile>
 #include <QFileInfo>
 #include <QJsonDocument>
@@ -24,9 +25,8 @@ bool isSpatialPackage(const QString &directory) {
   if (!file.open(QIODevice::ReadOnly)) return false;
   const auto object = QJsonDocument::fromJson(file.read(1024*1024+1)).object();
   if (object.value("kind").toString() != "builtin-3d") return false;
-  if (object.value("version").toInt() != 1 || !((object.value("id").toString() == "werewolf-3d" && object.value("asset").toString() == "werewolf") ||
-           (object.value("id").toString() == "raven-3d" && object.value("asset").toString() == "raven") ||
-           (object.value("id").toString() == "marmalade-3d" && object.value("asset").toString() == "marmalade")))
+  const auto* asset=character3d::builtinIdentity(object.value("id").toString());
+  if (object.value("version").toInt() != 1 || !asset || object.value("asset").toString()!=QLatin1String(asset->asset))
     throw std::runtime_error("Unsupported built-in 3D character descriptor");
   return true;
 }

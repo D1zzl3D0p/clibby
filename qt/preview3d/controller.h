@@ -31,6 +31,7 @@ class WolfMotion : public QObject {
  Q_PROPERTY(QVector3D leftGrip READ leftGrip NOTIFY anchorsChanged)
  Q_PROPERTY(QVector3D rightGrip READ rightGrip NOTIFY anchorsChanged)
  Q_PROPERTY(QString status READ status NOTIFY changed)
+ Q_PROPERTY(bool reachSupported READ reachSupported CONSTANT)
 public:
  explicit WolfMotion(const QString& rig,QObject* parent=nullptr,std::function<double()> clock={});
  double behaviorTime() const { return behaviorClock_(); }
@@ -87,6 +88,7 @@ public:
  bool verifyDeformation();
  void apply();
  bool eyeBlinkSupported() const { return joints_.count("eye_left") && joints_.count("eye_right"); }
+ bool reachSupported() const { return hasArms_; }
  double eyeOpenness() const { return eyeOpenness_; }
  void setEyeOpenness(double);
 signals: void changed(); void anchorsChanged();
@@ -100,6 +102,8 @@ private:
  pets::character::Gait gait_=pets::character::Gait::Biped;
  std::array<pets::character3d::Arm,2> arms_;
  bool wings_=false,hasArms_=false;
+ std::uint32_t expressionRoles_=0;
+ std::optional<pets::behavior::Personality> personality_;
  double eyeOpenness_=1;
  QString skinName_="WerewolfSkin";
  QString gesture_;

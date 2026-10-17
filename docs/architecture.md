@@ -1,5 +1,12 @@
 # Architecture direction
 
+Update, 2026-10-16: the first catalogue expansion adds thirteen original skinned
+biped/quadruped base pets through a fixed trusted asset registry and generic build
+conversion. Optional arms/ears/tails derive actual expression capabilities;
+bounded personality tuning retains the same scheduler and old defaults. Four new
+families have separate deterministic motion prototypes, not production resident
+adapters. See the [catalogue delivery record](results/2026-10-16-catalogue-base-implementation.md).
+
 Update, 2026-10-16: the trusted spatial adapter now supports bounded two/four-leg
 anatomy. Marmalade 3D uses the shared quadruped planner, measured spatial IK,
 skinned woodland artwork and existing timerless resident path. Contact yaw,

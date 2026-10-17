@@ -123,6 +123,14 @@ and explain why 3D is unavailable. The renderer uses trusted deployed assets in
 See the [resident 3D record](docs/results/2026-10-10-resident-3d.md) for validation
 and remaining native acceptance checks.
 
+The first expansion also includes Pip, Biscuit, Clover, Mossback, Rivet, Paper
+Heron, Acorn Custodian, Puddle, Pocket Observatory, Night Librarian, Sprig,
+Hearthling and Crumb Golem as selectable 3D base pets. Each uses shared procedural
+movement with its own original anatomy; proposed signature actions remain
+separate work. Pebblekin, Margin, Lantern Snail and Velvet currently have working
+experimental motion studies outside the selector. See the
+[per-pet implementation status](docs/results/2026-10-16-catalogue-base-implementation.md).
+
 ## Notify from real work
 
 With the resident running, wrap a command to report its actual outcome:

@@ -1,5 +1,33 @@
 # New-session handoff
 
+## Latest: first implementation across all remaining pets
+
+All 17 remaining catalogue concepts now have original model/motion code.
+**Thirteen live 3D base pets** are selectable: Pip, Biscuit, Clover, Mossback,
+Rivet, Paper Heron, Acorn Custodian, Puddle, Pocket Observatory, Night Librarian,
+Sprig, Hearthling and Crumb Golem. **Four working experimental families** remain
+outside the selector: Pebblekin, Margin, Lantern Snail and Velvet. Their actual
+anchored/crawl/morph/six-foot motion is implemented under
+`experiments/catalogue-families/`; native host/drop/turn integration is pending.
+Most proposed signature prop/posture actions also remain pending; these are base
+characters, not a finished 18-pet catalogue.
+
+Fixed trusted registry/generic conversion deploys the new originals. Real joint
+availability controls ears/tail/arms/blinks; five bounded quiet dispositions
+retain the single scheduler and legacy defaults. Native capture caught and fixed
+a midstride quadruped-facing basis jump; per-swing heading now survives reversal
+until touchdown. Twenty production-geometry regression scenarios pass.
+
+Final combined Release: **61 passed/four skips** (65 total); 2D-only: **31
+passed/three skips** (34 total); Python: **72 passed**. Independent runtime and
+experimental reviews have no remaining findings after the paw-basis and actual
+stone-contact corrections. Native Qt motion sequences and prototype render
+studies are in ignored `results/catalogue-live-2026-10-16/` and
+`results/catalogue-families-2026-10-16/`. Read the
+[per-pet delivery record](results/2026-10-16-catalogue-base-implementation.md).
+Restart the rebuilt resident for live selection. Manual desktop/monitor/Spaces
+polish, signature actions, prototype promotion and energy remain separate work.
+
 ## Latest: live spatial quadruped woodland cat
 
 The selected B cat is now **Marmalade 3D**, selectable in the rebuilt Qt resident.

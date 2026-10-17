@@ -1,5 +1,6 @@
 #include "controller.h"
 #include "characters/fixtures.h"
+#include "characters3d/builtin_assets.h"
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -63,10 +64,16 @@ WolfMotion::WolfMotion(const QString& path,QObject* parent,std::function<double(
  }
  wings_=heads.count("wing_shoulder_left")&&heads.count("wing_shoulder_right");
  if(quadruped&&wings_)throw std::runtime_error("unsupported quadruped wings");
- hasArms_=!wings_&&!quadruped;
+ const auto arms=rig.value("arms");
+ if(!arms.isUndefined()&&!arms.isBool())throw std::runtime_error("invalid arm capability");
+ hasArms_=arms.isUndefined()?(!wings_&&!quadruped):arms.toBool();
+ if(hasArms_&&(wings_||quadruped))throw std::runtime_error("unsupported arm anatomy");
  skinName_=quadruped?"MarmaladeSkin":wings_?"RavenSkin":"WerewolfSkin";
- if(rig.contains("skin")&&rig["skin"].toString()!=skinName_)throw std::runtime_error("rig skin does not match anatomy");
- for(const auto* role:{"pelvis","spine","head","tail_base"})if(!heads.count(role))throw std::runtime_error("missing body joint");
+ if(rig.contains("skin"))skinName_=rig["skin"].toString();
+ const auto* asset=pets::character3d::builtinSkin(skinName_);
+ if(!asset||asset->quadruped!=quadruped)throw std::runtime_error("rig skin does not match trusted anatomy");
+ personality_=pets::behavior::personalityFor(asset->disposition);
+ for(const auto* role:{"pelvis","spine","head"})if(!heads.count(role))throw std::runtime_error("missing body joint");
  legRoles_=quadruped?std::vector<QString>{"foreLeft","foreRight","hindLeft","hindRight"}:std::vector<QString>{"left","right"};
  legs_.setCount(legRoles_.size());
  const auto contacts=rig["contacts"].toObject();
@@ -95,7 +102,14 @@ WolfMotion::WolfMotion(const QString& path,QObject* parent,std::function<double(
   }
  }
  motion_=std::make_unique<pets::character3d::Motion>(legs_,hasArms_?std::optional<std::array<pets::character3d::Arm,2>>{arms_}:std::optional<std::array<pets::character3d::Arm,2>>{},wings_,wingReferenceReach,gait_);
- behaviorNow_=behaviorTime();curiosity_.reset(behaviorNow_,pets::behavior::Profile::Werewolf,{63,hasArms_,true});
+ using pets::character::Role;using pets::character::roleBit;
+ expressionRoles_=roleBit(Role::Head);
+ if(heads.count("ear_left"))expressionRoles_|=roleBit(Role::EarLeft);
+ if(heads.count("ear_right"))expressionRoles_|=roleBit(Role::EarRight);
+ if(heads.count("tail_base"))expressionRoles_|=roleBit(Role::Tail);
+ if(hasArms_)expressionRoles_|=roleBit(Role::WristLeft)|roleBit(Role::WristRight);
+ motion_->expressions()=pets::character::ExpressionMotion(expressionRoles_);
+ behaviorNow_=behaviorTime();curiosity_.reset(behaviorNow_,pets::behavior::Profile::Werewolf,{expressionRoles_,hasArms_,true},personality_);
  motion_->setSpeedMultiplier(2);
  // Scheduling belongs to the preview wrapper or resident application.
 }
@@ -192,9 +206,9 @@ void WolfMotion::setAutonomous(bool enabled){
  behaviorNow_=behaviorTime();
  if(autonomous_&&!enabled)motion_->target(motion_->state().rootX);
  autonomous_=enabled;motion_->expressions().clear();motion_->clearArmGoal(0);motion_->clearArmGoal(1);
- curiosity_.reset(behaviorNow_,pets::behavior::Profile::Werewolf,{63,hasArms_,true});emit changed();
+ curiosity_.reset(behaviorNow_,pets::behavior::Profile::Werewolf,{expressionRoles_,hasArms_,true},personality_);emit changed();
 }
-void WolfMotion::setSeed(quint32 seed){behaviorNow_=behaviorTime();seed_=seed;curiosity_=pets::behavior::Curiosity(seed);curiosity_.reset(behaviorNow_,pets::behavior::Profile::Werewolf,{63,hasArms_,true});emit changed();}
+void WolfMotion::setSeed(quint32 seed){behaviorNow_=behaviorTime();seed_=seed;curiosity_=pets::behavior::Curiosity(seed);curiosity_.reset(behaviorNow_,pets::behavior::Profile::Werewolf,{expressionRoles_,hasArms_,true},personality_);emit changed();}
 std::optional<double> WolfMotion::nextBehaviorDeadline()const{return autonomous_&&!paused_?curiosity_.nextDeadline():std::nullopt;}
 void WolfMotion::advanceBehavior(double now){
  behaviorNow_=now;if(!autonomous_)return;
@@ -347,7 +361,7 @@ bool WolfMotion::verifyDeformation(){
   }
  }
 
- if(gait_==pets::character::Gait::QuadrupedWalk){
+ if(gait_==pets::character::Gait::QuadrupedWalk||(!hasArms_&&!wings_)){
   std::array<std::optional<QVector3D>,4> previousSole;
   std::array<bool,4> previousGrounded{},articulated{};
   bool moved=false;
@@ -373,7 +387,7 @@ bool WolfMotion::verifyDeformation(){
     articulated[i]=articulated[i]||std::abs(pose.footPitch[i])>.01;
     moved=moved||pose.swing[i];
    }
-   if(supportCount<3)throw std::runtime_error("quadruped walking lost three-paw support");
+   if(supportCount<int(legRoles_.size())-1)throw std::runtime_error("walking lost required foot support");
   };
   check();
   for(double targetX:{60.,-60.,0.}){
@@ -382,7 +396,7 @@ bool WolfMotion::verifyDeformation(){
    if(!settled())throw std::runtime_error("quadruped live navigation failed to settle");
   }
   if(!moved)throw std::runtime_error("quadruped live chains never moved");
-  for(auto didArticulate:articulated)if(!didArticulate)throw std::runtime_error("quadruped paw never articulated");
+  for(std::size_t i=0;i<legRoles_.size();++i)if(!articulated[i])throw std::runtime_error("walking foot never articulated");
   for(auto semantic:{QString("look"),QString("wave"),QString("failure")}){
    gesture(semantic);for(int frame=0;frame<900&&!settled();++frame){advance(1./120);check();}
    if(!settled())throw std::runtime_error("quadruped expression failed to settle");

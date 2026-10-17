@@ -1,6 +1,7 @@
 #include "application.h"
 #include "spatial_character.h"
 #include "desktop_host.h"
+#include "characters3d/builtin_assets.h"
 #include <QApplication>
 #include <QQuickWindow>
 #include <QSGRendererInterface>
@@ -52,6 +53,15 @@ int main(int argc,char** argv){
    require(shell.selectCharacter(root+"/marmalade",&error),"switch back to planar cat");
    require(shell.groundedState()->feet.size()==4,"planar cat retains four feet after spatial switch");
    require(shell.selectCharacter(root+"/marmalade-3d",&error),"switch back to spatial cat");
+   for(const auto& asset:pets::character3d::builtinAssets){
+    if(!asset.catalogueStyle||QString(asset.asset)=="marmalade")continue;
+    const auto directory=root+"/"+QString::fromLatin1(asset.id);
+    require(pets::isSpatialPackage(directory),"new catalogue descriptor not recognized");
+    require(shell.selectCharacter(directory,&error),error.toUtf8().constData());
+    require(shell.selectedCharacter()==QLatin1String(asset.id),"new catalogue identity not selected");
+    require(shell.groundedState()->feet.size()==(asset.quadruped?4:2),"new catalogue selected wrong anatomy");
+   }
+   require(shell.selectCharacter(root+"/marmalade-3d",&error),"restore spatial cat after catalogue selection");
   }
   {
    pets::ResidentApplication restored(root+"/soft-creature",storage.path(),false,[&]{return now;},pets::IpcMode::DisabledForTests,nullptr,true,[]{return std::optional<QPointF>{};});
