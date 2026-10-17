@@ -2,7 +2,7 @@
   "triangles": 1100,
   "exported_vertices": 2368,
   "materials": 1,
-  "deform_joints": 12,
+  "deform_joints": 14,
   "max_influences": 2,
   "atlas": [
     256,
@@ -15,8 +15,10 @@
     "pelvis",
     "spine",
     "head",
+    "antenna",
     "eye_left",
     "eye_right",
+    "signature_arm_left",
     "thigh_left",
     "shin_left",
     "foot_left",
@@ -28,5 +30,17 @@
   "armature_deformation_test_max_distance_meters": 0.23580310468240745,
   "eye_closure_test_max_distance_meters": 0.033497214437593785,
   "eye_closure_vertex_count": 52,
-  "continuous_weighted_legs": 2
+  "continuous_weighted_legs": 2,
+  "signature_appendage_deformation": {
+    "antenna": {
+      "weighted_vertices": 42,
+      "displacement_meters": 0.08103860589106905,
+      "unrelated_displacement_meters": 0.0
+    },
+    "signature_arm_left": {
+      "weighted_vertices": 58,
+      "displacement_meters": 0.13485631607425236,
+      "unrelated_displacement_meters": 0.0
+    }
+  }
 }

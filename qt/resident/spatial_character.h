@@ -35,6 +35,11 @@ public:
   void realize(double logicalX, bool blocked = false, std::optional<double> elevation = {});
   character::GroundedState state() const;
   bool settled() const;
+  bool signatureSupported() const;
+  QString signatureName() const;
+  bool signature();
+  void cancelSignature(bool immediate = false);
+  bool signatureActive() const;
   void setSpeed(double multiplier);
   character::ExpressionMotion &expressions();
   bool reach(int side, motion::Vec3 normalizedTarget);

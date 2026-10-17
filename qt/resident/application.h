@@ -66,6 +66,8 @@ public:
   bool flyTo(double worldX, double elevation);
   bool land();
   bool flyToWindow();
+  bool signature();
+  bool signatureActive() const;
 
 private:
   void advance();
@@ -96,6 +98,7 @@ private:
   void wakeMotion(double now);
   void advanceSurfaces(double now);
   void advanceRaven(double now);
+  void advanceSignature(double now);
   bool flyForward(double elevation);
   character::ExpressionMotion *expressions();
   void submitReaction(double now);
@@ -130,6 +133,7 @@ private:
   double lastGroundTime_ = 0;
   std::optional<double> groundDeadline_;
   std::optional<double> surfaceDeadline_, ravenDeadline_;
+  std::optional<double> signatureDeadline_;
   std::optional<double> flightLandAt_;
   QString perchTargetId_;
   std::string supportFrameId_;

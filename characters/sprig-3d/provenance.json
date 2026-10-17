@@ -1,6 +1,6 @@
 {
   "authoring_source": "tools/author_catalogue_bipeds.py",
-  "source_sha256": "e1847a0efa27562dc206ac9bc64987a352be920f739528057681c120e2942222",
+  "source_sha256": "7fee29540455a31e5b799edc21fb73fff7a01f2310c7307bfdc0c8ba26384547",
   "helper_sha256": "de52ece6f24a0fa2905f09afac7dcaeec3a76e608e50acd37f8a3933b9a2a1d9",
   "license": "MIT",
   "original_geometry": true,

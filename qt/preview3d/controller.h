@@ -1,5 +1,6 @@
 #pragma once
 #include "characters3d/pose.h"
+#include "characters3d/signature.h"
 #include "behavior/curiosity.h"
 #include <QObject>
 #include <QQuaternion>
@@ -32,6 +33,8 @@ class WolfMotion : public QObject {
  Q_PROPERTY(QVector3D rightGrip READ rightGrip NOTIFY anchorsChanged)
  Q_PROPERTY(QString status READ status NOTIFY changed)
  Q_PROPERTY(bool reachSupported READ reachSupported CONSTANT)
+ Q_PROPERTY(bool signatureSupported READ signatureSupported CONSTANT)
+ Q_PROPERTY(QString signatureName READ signatureName CONSTANT)
 public:
  explicit WolfMotion(const QString& rig,QObject* parent=nullptr,std::function<double()> clock={});
  double behaviorTime() const { return behaviorClock_(); }
@@ -39,7 +42,7 @@ public:
  void setWalkingSpeed(double);
  void bind(QObject* scene);
  void advance(double dt);
- void advancePresentation(double dt);
+ void advancePresentation(double dt, bool render=true);
  bool autonomous() const { return autonomous_; }
  void setAutonomous(bool);
  quint32 seed() const { return seed_; }
@@ -74,6 +77,11 @@ public:
  Q_INVOKABLE void reach(int side, QVector3D modelGripTarget);
  Q_INVOKABLE void release(int side);
  Q_INVOKABLE void gesture(const QString &semantic);
+ bool signatureSupported() const { return signatureBound_; }
+ QString signatureName() const { return signatureBound_ ? QString::fromUtf8(signature_.name().data(),int(signature_.name().size())) : QString(); }
+ Q_INVOKABLE bool signature();
+ void cancelSignature(bool immediate=false);
+ bool signatureActive() const { return signature_.active(); }
 
  Q_INVOKABLE void target(double x);
  Q_INVOKABLE void stop();
@@ -83,7 +91,7 @@ public:
  Q_INVOKABLE void impulse();
  Q_INVOKABLE void pause(bool);
  bool paused() const { return paused_; }
- bool settled() const { return motion_->settled() && gestureTime_ >= 1; }
+ bool settled() const { return motion_->settled() && gestureTime_ >= 1 && !signature_.active(); }
  int jointCount() const { return joints_.size(); }
  bool verifyDeformation();
  void apply();
@@ -107,6 +115,8 @@ private:
  double eyeOpenness_=1;
  QString skinName_="WerewolfSkin";
  QString gesture_;
+ pets::character3d::SignatureMotion signature_{""};
+ bool signatureBound_=false;
  double gestureTime_=1;
 
  std::unique_ptr<pets::character3d::Motion> motion_;

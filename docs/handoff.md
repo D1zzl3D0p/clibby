@@ -1,5 +1,17 @@
 # New-session handoff
 
+## Latest: first signature-action pass
+
+All fourteen live catalogue-style pets now have finite planted-feet signature
+actions, including Marmalade. The menu/toolbox's **Signature action** triggers
+the selected pet's named action; quiet autonomy uses the existing single timer.
+Real new weighted appendages support antenna/arm, wings, cap, book covers/ribbon
+and leaf motion. Pause freezes actions; walking/notifications release smoothly;
+drag/hide/reset discard them. No extra reach or flight capability is implied.
+Supported flops/sitting/hops, owned props and experimental-family promotion
+remain pending. Read the [per-pet signature record](results/2026-10-16-signature-actions.md).
+Restart the rebuilt resident to use the new actions.
+
 ## Latest: first implementation across all remaining pets
 
 All 17 remaining catalogue concepts now have original model/motion code.

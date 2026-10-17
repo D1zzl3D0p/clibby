@@ -2,7 +2,7 @@
   "triangles": 494,
   "exported_vertices": 1060,
   "materials": 1,
-  "deform_joints": 12,
+  "deform_joints": 14,
   "max_influences": 2,
   "atlas": [
     256,
@@ -17,6 +17,8 @@
     "head",
     "eye_left",
     "eye_right",
+    "wing_fold_left",
+    "wing_fold_right",
     "thigh_left",
     "shin_left",
     "foot_left",
@@ -28,5 +30,17 @@
   "armature_deformation_test_max_distance_meters": 0.2938490421646615,
   "eye_closure_test_max_distance_meters": 0.019474983378784363,
   "eye_closure_vertex_count": 52,
-  "continuous_weighted_legs": 2
+  "continuous_weighted_legs": 2,
+  "signature_appendage_deformation": {
+    "wing_fold_left": {
+      "weighted_vertices": 4,
+      "displacement_meters": 0.17350853456314896,
+      "unrelated_displacement_meters": 0.0
+    },
+    "wing_fold_right": {
+      "weighted_vertices": 4,
+      "displacement_meters": 0.17350853456314896,
+      "unrelated_displacement_meters": 0.0
+    }
+  }
 }

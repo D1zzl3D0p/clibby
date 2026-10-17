@@ -80,12 +80,14 @@ void SpatialCharacter::install(DesktopHost &host) {
   impl_->prepared.release();
 }
 void SpatialCharacter::reset(const DesktopHost &host) {
+  impl_->binding.cancelSignature(true);
   auto span = host.groundSpan();
   const auto scale = impl_->pixelsPerCentimeter;
   impl_->binding.motion().reset(host.groundRootX()/scale, {span.minimum/scale, span.maximum/scale},host.floorWorldY()/impl_->verticalPixelsPerCentimeter);
   impl_->binding.apply();
 }
 void SpatialCharacter::pickup(double logicalX,double elevation) {
+  impl_->binding.cancelSignature(true);
   impl_->binding.motion().pickup(logicalX/impl_->pixelsPerCentimeter,
                                  elevation/impl_->verticalPixelsPerCentimeter);
 }
@@ -137,12 +139,14 @@ void SpatialCharacter::setSupportBounds(std::optional<character::GroundSpan> log
  }
  impl_->binding.motion().setSupportBounds(logicalBounds);
 }
-void SpatialCharacter::target(double logicalX) { impl_->binding.motion().target(logicalX/impl_->pixelsPerCentimeter); }
-bool SpatialCharacter::face(double logicalX) { return impl_->binding.motion().face(logicalX/impl_->pixelsPerCentimeter); }
+void SpatialCharacter::target(double logicalX) { impl_->binding.cancelSignature(); impl_->binding.motion().target(logicalX/impl_->pixelsPerCentimeter); }
+bool SpatialCharacter::face(double logicalX) { impl_->binding.cancelSignature(); return impl_->binding.motion().face(logicalX/impl_->pixelsPerCentimeter); }
 bool SpatialCharacter::blinkSupported() const { return impl_->binding.eyeBlinkSupported(); }
 void SpatialCharacter::setEyeOpenness(double openness) { impl_->binding.setEyeOpenness(openness); }
 character::MotionProposal SpatialCharacter::propose(double dt) {
   auto p = impl_->binding.motion().propose(dt);
+  // Realization below owns the frame's single presentation update.
+  impl_->binding.advancePresentation(dt,false);
   p.displacement *= impl_->pixelsPerCentimeter; p.targetX *= impl_->pixelsPerCentimeter;
   p.displacementY *= impl_->verticalPixelsPerCentimeter;
   return p;
@@ -168,7 +172,12 @@ character::GroundedState SpatialCharacter::state() const {
 character::ExpressionMotion &SpatialCharacter::expressions() { return impl_->binding.motion().expressions(); }
 bool SpatialCharacter::reach(int side, motion::Vec3 target) { return impl_->binding.motion().reach(side, target); }
 void SpatialCharacter::releaseReach(int side) { impl_->binding.motion().clearArmGoal(side); }
-bool SpatialCharacter::settled() const { return impl_->binding.motion().settled(); }
+bool SpatialCharacter::settled() const { return impl_->binding.settled(); }
+bool SpatialCharacter::signatureSupported() const { return impl_->binding.signatureSupported(); }
+QString SpatialCharacter::signatureName() const { return impl_->binding.signatureName(); }
+bool SpatialCharacter::signature() { return impl_->binding.signature(); }
+void SpatialCharacter::cancelSignature(bool immediate) { impl_->binding.cancelSignature(immediate); }
+bool SpatialCharacter::signatureActive() const { return impl_->binding.signatureActive(); }
 void SpatialCharacter::setSpeed(double multiplier) { impl_->binding.setWalkingSpeed(multiplier); }
 void SpatialCharacter::reaction(const QString &semantic, double progress) { impl_->binding.setReaction(semantic,progress); }
 void SpatialCharacter::apply(DesktopHost &host) {
@@ -226,6 +235,11 @@ character::MotionProposal SpatialCharacter::propose(double) { return {}; }
 void SpatialCharacter::realize(double,bool,std::optional<double>) {}
 character::GroundedState SpatialCharacter::state() const { return {}; }
 bool SpatialCharacter::settled() const { return true; }
+bool SpatialCharacter::signatureSupported() const { return false; }
+QString SpatialCharacter::signatureName() const { return {}; }
+bool SpatialCharacter::signature() { return false; }
+void SpatialCharacter::cancelSignature(bool) {}
+bool SpatialCharacter::signatureActive() const { return false; }
 void SpatialCharacter::setSpeed(double) {}
 character::ExpressionMotion &SpatialCharacter::expressions() { static character::ExpressionMotion unavailable; return unavailable; }
 bool SpatialCharacter::reach(int, motion::Vec3) { return false; }

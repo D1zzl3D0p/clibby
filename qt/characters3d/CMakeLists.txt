@@ -1,4 +1,4 @@
-add_library(pet_character3d_core pose.cpp)
+add_library(pet_character3d_core pose.cpp signature.cpp)
 target_link_libraries(pet_character3d_core PUBLIC pet_character_core)
 target_include_directories(pet_character3d_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
 add_executable(character3d_tests tests.cpp)
@@ -10,6 +10,9 @@ add_test(NAME character3d_flight COMMAND character3d_flight_tests)
 add_executable(character3d_expression_tests expression_tests.cpp)
 target_link_libraries(character3d_expression_tests PRIVATE pet_character3d_core)
 add_test(NAME character3d_expression COMMAND character3d_expression_tests)
+add_executable(character3d_signature_tests signature_tests.cpp)
+target_link_libraries(character3d_signature_tests PRIVATE pet_character3d_core)
+add_test(NAME character3d_signature COMMAND character3d_signature_tests)
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/quadruped_tests.cpp")
   add_executable(character3d_quadruped_tests quadruped_tests.cpp)
@@ -119,6 +122,8 @@ if(EXISTS "${WOLF_SOURCE}" AND EXISTS "${WOLF_RIG}")
   add_executable(catalogue3d_tests ../preview3d/catalogue_tests.cpp)
   target_link_libraries(catalogue3d_tests PRIVATE pet_character3d_render)
   set_target_properties(catalogue3d_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+  add_test(NAME catalogue3d_marmalade_signature COMMAND catalogue3d_tests --asset marmalade)
+  set_tests_properties(catalogue3d_marmalade_signature PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
   foreach(ASSET_TYPE IN ITEMS "pip:Pip" "biscuit:Biscuit" "clover:Clover" "mossback:Mossback"
       "rivet:Rivet" "paper-heron:PaperHeron" "acorn-custodian:AcornCustodian" "puddle:Puddle"
       "pocket-observatory:PocketObservatory" "night-librarian:NightLibrarian" "sprig:Sprig"

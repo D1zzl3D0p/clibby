@@ -34,7 +34,7 @@ int main(int argc,char** argv){
   index=args.indexOf("--capture-dir");if(index>=0){check(index+1<args.size(),"missing capture directory");out=args[index+1];check(QDir().mkpath(out),"capture directory unavailable");}
   bool any=false;
   for(const auto& asset:pets::character3d::builtinAssets){
-   if(!asset.catalogueStyle||QString(asset.asset)=="marmalade"||(!only.isEmpty()&&only!=QLatin1String(asset.asset)))continue;
+   if(!asset.catalogueStyle||(!only.isEmpty()&&only!=QLatin1String(asset.asset)))continue;
    any=true;const auto name=QString::fromLatin1(asset.asset);
    WolfMotion motion(residentRigPath(name));QQmlEngine engine;QString error;
    std::unique_ptr<QQuickItem> stage(createResidentStage(engine,motion,&error,name));check(bool(stage),name+": "+error);
@@ -79,6 +79,44 @@ int main(int argc,char** argv){
    motion.motion().pickup(0,45);motion.advancePresentation(0);inspect(false);motion.motion().release({0,0});
    for(int i=0;i<6000&&!motion.settled();++i){motion.advance(1./120);inspect(false);}check(motion.settled(),name+": drop never settles");
    const auto quiet=motion.motion().pose();for(int i=0;i<30;++i)motion.advance(1./120);check(motion.settled()&&motion.motion().pose().rootX==quiet.rootX,name+": quiet rest moves");
+   check(motion.signatureSupported()&&!motion.signatureName().isEmpty(),name+": missing signature binding");
+   auto actionPose=[&]{
+    std::vector<QMatrix4x4> transforms;
+    pets::character3d::SignatureMotion definition(asset.asset);
+    for(auto joint:definition.requiredJoints()){
+     auto node=stage->findChild<QObject*>(QString::fromUtf8(joint.data(),int(joint.size())));check(node,name+": missing action joint");
+     transforms.push_back(node->property("sceneTransform").value<QMatrix4x4>());
+    }return transforms;
+   };
+   // Isolate the signature from residual landing/turn followers tested above.
+   motion.motion().reset(0,{-120,120});
+   for(int i=0;i<600;++i){motion.advance(1./120);inspect(true);}
+   const auto resting=actionPose();
+   check(motion.signature()&&!motion.signature(),name+": signature admission failed");
+   check(!motion.settled(),name+": action failed to wake");
+   for(int i=0;i<180;++i){motion.advance(1./120);inspect(true);}
+   const auto expressive=actionPose();check(expressive!=resting,name+": signature does not deform actual joints");
+   motion.pause(true);for(int i=0;i<90;++i)motion.advance(1./120);check(actionPose()==expressive&&motion.signatureActive(),name+": pause did not freeze action");motion.pause(false);
+   for(int i=0;i<1200&&!motion.settled();++i){motion.advance(1./120);inspect(true);}
+   check(motion.settled()&&!motion.signatureActive(),name+": signature never settles");
+   const auto finished=actionPose();
+   // Quick3D retains tiny near-identity quaternion residuals in node setters.
+   // Core channels reach exact zero; live matrices allow <1 mm / .06 degrees.
+   for(std::size_t i=0;i<resting.size();++i)for(int n=0;n<16;++n)
+    check(std::abs(resting[i].constData()[n]-finished[i].constData()[n])<.001,name+": signature did not restore rest joint "+QString::number(i)+" element "+QString::number(n)+" before "+QString::number(resting[i].constData()[n], 'g', 9)+" after "+QString::number(finished[i].constData()[n], 'g', 9));
+   check(motion.signature(),name+": signature did not restart");for(int i=0;i<150;++i)motion.advance(1./120);
+   motion.target(25);for(int i=0;i<60;++i){motion.advance(1./120);inspect(true);}check(!motion.signatureActive(),name+": walking did not cancel action");
+   for(int i=0;i<6000&&!motion.settled();++i)motion.advance(1./120);check(motion.settled(),name+": cancellation did not settle");
+   if(window&&args.contains("--capture-signature")){
+    motion.motion().reset(0,{-120,120});motion.clearExpression();for(int i=0;i<900&&!motion.settled();++i)motion.advance(1./120);
+    const auto directory=out+"/"+name+"-signature";check(QDir().mkpath(directory),"signature directory unavailable");
+    check(motion.signature(),name+": capture action refused");
+    for(int frame=0;frame<105;++frame){
+     for(int step=0;step<8;++step){motion.advance(1./120);inspect(true);}
+     capture(app,*window,stage.get(),directory+"/"+QString::number(frame).rightJustified(4,'0'));
+    }
+    check(motion.settled(),name+": captured signature not quiet");
+   }
    if(window)stage->setParentItem(nullptr);
    if(window&&args.contains("--capture-animation")){
     stage->setParentItem(window->contentItem());const auto directory=out+"/"+name;check(QDir().mkpath(directory),"animation directory unavailable");
@@ -90,7 +128,7 @@ int main(int argc,char** argv){
     }
     stage->setParentItem(nullptr);
    }
-   std::cout<<name.toStdString()<<": live anatomy, contacts, walk/reverse, gaze, drop, quiet rest verified\n";
+   std::cout<<name.toStdString()<<": live anatomy, contacts, walk/reverse, gaze, drop, signature, pause/cancel and quiet rest verified\n";
   }
   check(any,"unknown or unsupported catalogue asset");return 0;
  }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}

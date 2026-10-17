@@ -47,13 +47,16 @@ def rivet():
     a.box('cream face panel',(0,-.295,1.58),(.31,.04,.16),'cream','head')
     a.eyes(1.62,-.344,.17,.043)
     a.box('quiet mouth',(0,-.345,1.51),(.08,.012,.013),'dark','head')
-    a.taper('antenna mast',(.14,.04,1.80),(.22,.04,2.06),.025,.019,'metal','head')
-    a.blob('antenna cap',(.22,.04,2.06),(.065,.065,.065),'accent','head',8,4)
+    a.joint('antenna',(.14,.04,1.80),(.14,.04,1.96),'head')
+    a.joint('signature_arm_left',(-.50,0,1.17),(-.50,0,1.33),'spine')
+    a.taper('antenna mast',(.14,.04,1.80),(.22,.04,2.06),.025,.019,'metal','antenna')
+    a.blob('antenna cap',(.22,.04,2.06),(.065,.065,.065),'accent','antenna',8,4)
     for sign in [-1,1]:
         x=sign*.50
         a.blob('shoulder rivet',(x,0,1.17),(.10,.13,.12),'metal','spine')
-        a.taper('resting mechanical arm',(x,0,1.13),(x*1.10,-.03,.77),.08,.065,'body','spine')
-        a.blob('mitten claw',(x*1.10,-.03,.73),(.105,.12,.10),'dark','spine')
+        bone = 'signature_arm_left' if sign < 0 else 'spine'
+        a.taper('resting mechanical arm',(x,0,1.13),(x*1.10,-.03,.77),.08,.065,'body',bone)
+        a.blob('mitten claw',(x*1.10,-.03,.73),(.105,.12,.10),'dark',bone)
     return a,a.biped(width=.25,radius=.10,feet_color='dark')
 
 
@@ -65,8 +68,10 @@ def paper_heron():
              (0,-.19,1.43),(0,.54,1.27),(0,.02,.85)],
              [(0,4,1),(0,2,5,4),(1,4,5,3),(2,6,3,5),(0,6,2),(1,3,6),(0,1,6)],'body','spine')
     for s in [-1,1]:
+        bone = 'wing_fold_left' if s < 0 else 'wing_fold_right'
+        a.joint(bone,(s*.28,-.21,1.28),(s*.28,-.21,1.43),'spine')
         a.wedge('tucked paper wing',[(s*.30,-.24,1.29),(s*.34,.48,1.19),(s*.28,.20,.99),(s*.12,.02,1.32)],
-                [(0,1,2),(0,3,1),(0,2,3),(1,3,2)],'accent','spine')
+                [(0,1,2),(0,3,1),(0,2,3),(1,3,2)],'accent',bone)
     a.tube('angular folded neck',[(0,-.23,1.23),(0,-.49,1.51),(0,-.29,1.78)],
            [.14,.115,.10],'light','head',sides=4)
     a.wedge('paper crown',[(-.14,-.48,1.74),(.14,-.48,1.74),(0,-.19,1.91),(0,-.17,1.68)],
@@ -79,13 +84,14 @@ def paper_heron():
 def acorn():
     a=base('acorn-custodian','Acorn Custodian',head=1.25)
     a.blob('amber seed',(0,0,1.12),(.43,.33,.60),'light','spine',12,6)
-    a.blob('broad acorn cap',(0,.01,1.64),(.55,.42,.24),'body','head',12,4)
-    a.taper('cap stem',(0,.05,1.76),(.08,.08,1.98),.065,.04,'dark','head')
-    a.taper('cap brim',(0,0,1.50),(0,0,1.59),.52,.53,'dark','head',12)
+    a.joint('cap',(0,0,1.50),(0,0,1.68),'head')
+    a.blob('broad acorn cap',(0,.01,1.64),(.55,.42,.24),'body','cap',12,4)
+    a.taper('cap stem',(0,.05,1.76),(.08,.08,1.98),.065,.04,'dark','cap')
+    a.taper('cap brim',(0,0,1.50),(0,0,1.59),.52,.53,'dark','cap',12)
     for s in [-1,1]:
         a.taper('twig arm',(s*.37,0,1.25),(s*.55,-.05,.88),.055,.035,'body','spine',6)
         a.taper('twig fork',(s*.52,-.05,.94),(s*.66,-.08,.99),.032,.015,'body','spine',6)
-    leaf(a,'single cap leaf',(.07,.04,1.85),(.44,.10,2.00),.12,'green','head')
+    leaf(a,'single cap leaf',(.07,.04,1.85),(.44,.10,2.00),.12,'green','cap')
     a.eyes(1.30,-.31,.16,.035)
     a.box('seed groove',(0,-.327,.94),(.015,.012,.18),'body','spine')
     return a,a.biped(width=.23,radius=.075,foot_scale=(.14,.21,.075),feet_color='body')
@@ -101,7 +107,9 @@ def puddle():
     a.blob('broad flat bill',(0,-.57,1.43),(.25,.23,.065),'accent','head',8,4)
     a.eyes(1.57,-.47,.205,.034)
     for s in [-1,1]:
-        a.blob('folded oval wing',(s*.38,.10,.95),(.12,.34,.24),'body','spine')
+        bone = 'wing_fold_left' if s < 0 else 'wing_fold_right'
+        a.joint(bone,(s*.34,-.17,1.08),(s*.34,-.17,1.23),'spine')
+        a.blob('folded oval wing',(s*.38,.10,.95),(.12,.34,.24),'body',bone)
     a.wedge('upturned tail',[(-.19,.34,.88),(.19,.34,.88),(.12,.64,1.12),(-.12,.64,1.12),(0,.52,.83)],
             [(0,1,2,3),(0,4,1),(1,4,2),(2,4,3),(3,4,0)],'cream','spine')
     return a,a.biped(hip_z=.43,width=.23,knee_y=.06,radius=.055,foot_scale=(.20,.27,.06),color='accent',feet_color='accent')
@@ -125,16 +133,19 @@ def observatory():
 def librarian():
     a=base('night-librarian','Night Librarian',hip=.52,head=1.0)
     # Whole book looks as one instrument; its head pivot is the book's honest tilt.
-    a.box('cloth back cover',(0,.14,1.22),(.49,.065,.64),'blue','head')
+    a.joint('cover_back',(-.46,.14,1.22),(-.46,.14,1.40),'head')
+    a.joint('cover_front',(-.46,-.14,1.22),(-.46,-.14,1.40),'head')
+    a.joint('bookmark',(.02,-.05,.65),(.02,-.05,.80),'head')
+    a.box('cloth back cover',(0,.14,1.22),(.49,.065,.64),'blue','cover_back')
     a.box('warm paper block',(.015,0,1.22),(.43,.10,.58),'cream','head')
-    a.box('cloth front cover',(0,-.14,1.22),(.49,.055,.64),'blue','head')
+    a.box('cloth front cover',(0,-.14,1.22),(.49,.055,.64),'blue','cover_front')
     a.box('rounded spine',(-.46,0,1.22),(.07,.17,.64),'green','head')
     for z in [.78,1.63]:
         a.box('brass spine band',(-.47,-.01,z),(.075,.18,.035),'metal','head')
-    a.box('quiet title plaque',(.02,-.20,1.35),(.21,.014,.14),'metal','head')
-    a.box('plaque inset',(.02,-.216,1.35),(.15,.005,.09),'blue','head')
+    a.box('quiet title plaque',(.02,-.20,1.35),(.21,.014,.14),'metal','cover_front')
+    a.box('plaque inset',(.02,-.216,1.35),(.15,.005,.09),'blue','cover_front')
     a.wedge('bookmark ribbon',[(-.03,-.05,.65),(.07,-.05,.65),(.07,-.10,.37),(.02,-.10,.41),(-.03,-.10,.37)],
-            [(0,1,2,3,4)],'accent','head')
+            [(0,1,2,3,4)],'accent','bookmark')
     for z in [.89,1.06,1.48,1.62]:
         a.box('page edge group',(.452,0,z),(.008,.093,.012),'metal','head')
     return a,a.biped(hip_z=.52,width=.25,radius=.065,foot_scale=(.13,.21,.07),color='dark',feet_color='body')
@@ -146,11 +157,12 @@ def sprig():
     a.taper('pale ceramic pot',(0,0,.57),(0,0,1.16),.29,.43,'body','spine',10)
     a.taper('thick pot lip',(0,0,1.13),(0,0,1.25),.46,.46,'light','spine',10)
     a.taper('soil surface',(0,0,1.246),(0,0,1.255),.38,.38,'dark','spine',10)
-    # Leaf groups are rigid geometry attached to a botanical crown, never ears.
+    # A real botanical leaf pivot, never an ear follower.
+    a.joint('leaf_present',(0,0,1.24),(0,0,1.40),'head')
     for i in range(7):
         ang=i*math.tau/7
         end=(math.cos(ang)*.68,math.sin(ang)*.57,1.43+(i%2)*.15)
-        leaf(a,'succulent folded outer leaf '+str(i),(0,0,1.24),end,.16,'green' if i%2 else 'leaf','head')
+        leaf(a,'succulent folded outer leaf '+str(i),(0,0,1.24),end,.16,'green' if i%2 else 'leaf','leaf_present' if i == 5 else 'head')
     for i in range(3):
         ang=i*math.tau/3
         leaf(a,'upright crown leaf '+str(i),(0,0,1.27),(math.cos(ang)*.23,math.sin(ang)*.23,1.94),.13,'leaf','head')
@@ -184,13 +196,70 @@ def crumb():
     a.blob('uneven biscuit trunk',(0,0,1.03),(.43,.30,.43),'light','spine',7,4)
     a.blob('angular biscuit head',(-.035,0,1.56),(.34,.28,.29),'cream','head',7,4)
     a.eyes(1.62,-.25,.15,.033)
+    a.joint('signature_arm_left',(-.40,0,1.30),(-.40,0,1.46),'spine')
     for s,z in [(-1,1.15),(1,1.03)]:
-        a.blob('mismatched stone arm',(s*.47,0,z),(.17,.16,.25),'body' if s<0 else 'cream','spine',6,4)
+        a.blob('mismatched stone arm',(s*.47,0,z),(.17,.16,.25),'body' if s<0 else 'cream',
+               'signature_arm_left' if s < 0 else 'spine',6,4)
     for x,z,size in [(-.18,1.11,.065),(.20,.91,.055),(.07,1.29,.038),(-.14,1.74,.04),(.19,1.52,.045)]:
         a.blob('baked chip',(x,-.272,z),(size,.025,size*.75),'body','head' if z>1.4 else 'spine',6,3)
     a.wedge('biscuit brow notch',[(-.14,-.25,1.82),(.08,-.25,1.82),(-.02,-.25,1.73),(-.03,-.12,1.77)],
             [(0,1,2),(0,3,1),(0,2,3),(1,3,2)],'body','head')
     return a,a.biped(width=.25,radius=.12,foot_scale=(.20,.25,.10),color='light',feet_color='body')
+
+
+SIGNATURE_JOINTS = {
+    'rivet': ('antenna', 'signature_arm_left'),
+    'paper-heron': ('wing_fold_left', 'wing_fold_right'),
+    'acorn-custodian': ('cap',),
+    'puddle': ('wing_fold_left', 'wing_fold_right'),
+    'night-librarian': ('cover_front', 'cover_back', 'bookmark'),
+    'sprig': ('leaf_present',),
+    'crumb-golem': ('signature_arm_left',),
+}
+
+
+def validate_signature_deformation(a):
+    """Verify each appendage deforms its own geometry and leaves the rest alone."""
+    import bpy
+    import json
+    names = SIGNATURE_JOINTS.get(a.id, ())
+    if not names:
+        return
+    skin = bpy.data.objects[a.skin_name]
+    arm = skin.parent
+
+    def evaluated():
+        bpy.context.view_layer.update()
+        obj = skin.evaluated_get(bpy.context.evaluated_depsgraph_get())
+        mesh = obj.to_mesh()
+        points = [v.co.copy() for v in mesh.vertices]
+        obj.to_mesh_clear()
+        return points
+
+    rest = evaluated()
+    checks = {}
+    for name in names:
+        owned = {v.index for v in skin.data.vertices
+                 if any(skin.vertex_groups[g.group].name == name and g.weight > .99
+                        for g in v.groups)}
+        assert owned, name
+        bone = arm.pose.bones[name]
+        bone.rotation_mode = 'XYZ'
+        bone.rotation_euler.x = .25
+        posed = evaluated()
+        displacement = max((rest[i]-posed[i]).length for i in owned)
+        unrelated = max((p-q).length for i,(p,q) in enumerate(zip(rest,posed)) if i not in owned)
+        assert displacement > .005, (name, displacement)
+        assert unrelated < 1e-5, (name, unrelated)
+        bone.rotation_euler.x = 0
+        assert max((p-q).length for p,q in zip(rest,evaluated())) < 1e-5
+        checks[name] = dict(weighted_vertices=len(owned),
+                            displacement_meters=displacement,
+                            unrelated_displacement_meters=unrelated)
+    path = a.out / 'validation.json'
+    validation = json.loads(path.read_text())
+    validation['signature_appendage_deformation'] = checks
+    path.write_text(json.dumps(validation, indent=2)+'\n')
 
 
 BUILDERS = {'rivet':rivet,'paper-heron':paper_heron,'acorn-custodian':acorn,
@@ -204,3 +273,4 @@ if __name__ == '__main__':
         a, contacts = BUILDERS[name]()
         a.finish(__file__,contacts,arms=False,presentation={
             'pixels_per_meter':80,'camera_tilt_degrees':15.4,'yaw_bias_degrees':-35})
+        validate_signature_deformation(a)

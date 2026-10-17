@@ -2,7 +2,7 @@
   "triangles": 512,
   "exported_vertices": 1052,
   "materials": 1,
-  "deform_joints": 10,
+  "deform_joints": 11,
   "max_influences": 2,
   "atlas": [
     256,
@@ -15,6 +15,7 @@
     "pelvis",
     "spine",
     "head",
+    "leaf_present",
     "thigh_left",
     "shin_left",
     "foot_left",
@@ -26,5 +27,12 @@
   "armature_deformation_test_max_distance_meters": 0.17828180690188608,
   "eye_closure_test_max_distance_meters": 0,
   "eye_closure_vertex_count": 0,
-  "continuous_weighted_legs": 2
+  "continuous_weighted_legs": 2,
+  "signature_appendage_deformation": {
+    "leaf_present": {
+      "weighted_vertices": 5,
+      "displacement_meters": 0.16244355909960384,
+      "unrelated_displacement_meters": 0.0
+    }
+  }
 }

@@ -73,6 +73,10 @@ WolfMotion::WolfMotion(const QString& path,QObject* parent,std::function<double(
  const auto* asset=pets::character3d::builtinSkin(skinName_);
  if(!asset||asset->quadruped!=quadruped)throw std::runtime_error("rig skin does not match trusted anatomy");
  personality_=pets::behavior::personalityFor(asset->disposition);
+ signature_=pets::character3d::SignatureMotion(asset->asset);
+ signatureBound_=signature_.supported();
+ for(auto name:signature_.requiredJoints())
+  signatureBound_=signatureBound_&&heads.count(QString::fromUtf8(name.data(),int(name.size())));
  for(const auto* role:{"pelvis","spine","head"})if(!heads.count(role))throw std::runtime_error("missing body joint");
  legRoles_=quadruped?std::vector<QString>{"foreLeft","foreRight","hindLeft","hindRight"}:std::vector<QString>{"left","right"};
  legs_.setCount(legRoles_.size());
@@ -142,14 +146,21 @@ void WolfMotion::land(){manualInput();motion_->land();emit changed();}
 void WolfMotion::stop(){target(motion_->state().rootX);}
 void WolfMotion::impulse(){manualInput();motion_->impulse();wake();emit changed();}
 void WolfMotion::pause(bool p){paused_=p;emit changed();}
-void WolfMotion::advance(double dt){motion_->step(dt);advancePresentation(dt);}
-void WolfMotion::advancePresentation(double dt){
+void WolfMotion::advance(double dt){if(paused_)return;motion_->step(dt);advancePresentation(dt);}
+void WolfMotion::advancePresentation(double dt,bool render){
+ if(!std::isfinite(dt)||dt<0)throw std::invalid_argument("invalid presentation interval");
+ if(paused_)return;
+ const auto state=motion_->state();
+ if(state.phase!=pets::character::DropPhase::Grounded || state.elevation>.01 || state.anyFootSwinging() || std::abs(state.targetX-state.rootX)>.05 || std::abs(state.velocity)>.02)
+  signature_.cancel();
+ signature_.advance(dt);
  if(!externalReaction_){gestureTime_=std::min(1.,gestureTime_+std::min(dt,1./30));submitReaction();}
- emit changed();apply();emit anchorsChanged();
+ if(render){emit changed();apply();emit anchorsChanged();}
 }
 void WolfMotion::setReaction(const QString& semantic,double progress){
  if(!semantic.isEmpty()&&semantic!="look"&&semantic!="wave"&&semantic!="point"&&semantic!="present"&&semantic!="nod"&&semantic!="success"&&semantic!="failure")throw std::runtime_error("unknown gesture");
  if(!std::isfinite(progress))throw std::runtime_error("invalid gesture progress");
+ if(!semantic.isEmpty())signature_.cancel();
  externalReaction_=true;
  if(gesture_!=semantic)reactionPhase_=-1;
  gesture_=semantic;gestureTime_=semantic.isEmpty()?1:std::clamp(progress,0.,1.);submitReaction();
@@ -200,7 +211,20 @@ void WolfMotion::submitReaction(){
  else if(gesture_=="present")motion_->armGoal(0,{.68,1.3,.35});
 }
 void WolfMotion::manualInput(){
+ signature_.cancel();
  if(autonomous_){autonomous_=false;motion_->target(motion_->state().rootX);motion_->expressions().clear();motion_->clearArmGoal(0);motion_->clearArmGoal(1);}
+}
+bool WolfMotion::signature(){
+ const auto state=motion_->state();
+ if(!signatureBound_||paused_||state.phase!=pets::character::DropPhase::Grounded||state.elevation>.01||!motion_->settled()||gestureTime_<1||signature_.active())return false;
+ manualInput();
+ motion_->expressions().clear();
+ const bool started=signature_.start();
+ if(started){wake();emit changed();}
+ return started;
+}
+void WolfMotion::cancelSignature(bool immediate){
+ if(immediate)signature_.reset();else signature_.cancel();
 }
 void WolfMotion::setAutonomous(bool enabled){
  behaviorNow_=behaviorTime();
@@ -285,6 +309,19 @@ void WolfMotion::apply(){
  for(const auto& named:std::array<std::pair<QString,pets::motion::Vec3>,4>{{{"head",p.head},{"ear_left",p.ears[0]},{"ear_right",p.ears[1]},{"tail_base",p.tail}}}){
   auto found=joints_.find(named.first);if(found==joints_.end())continue;
   auto& joint=found->second;joint.node->setProperty("rotation",QVariant::fromValue(joint.restRotation*rotation(named.second)));
+ }
+ // Convert neutral model-axis action offsets through the current parent frame.
+ // Apply before solving legs: signatures cannot translate the support chains.
+ if(signatureBound_&&signature_.active())for(const auto& offset:signature_.offsets()){
+  auto& joint=joints_.at(QString::fromStdString(offset.joint));
+  const auto parent=joint.parent.isEmpty()?avatar_:joints_.at(joint.parent).node;
+  const auto parentWorld=parent->property("sceneRotation").value<QQuaternion>();
+  const auto modelWorld=avatar_->property("sceneRotation").value<QQuaternion>();
+  const auto frame=parentWorld.conjugated()*modelWorld;
+  const auto current=joint.node->property("rotation").value<QQuaternion>();
+  joint.node->setProperty("rotation",QVariant::fromValue(frame*rotation(offset.rotation)*frame.conjugated()*current));
+  const auto position=joint.node->property("position").value<QVector3D>();
+  joint.node->setProperty("position",QVariant::fromValue(position+frame.rotatedVector(vector(offset.translation))));
  }
  // Parent expressions are applied first; every leg endpoint is then placed
  // from the solved model snapshot, including forelegs below a leaning spine.
@@ -476,7 +513,7 @@ bool WolfMotion::verifyDeformation(){
  setReaction("",1);externalReaction_=false;
  for(int frame=0;frame<600&&!motion_->settled();++frame){motion_->step(1./120);apply();}
  auto before=joints_.at("thigh_left").node->property("rotation").value<QQuaternion>();
- reach(0,{.6f,1.3f,.3f});target(60);pause(true);bool changedTransform=false;
+ reach(0,{.6f,1.3f,.3f});target(60);pause(false);bool changedTransform=false;
  std::array<bool,2> articulatedPaw{};
  std::array<std::optional<QVector3D>,2> previousLiveSole;
  std::array<bool,2> previousGrounded{};

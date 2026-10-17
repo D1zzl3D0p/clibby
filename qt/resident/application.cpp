@@ -202,6 +202,10 @@ ResidentApplication::ResidentApplication(const QString &assets,
   toolbox_->addControl(left, "toolboxWalkLeft");
   toolbox_->addControl(right, "toolboxWalkRight");
   toolbox_->addControl(stop, "toolboxStop");
+  auto *signatureAction = addAction("Signature action");
+  signatureAction->setObjectName("signature");
+  connect(signatureAction, &QAction::triggered, this, [this] { signature(); });
+  toolbox_->addControl(signatureAction, "toolboxSignature");
   auto *hopAction=addAction("Hop");
   auto *flyAction=addAction("Fly up");
   auto *landAction=addAction("Land");
@@ -317,6 +321,13 @@ void ResidentApplication::control(Control command) {
     host_->reconcileScreens();
   const double now = clock_();
   runtime_.control(command, now);
+  if (command == Control::Hide || command == Control::Suspend || command == Control::Quit || command == Control::BeginDrag) {
+    if (spatialCharacter_) spatialCharacter_->cancelSignature(true);
+    signatureDeadline_.reset();
+  }
+  if (command == Control::Pause) signatureDeadline_.reset();
+  if (command == Control::Resume || command == Control::Show || command == Control::Wake)
+    if (spatialCharacter_ && spatialCharacter_->signatureSupported()) signatureDeadline_ = now + 25;
   if(command==Control::Pause || command==Control::Hide || command==Control::Suspend || command==Control::Quit) {
     surfaceDeadline_.reset(); ravenDeadline_.reset(); flightLandAt_.reset();
   }
@@ -390,6 +401,7 @@ void ResidentApplication::advance() {
   configureSupportFootprint();
   advanceSurfaces(now);
   advanceRaven(now);
+  advanceSignature(now);
   advanceCuriosity(now);
   submitReaction(now);
   const auto tick = runtime_.advance(now);
@@ -481,6 +493,7 @@ void ResidentApplication::schedule() {
   if (surfaceDeadline_ && (!deadline || *surfaceDeadline_ < *deadline)) deadline = surfaceDeadline_;
   if (ravenDeadline_ && (!deadline || *ravenDeadline_ < *deadline)) deadline = ravenDeadline_;
   if (flightLandAt_ && (!deadline || *flightLandAt_ < *deadline)) deadline = flightLandAt_;
+  if (signatureDeadline_ && (!deadline || *signatureDeadline_ < *deadline)) deadline = signatureDeadline_;
   if (springDeadline_ && (!deadline || *springDeadline_ < *deadline))
     deadline = springDeadline_;
   if (const auto expiry = sessions_.nextDeadline();
@@ -632,6 +645,7 @@ void ResidentApplication::synchronizeSessions(double now) {
   if (snapshot.reaction && !sameReaction && !characterController_ && !spatialCharacter_)
     runtime_.requestReaction(now, snapshot.reaction->endsAt - now);
   reaction_ = snapshot.reaction;
+  if (reaction_ && spatialCharacter_) spatialCharacter_->cancelSignature();
   advanceCuriosity(now);
   submitReaction(now);
   const auto& displayed = statusLabel_->record();
@@ -762,6 +776,10 @@ void ResidentApplication::wakeMotion(double now) {
 }
 void ResidentApplication::resetCuriosity() {
   const double now = clock_();
+  const auto &state = runtime_.state();
+  signatureDeadline_ = spatialCharacter_ && spatialCharacter_->signatureSupported() && state.visible &&
+      !state.paused && !state.suspended && !state.quitting && !state.dragging
+      ? std::optional<double>{now + 25} : std::optional<double>{};
   manualNavigation_ = false; blockedNavigation_ = false; reactionSubmitted_ = false;
   behavior::Capabilities capabilities;
   if (auto *motion = expressions()) {
@@ -819,7 +837,7 @@ void ResidentApplication::advanceCuriosity(double now) {
         && !state->anyFootSwinging();
     if (manualNavigation_ && observation.arrived && now >= manualUntil_) manualNavigation_ = false;
   }
-  observation.manualBusy = manualNavigation_;
+  observation.manualBusy = manualNavigation_ || signatureActive();
   observation.blocked = blockedNavigation_; blockedNavigation_ = false;
   const bool cursorAllowed = !observation.suppressed && !observation.manualBusy && !observation.reactionBusy
       && expressions()->supports(character::Role::Head);
@@ -864,6 +882,7 @@ void ResidentApplication::advanceCuriosity(double now) {
     case Kind::ReleaseReach: if (spatialCharacter_) spatialCharacter_->releaseReach(command.side); break;
     case Kind::Navigate:
     case Kind::StopNavigation: {
+      if (signatureActive()) break;
       const double target = command.kind == Kind::Navigate ? command.targetX : observation.rootX;
       if (spatialCharacter_) spatialCharacter_->target(target);
       else if (groundedController_) groundedController_->setTargetX(target);
@@ -1386,6 +1405,37 @@ bool ResidentApplication::hasGroundMotion() const { return bool(groundedControll
 bool ResidentApplication::groundSettled() const {
   return spatialCharacter_ ? spatialCharacter_->settled() : (!groundedController_ || groundedController_->settled());
 }
+bool ResidentApplication::signatureActive() const {
+  return spatialCharacter_ && spatialCharacter_->signatureActive();
+}
+bool ResidentApplication::signature() {
+  const auto &s = runtime_.state();
+  if (!spatialCharacter_ || !spatialCharacter_->signatureSupported() || stopped_ || !s.visible ||
+      s.paused || s.suspended || s.dragging || dropBusy() || reaction_ || manualNavigation_ || !groundSettled()) return false;
+  const auto state = spatialCharacter_->state();
+  if (state.anyFootSwinging() || std::abs(state.velocity) > .02) return false;
+  if (!spatialCharacter_->signature()) return false;
+  const double now = clock_();
+  signatureDeadline_ = now + 90;
+  advanceCuriosity(now);
+  wakeMotion(now);
+  schedule();
+  return true;
+}
+void ResidentApplication::advanceSignature(double now) {
+  const auto &s = runtime_.state();
+  if (!spatialCharacter_ || !spatialCharacter_->signatureSupported() || !s.visible || s.paused || s.suspended || s.quitting || s.dragging) {
+    signatureDeadline_.reset();
+    return;
+  }
+  if (!signatureDeadline_) signatureDeadline_ = now + 25;
+  if (now < *signatureDeadline_) return;
+  // A bounded quiet retry shares the resident scheduler. Missed opportunities
+  // never accumulate during interaction or suppression.
+  signatureDeadline_ = now + 5;
+  if (manualNavigation_ && now >= manualUntil_ && groundSettled()) manualNavigation_ = false;
+  signature();
+}
 void ResidentApplication::persist() {
   if (!host_)
     return;
@@ -1407,6 +1457,11 @@ void ResidentApplication::updateMenu() {
       action->setEnabled(hasGroundMotion());
     else if(action->objectName()=="hop" || action->objectName()=="land") action->setEnabled(hasGroundMotion());
     else if(action->objectName()=="fly" || action->objectName()=="perch") action->setEnabled(flightCapable());
+    else if(action->objectName()=="signature") {
+      const bool supported = spatialCharacter_ && spatialCharacter_->signatureSupported();
+      action->setEnabled(supported && runtime_.state().visible && !runtime_.state().paused && !runtime_.state().suspended);
+      action->setText(supported ? "Signature action: " + spatialCharacter_->signatureName() : "Signature action");
+    }
   visibilityAction_->setText(runtime_.state().visible ? "Hide" : "Show");
   pauseAction_->setText(runtime_.state().paused ? "Resume" : "Pause");
 }

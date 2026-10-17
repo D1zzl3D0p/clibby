@@ -54,5 +54,57 @@ class CatalogueBipeds(unittest.TestCase):
         self.assertEqual(len(hashes), len(IDS))
 
 
+    def test_signature_appendages_have_real_weighted_geometry_and_isolated_motion(self):
+        expected = {
+            'rivet': {'antenna': 'head', 'signature_arm_left': 'spine'},
+            'paper-heron': {'wing_fold_left': 'spine', 'wing_fold_right': 'spine'},
+            'acorn-custodian': {'cap': 'head'},
+            'puddle': {'wing_fold_left': 'spine', 'wing_fold_right': 'spine'},
+            'night-librarian': {'cover_front': 'head', 'cover_back': 'head', 'bookmark': 'head'},
+            'sprig': {'leaf_present': 'head'},
+            'crumb-golem': {'signature_arm_left': 'spine'},
+        }
+        for name, appendages in expected.items():
+            with self.subTest(name=name):
+                folder = ROOT / 'characters' / (name + '-3d')
+                rig = json.loads((folder / 'rig.json').read_text())
+                joints = {j['name']: j for j in rig['joints']}
+                bounds = {item['joint'] for group in rig['skinBounds'] for item in group}
+                validation = json.loads((folder / 'validation.json').read_text())
+                raw = (folder / (name + '.glb')).read_bytes()
+                size, = struct.unpack_from('<I', raw, 12)
+                gltf = json.loads(raw[20:20 + size])
+                binary_start = 20 + size + 8
+                skin_joints = [gltf['nodes'][i]['name'] for i in gltf['skins'][0]['joints']]
+
+                def accessor_rows(index):
+                    accessor = gltf['accessors'][index]
+                    view = gltf['bufferViews'][accessor['bufferView']]
+                    code, width = {5121: ('B', 1), 5123: ('H', 2), 5126: ('f', 4)}[accessor['componentType']]
+                    count = {'VEC4': 4}[accessor['type']]
+                    offset = binary_start + view.get('byteOffset', 0) + accessor.get('byteOffset', 0)
+                    stride = view.get('byteStride', count * width)
+                    return [struct.unpack_from('<' + code * count, raw, offset + i * stride)
+                            for i in range(accessor['count'])]
+
+                weighted = set()
+                for mesh in gltf['meshes']:
+                    for primitive in mesh['primitives']:
+                        attrs = primitive['attributes']
+                        for indices, weights in zip(accessor_rows(attrs['JOINTS_0']),
+                                                    accessor_rows(attrs['WEIGHTS_0'])):
+                            weighted.update(skin_joints[index] for index, weight in zip(indices, weights)
+                                            if weight > .99)
+                for joint, parent in appendages.items():
+                    self.assertEqual(joints[joint]['parent'], parent)
+                    self.assertIn(joint, bounds)
+                    self.assertIn(joint, weighted)
+                    proof = validation['signature_appendage_deformation'][joint]
+                    self.assertGreater(proof['weighted_vertices'], 0)
+                    self.assertGreater(proof['displacement_meters'], .005)
+                    self.assertLess(proof['unrelated_displacement_meters'], 1e-5)
+                self.assertFalse(rig['arms'])
+
+
 if __name__ == '__main__':
     unittest.main()
