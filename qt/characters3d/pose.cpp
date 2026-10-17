@@ -118,7 +118,7 @@ void Motion::clearArmGoal(int side) {
 Motion::Motion(LimbArray<Leg> l,std::optional<std::array<Arm,2>> arms,bool wings,double wingReferenceReach,pets::character::Gait gait):legs_(l),arms_(arms),
  expressions_(pets::character::roleBit(pets::character::Role::Head)|pets::character::roleBit(pets::character::Role::EarLeft)|pets::character::roleBit(pets::character::Role::EarRight)|pets::character::roleBit(pets::character::Role::Tail)|(arms?(pets::character::roleBit(pets::character::Role::WristLeft)|pets::character::roleBit(pets::character::Role::WristRight)):0)),planner_(definition(l,wings,wingReferenceReach,gait)){
  if(quadruped()&&arms_)throw std::runtime_error("quadruped arms unsupported");
- contacts_.setCount(l.size());footYaw_.setCount(l.size());swingStartYaw_.setCount(l.size());swingEndYaw_.setCount(l.size());swingContactOffset_.setCount(l.size());supportRestLength_.setCount(l.size());
+ contacts_.setCount(l.size());footYaw_.setCount(l.size());swingStartYaw_.setCount(l.size());swingEndYaw_.setCount(l.size());swingContactOffset_.setCount(l.size());swingFacing_.setCount(l.size());supportRestLength_.setCount(l.size());
  if(arms_)for(int i=0;i<2;++i){auto neutral=add((*arms_)[i].hand,(*arms_)[i].gripOffset);double values[]={neutral.x,neutral.y,neutral.z};for(int axis=0;axis<3;++axis){reach_[i][axis].setTuning({2.5,1.,0});reach_[i][axis].reset(values[axis]);}}
  // A short lead lets the support paw travel beneath and behind its hip
  // instead of recovering early to a permanently forward-biased target.
@@ -189,6 +189,7 @@ void Motion::reset(double rootX,pets::character::GroundSpan span,double floor){
  yaw_.reset(yawTarget_);follower_.reset();expressions_.reset();armGoals_={};
  if(arms_)for(int i=0;i<2;++i){auto v=add((*arms_)[i].hand,(*arms_)[i].gripOffset);v.y+=pose().legs[0].hip.y-legs_[0].hip.y;reach_[i][0].reset(v.x);reach_[i][1].reset(v.y);reach_[i][2].reset(v.z);}
  footYaw_.fill(yawTarget_);swingStartYaw_=footYaw_;swingEndYaw_=footYaw_;swingContactOffset_.fill({});
+ swingFacing_.fill(planner_.state().facing);
  turningFoot_=-1;turnTime_=turnStartYaw_=turnEndYaw_=turnCooldown_=0;
  for(std::size_t i=0;i<legs_.size();++i){
   Vec3 neutral=legs_[i].contact;neutral.z=legs_[i].hip.z;
@@ -200,6 +201,7 @@ void Motion::setSpan(pets::character::GroundSpan span){reset(planner_.state().ro
 void Motion::clearPickupMotion(){
  pendingPlanner_.reset();pendingDelta_=0;
  requestedTarget_=planner_.state().rootX;
+ swingFacing_.fill(planner_.state().facing);
  turningFoot_=-1;turnTime_=turnStartYaw_=turnEndYaw_=turnCooldown_=0;
  // Detached paws share the presented heading; no ground replant survives.
  yawTarget_=yaw_.value();yaw_.reset(yawTarget_);follower_.reset();
@@ -220,6 +222,7 @@ void Motion::release(pets::character::Vec2 velocity){
 }
 void Motion::installContacts(){
  const auto state=planner_.state();
+ swingFacing_.fill(state.facing);
  for(std::size_t i=0;i<legs_.size();++i){
   Vec3 neutral=legs_[i].contact;neutral.z=legs_[i].hip.z;
   contacts_[i]=rotateYaw(neutral,footYaw_[i]);
@@ -366,13 +369,17 @@ void Motion::realize(double rootX,bool blocked,std::optional<double> elevation,d
    if(!before.feet[i].swing) {
     swingStartYaw_[i]=footYaw_[i];
     swingEndYaw_[i]=yawStepGoal(i,turnIncrement);
+    swingFacing_[i]=after.facing;
    }
    footYaw_[i]=swingStartYaw_[i]+(swingEndYaw_[i]-swingStartYaw_[i])*ease(after.feet[i].phase);
   }
   if(before.feet[i].swing&&!after.feet[i].swing)footYaw_[i]=swingEndYaw_[i];
   Vec3 neutral=legs_[i].contact;neutral.z=legs_[i].hip.z;
   auto rotated=rotateYaw(neutral,footYaw_[i]);
-  Vec3 contact{rotated.x,-(after.feet[i].position.y-supportFloor_)/100,after.feet[i].position.x/100+rotated.z-(quadruped()?after.facing:1)*legs_[i].hip.z};
+  // A target reversal changes the planner heading immediately, but does not
+  // rewrite an already lifted foot's trajectory. Keep that step's original
+  // proxy-to-spatial basis through touchdown; the next lift takes the new one.
+  Vec3 contact{rotated.x,-(after.feet[i].position.y-supportFloor_)/100,after.feet[i].position.x/100+rotated.z-(quadruped()?swingFacing_[i]:1)*legs_[i].hip.z};
   // A normal catch-up may interrupt a turn replant. Preserve its presented
   // starting contact and blend away the offset over the new lifted phase.
   if(!before.feet[i].swing&&after.feet[i].swing)swingContactOffset_[i]=sub(contacts_[i],contact);

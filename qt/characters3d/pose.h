@@ -96,6 +96,8 @@ private:
  LimbArray<double> footYaw_{};
  LimbArray<double> swingStartYaw_{}, swingEndYaw_{};
  LimbArray<Vec3> swingContactOffset_{};
+ // Planner coordinates keep the heading that authored each in-flight step.
+ LimbArray<int> swingFacing_{};
  LimbArray<double> supportRestLength_{};
 
  Vec3 turnStart_;

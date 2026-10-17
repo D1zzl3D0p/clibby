@@ -15,6 +15,66 @@ LimbArray<Leg> anatomy(){return {
  {{-.23,.78,.58},{-.24,.43,.45},{-.23,.12,.52},{-.23,0,.62}},
  {{.25,.77,-.58},{.26,.46,-.34},{.25,.12,-.62},{.25,0,-.52}},
  {{-.25,.77,-.58},{-.26,.46,-.34},{-.25,.12,-.62},{-.25,0,-.52}}};}
+// Production Pip and Mossback joint/contact coordinates converted from
+// Blender (x,y,z) to the motion adapter's (x,z,-y) frame.
+LimbArray<Leg> catalogueAnatomy(bool low){
+ const double x=low?.44:.29,fore=low?.56:.59,hind=low?-.69:-.66;
+ LimbArray<Leg> legs;legs.setCount(4);
+ for(int i=0;i<4;++i){const double side=i%2==0?-x:x;const bool front=i<2;
+  legs[i]={{side,front?(low?.48:.96):(low?.46:.91),front?fore:hind},
+           {side,front?(low?.2544:.5088):(low?.2438:.4823),front?(low?.49:.46):(low?-.59:-.48)},
+           {side,low?.1275:.17,front?(low?.535:.565):(low?-.715:-.685)},
+           {side,0,front?(low?.62:.65):(low?-.63:-.60)}};
+ }
+ return legs;
+}
+void midstrideReversals(){
+ constexpr double dt=1./120;
+ for(bool low:{false,true})for(int reverseTick:{96,128,160,176,200})for(bool rapid:{false,true}){
+  const auto legs=catalogueAnatomy(low);
+  Motion m(legs,{},false,0,Gait::QuadrupedWalk);
+  m.setFacingBias(-10.8*3.141592653589793/180);m.setCameraFacingTurns(true);m.reset(0,{-120,120});
+  for(int i=0;i<64;++i)m.step(dt);
+  m.target(35);auto previous=m.pose();bool reversedSwing=false;
+  for(int tick=0;tick<1200;++tick){
+   if(tick==reverseTick){reversedSwing=m.state().anyFootSwinging();m.target(-20);}
+   // Repeated requests during the same lifted phase must not replace its
+   // original basis, including an immediate reversal back to the first goal.
+   if(rapid&&(tick==reverseTick+1||tick==reverseTick+3))m.target(35);
+   if(rapid&&(tick==reverseTick+2||tick==reverseTick+4))m.target(-20);
+   if(tick==reverseTick+8){
+    const auto old=m.pose();m.reconcile(m.state().rootX+12,{-108,132},0,0);
+    const auto moved=m.pose();for(int i=0;i<4;++i)check(std::abs(moved.contacts[i].z-old.contacts[i].z-.12)<1e-10,"midstride support move loses a paw pin");
+    previous=moved;
+   }
+   m.step(dt);const auto p=m.pose();
+   for(int i=0;i<4;++i){
+    const double delta=distance(previous.contacts[i],p.contacts[i]);
+    // Even a full leg-length swing in the minimum .2 s duration stays well
+    // below this generous 18 m/s bound; a one-tick heading-basis jump does not.
+    if(delta>18*dt){std::cerr<<(low?"Mossback":"Pip")<<" reverse tick "<<reverseTick<<" tick "<<tick<<" foot "<<i<<" contact delta "<<delta<<"\n";}
+    check(delta<=18*dt,"midstride reversal teleports a spatial paw");
+    if(previous.grounded[i]&&p.grounded[i])check(delta<1e-9,"midstride reversal slides a planted paw");
+   }
+   check(std::count(p.swing.begin(),p.swing.end(),true)<=1,"midstride reversal lifts multiple paws");
+   previous=p;
+  }
+  if(reverseTick==176)check(reversedSwing,"native capture reversal fixture misses its in-flight paw");
+  // Reset after a reversed swing must clear the retained trajectory basis.
+  m.reset(0,{-120,120});
+  m.target(35);previous=m.pose();
+  for(int tick=0;tick<180;++tick){m.step(dt);const auto p=m.pose();for(int i=0;i<4;++i)check(distance(previous.contacts[i],p.contacts[i])<=18*dt,"reset retains a discontinuous swing basis");previous=p;}
+  m.target(-20);m.step(dt);m.pickup(0,60);m.release({0,0});previous=m.pose();
+  for(int tick=0;tick<5000&&!m.settled();++tick){
+   const auto phase=m.state().phase;m.step(dt);const auto p=m.pose();
+   const auto next=m.state().phase;
+   const bool grounded=phase!=pets::character::DropPhase::Airborne&&next!=pets::character::DropPhase::Airborne&&next!=pets::character::DropPhase::Held;
+   if(grounded){for(int i=0;i<4;++i){check(distance(previous.contacts[i],p.contacts[i])<=18*dt,"pickup/drop retains a discontinuous swing basis");if(previous.grounded[i]&&p.grounded[i])check(distance(previous.contacts[i],p.contacts[i])<1e-9,"recovery slides a planted paw");}}
+   previous=p;
+  }
+  check(m.settled(),"reversed quadruped drop recovery never settles");
+ }
+}
 void authoredBend(const Pose& pose,const LimbArray<Leg>& legs){
  for(std::size_t i=0;i<legs.size();++i){
   const auto& rest=legs[i];const auto& solved=pose.legs[i];
@@ -47,6 +107,7 @@ void inspect(const Pose& before,const Pose& p,const LimbArray<Leg>& legs,bool gr
 }
 }
 int main(){try{
+ midstrideReversals();
  auto legs=anatomy();bool rejected=false;try{Motion bad(legs);}catch(const std::exception&){rejected=true;}check(rejected,"four legs silently use biped gait");
  rejected=false;try{Motion bad(legs,{},false,0,static_cast<Gait>(99));}catch(const std::exception&){rejected=true;}check(rejected,"unknown spatial gait accepted");
  Motion motion(legs,{},false,0,Gait::QuadrupedWalk);check(motion.pose().legs.size()==4,"quadruped pose loses hind legs");
