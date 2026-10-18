@@ -5,13 +5,16 @@
 #include <vector>
 
 namespace pets::character3d {
-// Neutral model glTF axes (Y up, Z forward): additive Euler radians after the
-// ordinary expression, meters from rest. The binding converts to joint space.
+enum class SignatureRotationSpace { Model, JointLocal };
+// Default neutral model glTF axes (Y up, Z forward): additive Euler radians
+// after ordinary expression. JointLocal follows an authored moving hinge axis.
+// Translations remain model-space meters from rest.
 // Signature channels never own the body root or any support-chain joint.
 struct SignatureOffset {
  std::string joint;
  pets::motion::Vec3 rotation;
  pets::motion::Vec3 translation;
+ SignatureRotationSpace rotationSpace=SignatureRotationSpace::Model;
 };
 class SignatureMotion {
 public:

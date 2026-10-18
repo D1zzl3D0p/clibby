@@ -1,0 +1,11 @@
+{
+  "authoring_source": "tools/author_wayfarer_companions.py",
+  "source_sha256": "5ca30803ca1904b5ddd0d562ad83855730886738178fdabb2edc408ddbaa9f1d",
+  "helper_sha256": "de52ece6f24a0fa2905f09afac7dcaeec3a76e608e50acd37f8a3933b9a2a1d9",
+  "license": "MIT",
+  "original_geometry": true,
+  "original_texture": true,
+  "art_direction": "Refined pixel-rendered low-poly catalogue; original authored forms",
+  "blender_version": "5.2.2 LTS",
+  "humanoid_helper_sha256": "d01cc33bffc8f94458be323cfe1be03e3521b1ab97c8a806252a61a30deecb6f"
+}

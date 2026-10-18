@@ -1,5 +1,20 @@
 # New-session handoff
 
+## Latest: next six companions and physical hinges (2026-10-17)
+
+Iona, Milo, Orris, Fen, Oona and Quillan are implemented with distinct original
+bodies, real arms, attached props/ear-fins and finite signature actions. Map,
+clock-key and lantern-shutter hinges now use explicit joint-local rotation;
+older profiles retain their default neutral-model semantics. Native regression
+proves each shaft stays aligned while owners raise their hands.
+
+Fresh checks: 98 Python; 82 combined Qt passes/three environment skips;
+37 2D-only passes/two skips; no final failures. Native evidence includes 630
+unclipped frames in `results/wayfarer-companions-2026-10-17/` and a comparison GIF.
+Use rebuilt `build/qt-humanoids/Clibby.app` → **Companions**. Read the
+[delivery record](results/2026-10-17-wayfarer-companions.md) for checks and first-pass
+activity limits. Maren, Tarn, Pell, Serein, Nacre and Windle remain approved backlog.
+
 ## Latest: six original humanoid companions (2026-10-17)
 
 Nell, Alden, Saffron, Tess, Rowan and Vesper are implemented and selectable in

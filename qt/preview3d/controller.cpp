@@ -313,7 +313,8 @@ void WolfMotion::apply(){
   auto found=joints_.find(named.first);if(found==joints_.end())continue;
   auto& joint=found->second;joint.node->setProperty("rotation",QVariant::fromValue(joint.restRotation*rotation(named.second)));
  }
- // Convert neutral model-axis action offsets through the current parent frame.
+ // Convert neutral model-axis offsets through the current parent frame;
+ // explicit local hinges instead turn about their own posed authored shaft.
  // Arm IK realizes its baseline before additive arm and attached-prop offsets.
  // Other appendages remain ahead of support realization. Classify by actual
  // ancestry rather than aliases, so a hand's bound prop follows the same pass.
@@ -330,7 +331,10 @@ void WolfMotion::apply(){
   const auto modelWorld=avatar_->property("sceneRotation").value<QQuaternion>();
   const auto frame=parentWorld.conjugated()*modelWorld;
   const auto current=joint.node->property("rotation").value<QQuaternion>();
-  joint.node->setProperty("rotation",QVariant::fromValue(frame*rotation(offset.rotation)*frame.conjugated()*current));
+  const auto actionRotation=rotation(offset.rotation);
+  const auto posed=offset.rotationSpace==pets::character3d::SignatureRotationSpace::JointLocal
+   ? current*actionRotation : frame*actionRotation*frame.conjugated()*current;
+  joint.node->setProperty("rotation",QVariant::fromValue(posed));
   const auto position=joint.node->property("position").value<QVector3D>();
   joint.node->setProperty("position",QVariant::fromValue(position+frame.rotatedVector(vector(offset.translation))));
  }

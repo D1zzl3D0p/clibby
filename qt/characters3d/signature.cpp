@@ -13,6 +13,9 @@ struct Channel {
  const char* joint;
  Vec3 rotation{}, oscillation{}, translation{};
  double frequency=0, phase=0;
+ // Optional activity window; zero end retains the full profile lifetime.
+ double begin=0, end=0;
+ SignatureRotationSpace rotationSpace=SignatureRotationSpace::Model;
 };
 struct Profile {
  const char* asset;
@@ -22,7 +25,7 @@ struct Profile {
 };
 // Authored intent amplitudes, independent of renderer, host, timers and limbs.
 // Continuous envelopes shape bounded movement; no pose keys or clip playback.
-const std::array<Profile,20> profiles{{
+const std::array<Profile,26> profiles{{
  {"marmalade","Tail-tip inspection",5.2,{
   {"head",{-.12,-.28,.06}},
   {"tail_base",{0,.32,0},{0,.035,0},{},.6},
@@ -103,7 +106,65 @@ const std::array<Profile,20> profiles{{
   {"upper_arm_left",{-.50,0,.025}},
   {"forearm_left",{-.85,0,0}},
   {"held_prop",{-.08,.12,0}},
-  {"prop_hinge",{0,-.88,0}}}}
+  {"prop_hinge",{0,-.88,0}}}},
+ {"iona","Map route study",6.4,{
+  {"head",{.36,.12,-.035}},
+  {"upper_arm_left",{-.64,0,-.22}},
+  {"forearm_left",{-.92,0,0}},
+  {"hand_left",{-.08,.10,0}},
+  {"held_prop",{-.10,.08,0}},
+  {"prop_hinge",{0,-.95,0},{},{},0,0,0,0,SignatureRotationSpace::JointLocal},
+  {"upper_arm_right",{-.70,0,1.12},{0,0,.06},{},.40,0,1.1},
+  {"forearm_right",{-.82,0,.12},{0,.13,0},{},.40,0,1.1},
+  {"hand_right",{-.10,.12,0},{0,0,.10},{},.40,0,1.1}}},
+ {"milo","Instrument tune and rhythm",6.2,{
+  {"head",{.32,.14,-.06},{0,0,.025},{},.6},
+  {"upper_arm_left",{-.60,0,-.045}},
+  {"forearm_left",{-.92,0,.025}},
+  {"hand_left",{-.06,.12,0}},
+  {"held_prop",{0,.22,-.12}},
+  {"upper_arm_right",{-.62,0,.45},{.035,0,0},{},1.1,0,.5},
+  {"forearm_right",{-.82,0,-.08},{0,.14,0},{},.55,0,.5},
+  {"hand_right",{-.08,.13,0},{.12,0,.06},{},1.1,0,.5}}},
+ {"orris","Clock winding and spectacles check",6.4,{
+  {"head",{.30,.13,-.035}},
+  {"upper_arm_left",{-.66,0,-.025}},
+  {"forearm_left",{-.90,0,0}},
+  {"hand_left",{-.08,.10,0}},
+  {"held_prop",{-.10,.14,0}},
+  {"prop_hinge",{0,.28,0},{0,.34,0},{},.85,0,.35,4.4,SignatureRotationSpace::JointLocal},
+  {"upper_arm_right",{-.85,0,1.03},{},{},0,0,2.5},
+  {"forearm_right",{-.20,.30,.10},{},{},0,0,2.5},
+  {"hand_right",{-.14,.16,0},{0,.05,0},{},.7,0,2.5}}},
+ {"fen","Lantern shutter adjustment",6.0,{
+  {"head",{.36,.16,-.04}},
+  {"upper_arm_left",{-.64,0,-.035}},
+  {"forearm_left",{-.94,0,0}},
+  {"hand_left",{-.08,.12,0}},
+  {"held_prop",{-.08,.12,-.06}},
+  {"prop_hinge",{0,-.92,0},{0,.12,0},{},.42,0,.5,0,SignatureRotationSpace::JointLocal},
+  {"upper_arm_right",{-.64,0,.40},{},{},0,0,.8},
+  {"forearm_right",{-.86,0,-.12},{0,.09,0},{},.42,0,.8},
+  {"hand_right",{-.10,.15,0},{0,.10,0},{},.42,0,.8}}},
+ {"oona","Mineral inspection",6.3,{
+  {"head",{.36,.15,-.025}},
+  {"upper_arm_left",{-.70,0,-.025}},
+  {"forearm_left",{-.98,0,0}},
+  {"hand_left",{-.08,.12,0},{0,.10,0},{},.32},
+  {"held_prop",{-.08,.28,-.12},{0,.16,.04},{},.32},
+  {"upper_arm_right",{-.48,0,.42},{},{},0,0,1.0},
+  {"forearm_right",{-.70,0,-.10},{},{},0,0,1.0},
+  {"hand_right",{-.08,.08,0},{0,.06,0},{},.32,0,1.0}}},
+ {"quillan","Hand study and tentative greeting",6.4,{
+  {"head",{.34,.14,-.045},{0,-.09,0},{},.25},
+  {"upper_arm_left",{-.68,0,-.04},{},{},0,0,0,4.6},
+  {"forearm_left",{-.96,0,0},{},{},0,0,0,4.6},
+  {"hand_left",{-.10,.26,0},{0,.16,0},{},.38,0,0,4.6},
+  {"upper_arm_right",{-.90,0,.36},{},{},0,0,2.6},
+  {"forearm_right",{-.82,0,.08},{},{},0,0,2.6},
+  {"hand_right",{-.08,.18,0},{0,0,.19},{},.85,0,2.6},
+  {"ear_fin_left",{.08,0,-.15},{0,0,.04},{},.55,0,2.9},
+  {"ear_fin_right",{.08,0,.15},{0,0,-.04},{},.55,0,2.9}}}
 }};
 Vec3 add(Vec3 a,Vec3 b){return {a.x+b.x,a.y+b.y,a.z+b.z};}
 Vec3 scale(Vec3 a,double f){return {a.x*f,a.y*f,a.z*f};}
@@ -153,11 +214,13 @@ bool SignatureMotion::active() const{return active_;}
 std::vector<SignatureOffset> SignatureMotion::evaluate(double elapsed) const{
  std::vector<SignatureOffset> result;
  if(!supported())return result;
- const auto& p=profiles[profile_];const double e=envelope(elapsed,p.duration);
+ const auto& p=profiles[profile_];
  result.reserve(p.channels.size());
  for(const auto& c:p.channels){
+  const double end=c.end>0?c.end:p.duration;
+  const double e=envelope(elapsed-c.begin,end-c.begin);
   const double wave=std::sin(2*pi*c.frequency*elapsed+c.phase);
-  result.push_back({c.joint,scale(add(c.rotation,scale(c.oscillation,wave)),e),scale(c.translation,e)});
+  result.push_back({c.joint,scale(add(c.rotation,scale(c.oscillation,wave)),e),scale(c.translation,e),c.rotationSpace});
  }
  return result;
 }

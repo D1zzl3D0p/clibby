@@ -63,7 +63,7 @@ int main(int argc,char** argv){
     require(shell.groundedState()->feet.size()==(asset.quadruped?4:2),"new catalogue selected wrong anatomy");
     ++selectedCatalogue;
    }
-   require(selectedCatalogue==19,"resident did not exercise all thirteen creatures and six humanoid companions");
+   require(selectedCatalogue==25,"resident did not exercise all thirteen creatures and twelve humanoid companions");
    require(shell.selectCharacter(root+"/marmalade-3d",&error),"restore spatial cat after catalogue selection");
   }
   {
