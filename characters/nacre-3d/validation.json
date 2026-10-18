@@ -1,0 +1,129 @@
+{
+  "triangles": 922,
+  "exported_vertices": 1918,
+  "materials": 1,
+  "deform_joints": 16,
+  "max_influences": 2,
+  "atlas": [
+    256,
+    256
+  ],
+  "animation_clips": 0,
+  "embedded_images": 1,
+  "joint_order": [
+    "root",
+    "pelvis",
+    "spine",
+    "head",
+    "fin_left",
+    "fin_right",
+    "gather_arm_left",
+    "gather_arm_right",
+    "pattern_left",
+    "pattern_right",
+    "thigh_left",
+    "shin_left",
+    "foot_left",
+    "thigh_right",
+    "shin_right",
+    "foot_right"
+  ],
+  "blender_version": "5.2.2 LTS",
+  "armature_deformation_test_max_distance_meters": 0.19744352439962493,
+  "eye_closure_test_max_distance_meters": 0,
+  "eye_closure_vertex_count": 0,
+  "continuous_weighted_legs": 2,
+  "creature_deformation": {
+    "gather_arm_left": {
+      "weighted_vertices": 56,
+      "displacement_meters": 0.13934126673726935,
+      "unrelated_displacement_meters": 0.0,
+      "moving_hull_blender_minimum": [
+        0.19574138522148132,
+        -0.4000583291053772,
+        0.40438926219940186
+      ],
+      "moving_hull_blender_maximum": [
+        0.590234637260437,
+        -0.20103082060813904,
+        0.7796061635017395
+      ]
+    },
+    "gather_arm_right": {
+      "weighted_vertices": 56,
+      "displacement_meters": 0.13892461854010252,
+      "unrelated_displacement_meters": 0.0,
+      "moving_hull_blender_minimum": [
+        -0.5021755695343018,
+        -0.5573354363441467,
+        0.4028938412666321
+      ],
+      "moving_hull_blender_maximum": [
+        -0.19046542048454285,
+        -0.23388051986694336,
+        0.7821339964866638
+      ]
+    },
+    "fin_left": {
+      "weighted_vertices": 5,
+      "displacement_meters": 0.13208152713791688,
+      "unrelated_displacement_meters": 0.0,
+      "moving_hull_blender_minimum": [
+        0.18311500549316406,
+        -0.18584197759628296,
+        0.9300000071525574
+      ],
+      "moving_hull_blender_maximum": [
+        0.6403605937957764,
+        0.3922591209411621,
+        1.1299999952316284
+      ]
+    },
+    "fin_right": {
+      "weighted_vertices": 5,
+      "displacement_meters": 0.13208148306841533,
+      "unrelated_displacement_meters": 0.0,
+      "moving_hull_blender_minimum": [
+        -0.6329447031021118,
+        -0.2031455636024475,
+        0.9300000071525574
+      ],
+      "moving_hull_blender_maximum": [
+        -0.20580294728279114,
+        0.29879868030548096,
+        1.1299999952316284
+      ]
+    },
+    "pattern_left": {
+      "weighted_vertices": 8,
+      "displacement_meters": 0.18000000233451524,
+      "unrelated_displacement_meters": 0.0,
+      "moving_hull_blender_minimum": [
+        0.43800002336502075,
+        -0.07000000029802322,
+        1.0299999713897705
+      ],
+      "moving_hull_blender_maximum": [
+        0.4620000123977661,
+        0.020000003278255463,
+        1.1700000762939453
+      ]
+    },
+    "pattern_right": {
+      "weighted_vertices": 8,
+      "displacement_meters": 0.18000000233451524,
+      "unrelated_displacement_meters": 0.0,
+      "moving_hull_blender_minimum": [
+        -0.4620000123977661,
+        -0.07000000029802322,
+        1.0299999713897705
+      ],
+      "moving_hull_blender_maximum": [
+        -0.43800002336502075,
+        0.020000003278255463,
+        1.1700000762939453
+      ]
+    }
+  },
+  "real_contact_geometry": "two ventral support arms"
+}

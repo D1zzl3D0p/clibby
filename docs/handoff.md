@@ -1,5 +1,23 @@
 # New-session handoff
 
+## Latest: approved eighteen-companion expansion complete (2026-10-17)
+
+Maren, Tarn, Pell, Serein, Nacre and Windle are implemented with original models
+and finite signatures. All eighteen approved expansion archetypes are selectable
+under **Companions**. Tarn has four real contacts and attached folding membranes;
+Nacre has free-arm gather and visible mantle markings; Windle has weighted wisps,
+scarf and hem supports. These remain grounded stylized movement, without new
+flight/aquatic simulation or timers. Tarn tip seams use actual local-Y hinges.
+
+Native validation covers all six bodies/actions, with 630 unclipped signature and
+360 walking frames under `results/final-companions-2026-10-17/`. Full Python 109
+passes. The exact staged 3D checkpoint passes 84 checks with two environment
+skips; the shared 3D build passes 89 with three skips. The isolated 2D checkpoint passes 33 checks with one environment skip. The latest
+shared 2D run reports a concurrent size-change failure, excluded from this checkpoint.
+Read the [delivery record](results/2026-10-17-final-companions.md) for final
+verification, concurrent-work context and first-pass activity limits. Restart
+rebuilt `build/qt-humanoids/Clibby.app` and choose **Companions**.
+
 ## Latest: next six companions and physical hinges (2026-10-17)
 
 Iona, Milo, Orris, Fen, Oona and Quillan are implemented with distinct original

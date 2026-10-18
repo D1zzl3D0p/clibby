@@ -129,7 +129,8 @@ if(EXISTS "${WOLF_SOURCE}" AND EXISTS "${WOLF_RIG}")
       "pocket-observatory:PocketObservatory" "night-librarian:NightLibrarian" "sprig:Sprig"
       "hearthling:Hearthling" "crumb-golem:CrumbGolem"
       "nell:Nell" "alden:Alden" "saffron:Saffron" "tess:Tess" "rowan:Rowan" "vesper:Vesper"
-      "iona:Iona" "milo:Milo" "orris:Orris" "fen:Fen" "oona:Oona" "quillan:Quillan")
+      "iona:Iona" "milo:Milo" "orris:Orris" "fen:Fen" "oona:Oona" "quillan:Quillan"
+      "maren:Maren" "tarn:Tarn" "pell:Pell" "serein:Serein" "nacre:Nacre" "windle:Windle")
     string(REPLACE ":" ";" ASSET_PARTS "${ASSET_TYPE}")
     list(GET ASSET_PARTS 0 ASSET)
     list(GET ASSET_PARTS 1 ASSET_TYPE_NAME)

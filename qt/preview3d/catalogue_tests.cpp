@@ -35,12 +35,19 @@ int main(int argc,char** argv){
   const auto args=app.arguments();QString only,out;int index=args.indexOf("--asset");if(index>=0){check(index+1<args.size(),"missing asset");only=args[index+1];}
   index=args.indexOf("--capture-dir");if(index>=0){check(index+1<args.size(),"missing capture directory");out=args[index+1];check(QDir().mkpath(out),"capture directory unavailable");}
   const std::array<const char*,6> wayfarers{{"iona","milo","orris","fen","oona","quillan"}};
-  check(pets::character3d::builtinAssets.size()==28,"trusted built-in catalogue count changed");
+  check(pets::character3d::builtinAssets.size()==34,"trusted built-in catalogue count changed");
   for(const auto* name:wayfarers){
    const auto* entry=pets::character3d::builtinAsset(QString::fromLatin1(name));
    check(entry&&entry->catalogueStyle&&!entry->quadruped,"wayfarer is not a trusted catalogue biped");
    check(pets::character3d::builtinIdentity(QString::fromLatin1(name)+"-3d")==entry,"wayfarer identity does not resolve to its asset");
    check(pets::character3d::builtinSkin(QString::fromLatin1(entry->type)+"Skin")==entry,"wayfarer skin does not resolve to its asset");
+  }
+  const std::array<const char*,6> finalCompanions{{"maren","tarn","pell","serein","nacre","windle"}};
+  for(const auto* name:finalCompanions){
+   const auto* entry=pets::character3d::builtinAsset(QString::fromLatin1(name));
+   check(entry&&entry->catalogueStyle&&entry->quadruped==(QString::fromLatin1(name)=="tarn"),"final companion trusted anatomy mismatch");
+   check(pets::character3d::builtinIdentity(QString::fromLatin1(name)+"-3d")==entry,"final companion identity mismatch");
+   check(pets::character3d::builtinSkin(QString::fromLatin1(entry->type)+"Skin")==entry,"final companion skin mismatch");
   }
   bool any=false;
   for(const auto& asset:pets::character3d::builtinAssets){
@@ -55,6 +62,19 @@ int main(int argc,char** argv){
    QFile f(residentRigPath(name));check(f.open(QIODevice::ReadOnly),"rig missing");const auto rig=QJsonDocument::fromJson(f.readAll()).object();
    const bool hasArms=rig.value("arms").toBool(false);
    const bool wayfarer=std::any_of(wayfarers.begin(),wayfarers.end(),[&](const char* entry){return name==QLatin1String(entry);});
+   const bool finalCompanion=std::any_of(finalCompanions.begin(),finalCompanions.end(),[&](const char* entry){return name==QLatin1String(entry);});
+   if(finalCompanion){
+    const bool humanoid=name=="maren"||name=="pell"||name=="serein";
+    check(hasArms==humanoid,name+": final companion invented or missing arm capability");
+    if(humanoid){
+     auto prop=stage->findChild<QObject*>("held_prop");
+     check(prop&&prop->parent()==stage->findChild<QObject*>("hand_left"),name+": final humanoid prop is not hand owned");
+    }
+    if(name=="maren")for(const auto* rope:{"rope_loop","rope_knot"}){
+     auto node=stage->findChild<QObject*>(rope);
+     check(node&&node->parent()==stage->findChild<QObject*>("held_prop"),name+": rope has no held-prop owner");
+    }
+   }
    if(wayfarer){
     check(hasArms,name+": wayfarer must have actual articulated arms");
     const auto* prop=stage->findChild<QObject*>("held_prop");
@@ -77,12 +97,18 @@ int main(int argc,char** argv){
    for(const auto value:rig["joints"].toArray()){
     const auto joint=value.toObject();const auto jointName=joint["name"].toString();const auto parentName=joint["parent"].toString();
     const bool earFin=jointName=="ear_fin_left"||jointName=="ear_fin_right";
-    if(jointName!="held_prop"&&jointName!="fastening"&&parentName!="held_prop"&&!earFin)continue;
+    const bool appendage=finalCompanion&&(jointName.startsWith("wing_fold_")||jointName.startsWith("wing_tip_")||jointName.startsWith("gather_arm_")||jointName.startsWith("fin_")||jointName.startsWith("wisp_")||jointName=="scarf_end");
+    if(jointName!="held_prop"&&jointName!="fastening"&&parentName!="held_prop"&&!earFin&&!appendage)continue;
     auto node=stage->findChild<QObject*>(jointName);auto parent=stage->findChild<QObject*>(parentName);
     check(node&&parent&&node->parent()==parent,name+": owned prop is outside its authored parent hierarchy");
     if(jointName=="held_prop")check(parentName=="hand_left",name+": held prop is not attached to its real hand");
     if(jointName=="fastening")check(parentName=="spine",name+": fastening is not attached to torso");
     if(earFin)check(parentName=="head",name+": ear-fin is not attached to its real head");
+    if(appendage){
+     const auto expected=jointName.startsWith("wing_tip_")?QString("wing_fold_")+jointName.mid(9):
+       ((jointName.startsWith("wing_fold_")||jointName.startsWith("wisp_"))?QString("spine"):QString("head"));
+     check(parentName==expected,name+": final appendage has wrong owner");
+    }
     bool invertible=false;const auto inverse=parent->property("sceneTransform").value<QMatrix4x4>().inverted(&invertible);
     check(invertible,name+": attachment parent transform is singular");
     attachments.push_back({node,parent,inverse.map(node->property("scenePosition").value<QVector3D>())});
@@ -145,14 +171,22 @@ int main(int argc,char** argv){
    const auto resting=actionPose();
    // Check each required channel locally: inherited head/arm movement alone
    // cannot establish that a weighted hand, hinge or ear-fin was animated.
-   struct LocalAction {QObject* node;QQuaternion rest;QVector3D position;double maxAngle=0;};
+   struct LocalAction {QObject* node;QQuaternion rest;QVector3D position;double maxAngle=0;double maxTranslation=0;};
    std::vector<LocalAction> localActions;
-   if(wayfarer){
+   if(wayfarer||finalCompanion){
     pets::character3d::SignatureMotion definition(asset.asset);
     std::vector<QString> expected{"head","upper_arm_left","forearm_left","hand_left","upper_arm_right","forearm_right","hand_right"};
     if(name=="quillan"){expected.push_back("ear_fin_left");expected.push_back("ear_fin_right");}
     else expected.push_back("held_prop");
     if(name=="iona"||name=="orris"||name=="fen")expected.push_back("prop_hinge");
+    if(finalCompanion){
+     if(name=="maren")expected={"head","upper_arm_left","forearm_left","hand_left","held_prop","upper_arm_right","forearm_right","hand_right","rope_loop","rope_knot"};
+     if(name=="pell")expected={"head","upper_arm_left","forearm_left","hand_left","held_prop"};
+     if(name=="serein")expected={"head","upper_arm_left","forearm_left","hand_left","held_prop","upper_arm_right","forearm_right","hand_right"};
+     if(name=="tarn")expected={"head","wing_fold_left","wing_fold_right","wing_tip_left","wing_tip_right","tail_base","tail_tip"};
+     if(name=="nacre")expected={"head","gather_arm_left","gather_arm_right","fin_left","fin_right","pattern_left","pattern_right"};
+     if(name=="windle")expected={"head","wisp_left","wisp_right","scarf_end"};
+    }
     const auto required=definition.requiredJoints();
     check(required.size()==expected.size(),name+": signature required-joint contract changed");
     for(const auto& jointName:expected){
@@ -174,14 +208,20 @@ int main(int argc,char** argv){
      const auto current=action.node->property("rotation").value<QQuaternion>().normalized();
      const auto alignment=std::fmin(1.,std::abs(double(QQuaternion::dotProduct(action.rest,current))));
      action.maxAngle=std::fmax(action.maxAngle,2*std::acos(alignment));
-     if(action.node->objectName()=="prop_hinge"){
+     if(action.node->objectName()=="prop_hinge"||(name=="tarn"&&action.node->objectName().startsWith("wing_tip_"))){
       // A hinge's authored local Y shaft remains fixed in its parent frame
       // while its leaf/key turns, including when the owning hand is raised.
       const auto shaft=QVector3D(0,1,0);
       check((current.rotatedVector(shaft)-action.rest.rotatedVector(shaft)).length()<.0001,
-        name+": signature hinge rotates away from its authored local Y shaft");
+        name+": signature hinge rotates away from its authored local Y shaft or membrane seam");
      }
-     check((action.node->property("position").value<QVector3D>()-action.position).length()<.0001,name+": signature translated an authored joint pivot: "+action.node->objectName());
+     const auto displacement=action.node->property("position").value<QVector3D>()-action.position;
+     const bool patch=name=="nacre"&&(action.node->objectName()=="pattern_left"||action.node->objectName()=="pattern_right");
+     action.maxTranslation=std::fmax(action.maxTranslation,double(displacement.length()));
+     if(patch){
+      check(displacement.length()<.181,name+": mantle reveal escaped bounded patch offset");
+      check(action.node->parent()==stage->findChild<QObject*>("head"),name+": mantle patch has no actual head owner");
+     }else check(displacement.length()<.0001,name+": signature translated an authored joint pivot: "+action.node->objectName());
     }
     if(freeHand){
      const auto hand=freeHand->property("scenePosition").value<QVector3D>();
@@ -207,7 +247,7 @@ int main(int argc,char** argv){
    for(int i=0;i<180;++i){motion.advance(1./120);inspect(true);sampleLocalActions();}
    const auto expressive=actionPose();check(expressive!=resting,name+": signature does not deform actual joints");
    for(const auto& arm:restingActionArms){
-    if(wayfarer)continue; // Wayfarer gestures have staged channels, sampled over the whole action below.
+    if(wayfarer||finalCompanion)continue; // Staged gestures are sampled over the whole action below.
     const auto current=arm.first->property("rotation").value<QQuaternion>().normalized();
     const auto alignment=std::fmin(1.,std::abs(double(QQuaternion::dotProduct(arm.second.normalized(),current))));
     check(2*std::acos(alignment)>.0087,name+": signature arm offset was overwritten by IK: "+arm.first->objectName());
@@ -215,8 +255,11 @@ int main(int argc,char** argv){
    motion.pause(true);for(int i=0;i<90;++i)motion.advance(1./120);check(actionPose()==expressive&&motion.signatureActive(),name+": pause did not freeze action");motion.pause(false);
    for(int i=0;i<1200&&!motion.settled();++i){motion.advance(1./120);inspect(true);sampleLocalActions();}
    check(motion.settled()&&!motion.signatureActive(),name+": signature never settles");
-   for(const auto& action:localActions)
-    check(action.maxAngle>.0087,name+": required signature joint did not rotate locally: "+action.node->objectName());
+   for(const auto& action:localActions){
+    const bool patch=name=="nacre"&&(action.node->objectName()=="pattern_left"||action.node->objectName()=="pattern_right");
+    check(patch?action.maxTranslation>.12:action.maxAngle>.0087,name+": required signature joint did not move locally: "+action.node->objectName());
+    check((action.node->property("position").value<QVector3D>()-action.position).length()<.0001,name+": signature failed to restore actual patch or pivot position");
+   }
    if(freeHand){
     check(highestFreeHand-restFreeHand.y()>.10,name+": activity leaves the free hand near its resting height");
     check(restActivityDistance-nearestActivityDistance>.06,name+": free hand does not approach its actual map or spectacles region");
@@ -226,6 +269,21 @@ int main(int argc,char** argv){
    // Core channels reach exact zero; live matrices allow <1 mm / .06 degrees.
    for(std::size_t i=0;i<resting.size();++i)for(int n=0;n<16;++n)
     check(std::abs(resting[i].constData()[n]-finished[i].constData()[n])<.001,name+": signature did not restore rest joint "+QString::number(i)+" element "+QString::number(n)+" before "+QString::number(resting[i].constData()[n], 'g', 9)+" after "+QString::number(finished[i].constData()[n], 'g', 9));
+   if(finalCompanion)for(double headingTarget:{-25.,25.}){
+    motion.target(headingTarget);
+    for(int frame=0;frame<6000&&!motion.settled();++frame){motion.advance(1./120);inspect(true);}
+    check(motion.settled(),name+": final companion heading did not settle");
+    const auto planted=motion.motion().pose();
+    check(motion.signature(),name+": final companion heading action refused");
+    for(int frame=0;frame<770;++frame){
+     motion.advance(1./120);inspect(true);const auto pose=motion.motion().pose();
+     for(size_t foot=0;foot<roles.size();++foot){
+      check(pose.grounded[foot],name+": signature released an actual support tip");
+      check((vector(pose.contacts[foot])-vector(planted.contacts[foot])).length()<.0004,name+": signature moved planted support in a heading");
+     }
+    }
+    check(!motion.signatureActive()&&motion.settled(),name+": heading action exceeded finite evidence window");
+   }
    check(motion.signature(),name+": signature did not restart");for(int i=0;i<150;++i)motion.advance(1./120);
    motion.target(25);for(int i=0;i<60;++i){motion.advance(1./120);inspect(true);}check(!motion.signatureActive(),name+": walking did not cancel action");
    for(int i=0;i<6000&&!motion.settled();++i)motion.advance(1./120);check(motion.settled(),name+": cancellation did not settle");

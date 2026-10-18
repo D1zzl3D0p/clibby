@@ -1,0 +1,81 @@
+{
+  "triangles": 411,
+  "exported_vertices": 833,
+  "materials": 1,
+  "deform_joints": 13,
+  "max_influences": 2,
+  "atlas": [
+    256,
+    256
+  ],
+  "animation_clips": 0,
+  "embedded_images": 1,
+  "joint_order": [
+    "root",
+    "pelvis",
+    "spine",
+    "head",
+    "scarf_end",
+    "wisp_left",
+    "wisp_right",
+    "thigh_left",
+    "shin_left",
+    "foot_left",
+    "thigh_right",
+    "shin_right",
+    "foot_right"
+  ],
+  "blender_version": "5.2.2 LTS",
+  "armature_deformation_test_max_distance_meters": 0.2305866086331872,
+  "eye_closure_test_max_distance_meters": 0,
+  "eye_closure_vertex_count": 0,
+  "continuous_weighted_legs": 2,
+  "creature_deformation": {
+    "wisp_left": {
+      "weighted_vertices": 6,
+      "displacement_meters": 0.18316408109349575,
+      "unrelated_displacement_meters": 0.0,
+      "moving_hull_blender_minimum": [
+        0.09149867296218872,
+        -0.05000000074505806,
+        0.6194251775741577
+      ],
+      "moving_hull_blender_maximum": [
+        0.270021915435791,
+        -0.014999999664723873,
+        1.1015260219573975
+      ]
+    },
+    "wisp_right": {
+      "weighted_vertices": 6,
+      "displacement_meters": 0.18316403278945287,
+      "unrelated_displacement_meters": 0.0,
+      "moving_hull_blender_minimum": [
+        -0.5426146984100342,
+        -0.05000000074505806,
+        0.7284623384475708
+      ],
+      "moving_hull_blender_maximum": [
+        -0.10910677909851074,
+        -0.014999999664723873,
+        1.0937376022338867
+      ]
+    },
+    "scarf_end": {
+      "weighted_vertices": 5,
+      "displacement_meters": 0.1785814775253527,
+      "unrelated_displacement_meters": 0.0,
+      "moving_hull_blender_minimum": [
+        -0.4409254491329193,
+        0.03999999910593033,
+        0.8554612398147583
+      ],
+      "moving_hull_blender_maximum": [
+        -0.12999999523162842,
+        0.1599999964237213,
+        1.1799999475479126
+      ]
+    }
+  },
+  "real_contact_geometry": "two weighted robe hem supports"
+}

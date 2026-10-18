@@ -25,7 +25,7 @@ struct Profile {
 };
 // Authored intent amplitudes, independent of renderer, host, timers and limbs.
 // Continuous envelopes shape bounded movement; no pose keys or clip playback.
-const std::array<Profile,26> profiles{{
+const std::array<Profile,32> profiles{{
  {"marmalade","Tail-tip inspection",5.2,{
   {"head",{-.12,-.28,.06}},
   {"tail_base",{0,.32,0},{0,.035,0},{},.6},
@@ -164,7 +164,54 @@ const std::array<Profile,26> profiles{{
   {"forearm_right",{-.82,0,.08},{},{},0,0,2.6},
   {"hand_right",{-.08,.18,0},{0,0,.19},{},.85,0,2.6},
   {"ear_fin_left",{.08,0,-.15},{0,0,.04},{},.55,0,2.9},
-  {"ear_fin_right",{.08,0,.15},{0,0,-.04},{},.55,0,2.9}}}
+  {"ear_fin_right",{.08,0,.15},{0,0,-.04},{},.55,0,2.9}}},
+ {"maren","Rope gather and knot inspection",6.4,{
+  {"head",{.34,.13,-.035}},
+  {"upper_arm_left",{-.65,0,-.08}},
+  {"forearm_left",{-.94,0,0}},
+  {"hand_left",{-.08,.13,0}},
+  {"held_prop",{-.08,.15,-.06}},
+  {"upper_arm_right",{-.68,0,.82},{},{},0,0,.8,4.8},
+  {"forearm_right",{-.84,0,-.10},{0,.10,0},{},.40,0,.8,4.8},
+  {"hand_right",{-.10,.15,0},{.08,0,.06},{},.65,0,.8,4.8},
+  {"rope_loop",{.14,.28,-.16},{0,.08,0},{},.40,0,.8,4.8},
+  {"rope_knot",{-.08,.24,0},{0,.05,0},{},.35,0,2.4}}},
+ {"tarn","Wing unfurl and refold",6.4,{
+  {"head",{.12,-.22,-.04}},
+  {"wing_fold_left",{0,0,-.65}},
+  {"wing_fold_right",{0,0,.18}},
+  {"wing_tip_left",{0,-.35,0},{0,.04,0},{},.35,0,.6,5.8,SignatureRotationSpace::JointLocal},
+  {"wing_tip_right",{0,.12,0},{},{},0,0,0,0,SignatureRotationSpace::JointLocal},
+  {"tail_base",{.08,.20,0}},
+  {"tail_tip",{.06,.28,0},{0,.04,0},{},.45}}},
+ {"pell","Pebble balance and pocket study",6.3,{
+  {"head",{.36,.14,-.035}},
+  {"upper_arm_left",{-.68,0,-.035},{},{},0,0,0,4.4},
+  {"forearm_left",{-.96,0,0},{},{},0,0,0,4.4},
+  {"hand_left",{-.08,.20,0},{0,.11,0},{},.40,0,0,4.8},
+  {"held_prop",{-.06,.20,-.10},{0,.09,0},{},.40}}},
+ {"serein","Leaf study and sleeve brush",6.4,{
+  {"head",{.34,.14,-.025}},
+  {"upper_arm_left",{-.66,0,-.035}},
+  {"forearm_left",{-.94,0,0}},
+  {"hand_left",{-.08,.12,0}},
+  {"held_prop",{-.06,.22,-.10},{0,.08,0},{},.35},
+  {"upper_arm_right",{-.58,0,.80},{},{},0,0,1.8,5.4},
+  {"forearm_right",{-.72,0,-.08},{.08,0,.06},{},.70,0,1.8,5.4},
+  {"hand_right",{-.10,.12,0},{.10,0,.06},{},.70,0,1.8,5.4}}},
+ {"nacre","Mantle reveal and arm gather",6.2,{
+  {"head",{.06,.08,0}},
+  {"gather_arm_left",{0,0,.28},{0,.06,0},{},.45},
+  {"gather_arm_right",{0,0,-.28},{0,-.06,0},{},.45},
+  {"fin_left",{0,.18,0},{0,.04,0},{},.55},
+  {"fin_right",{0,-.18,0},{0,-.04,0},{},.55},
+  {"pattern_left",{},{},{.18,0,0},0,0,.7,5.4},
+  {"pattern_right",{},{},{-.18,0,0},0,0,.7,5.4}}},
+ {"windle","Wisp gather and release",6.2,{
+  {"head",{.08,.12,-.035}},
+  {"wisp_left",{0,.40,0},{0,.05,0},{},.45},
+  {"wisp_right",{0,-.40,0},{0,-.05,0},{},.45},
+  {"scarf_end",{.20,.12,0},{.04,0,.06},{},.50}}}
 }};
 Vec3 add(Vec3 a,Vec3 b){return {a.x+b.x,a.y+b.y,a.z+b.z};}
 Vec3 scale(Vec3 a,double f){return {a.x*f,a.y*f,a.z*f};}

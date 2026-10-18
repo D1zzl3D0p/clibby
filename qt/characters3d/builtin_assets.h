@@ -12,7 +12,7 @@ struct BuiltinAsset {
  bool catalogueStyle;
  const char* disposition;
 };
-inline constexpr std::array<BuiltinAsset,28> builtinAssets{{
+inline constexpr std::array<BuiltinAsset,34> builtinAssets{{
  {"werewolf","werewolf-3d","Werewolf",false,false,"legacy"},
  {"raven","raven-3d","Raven",false,false,"legacy"},
  {"marmalade","marmalade-3d","Marmalade",true,true,"legacy"},
@@ -40,7 +40,13 @@ inline constexpr std::array<BuiltinAsset,28> builtinAssets{{
  {"orris","orris-3d","Orris",false,true,"calm"},
  {"fen","fen-3d","Fen",false,true,"curious"},
  {"oona","oona-3d","Oona",false,true,"curious"},
- {"quillan","quillan-3d","Quillan",false,true,"reserved"}
+ {"quillan","quillan-3d","Quillan",false,true,"reserved"},
+ {"maren","maren-3d","Maren",false,true,"calm"},
+ {"tarn","tarn-3d","Tarn",true,true,"reserved"},
+ {"pell","pell-3d","Pell",false,true,"cautious"},
+ {"serein","serein-3d","Serein",false,true,"curious"},
+ {"nacre","nacre-3d","Nacre",false,true,"calm"},
+ {"windle","windle-3d","Windle",false,true,"reserved"}
 }};
 inline const BuiltinAsset* builtinAsset(const QString& asset) {
  for(const auto& entry:builtinAssets)if(asset==QLatin1String(entry.asset))return &entry;

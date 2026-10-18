@@ -1,5 +1,15 @@
 # Approved companion expansion
 
+## Implementation status — 2026-10-17
+
+All eighteen approved companions now have selectable original models and finite
+signature actions. See the [first-six](../../results/2026-10-17-humanoid-companions.md),
+[next-six](../../results/2026-10-17-wayfarer-companions.md), and
+[final-six](../../results/2026-10-17-final-companions.md) delivery records for
+verification and first-pass limits. The original approval and first-batch-specific
+sections below are retained as design history; elaborate finger/object/cloth
+vignettes are not implied by this implementation status.
+
 The user approved the complete eighteen-character list on 2026-10-17 and
 explicitly requested implementation beginning with Nell, Alden, Saffron, Tess,
 Rowan and Vesper. Names, descriptions, geometry, costumes and motion are original;

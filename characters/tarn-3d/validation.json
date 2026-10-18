@@ -1,0 +1,135 @@
+{
+  "triangles": 1354,
+  "exported_vertices": 2786,
+  "materials": 1,
+  "deform_joints": 22,
+  "max_influences": 2,
+  "atlas": [
+    256,
+    256
+  ],
+  "animation_clips": 0,
+  "embedded_images": 1,
+  "joint_order": [
+    "root",
+    "pelvis",
+    "spine",
+    "head",
+    "thigh_foreLeft",
+    "shin_foreLeft",
+    "foot_foreLeft",
+    "thigh_foreRight",
+    "shin_foreRight",
+    "foot_foreRight",
+    "wing_fold_left",
+    "wing_tip_left",
+    "wing_fold_right",
+    "wing_tip_right",
+    "tail_base",
+    "tail_tip",
+    "thigh_hindLeft",
+    "shin_hindLeft",
+    "foot_hindLeft",
+    "thigh_hindRight",
+    "shin_hindRight",
+    "foot_hindRight"
+  ],
+  "blender_version": "5.2.2 LTS",
+  "armature_deformation_test_max_distance_meters": 0.20558658843967556,
+  "eye_closure_test_max_distance_meters": 0,
+  "eye_closure_vertex_count": 0,
+  "continuous_weighted_legs": 4,
+  "creature_deformation": {
+    "wing_fold_left": {
+      "weighted_vertices": 9,
+      "displacement_meters": 0.08595751399290599,
+      "unrelated_displacement_meters": 0.0,
+      "moving_hull_blender_minimum": [
+        0.04519367218017578,
+        0.03220342844724655,
+        0.6699999570846558
+      ],
+      "moving_hull_blender_maximum": [
+        0.3302372694015503,
+        0.6869985461235046,
+        1.0659998655319214
+      ]
+    },
+    "wing_fold_right": {
+      "weighted_vertices": 9,
+      "displacement_meters": 0.08595750654405984,
+      "unrelated_displacement_meters": 0.0,
+      "moving_hull_blender_minimum": [
+        -0.5764700174331665,
+        0.018299754709005356,
+        0.6699999570846558
+      ],
+      "moving_hull_blender_maximum": [
+        -0.16146400570869446,
+        0.5935381650924683,
+        1.0659998655319214
+      ]
+    },
+    "wing_tip_left": {
+      "weighted_vertices": 10,
+      "displacement_meters": 0.20404031852234503,
+      "unrelated_displacement_meters": 0.0,
+      "moving_hull_blender_minimum": [
+        0.10613292455673218,
+        0.17378315329551697,
+        0.6699999570846558
+      ],
+      "moving_hull_blender_maximum": [
+        0.3899163007736206,
+        0.6263759136199951,
+        1.0659998655319214
+      ]
+    },
+    "wing_tip_right": {
+      "weighted_vertices": 10,
+      "displacement_meters": 0.20404035974462018,
+      "unrelated_displacement_meters": 0.0,
+      "moving_hull_blender_minimum": [
+        -0.543948769569397,
+        0.16262392699718475,
+        0.6699999570846558
+      ],
+      "moving_hull_blender_maximum": [
+        -0.3348661959171295,
+        0.6731061339378357,
+        1.0659998655319214
+      ]
+    },
+    "tail_base": {
+      "weighted_vertices": 16,
+      "displacement_meters": 0.10878597771792867,
+      "unrelated_displacement_meters": 0.0,
+      "moving_hull_blender_minimum": [
+        -0.244913712143898,
+        0.32447439432144165,
+        0.4750947654247284
+      ],
+      "moving_hull_blender_maximum": [
+        0.11973792314529419,
+        0.955629825592041,
+        0.8017227649688721
+      ]
+    },
+    "tail_tip": {
+      "weighted_vertices": 8,
+      "displacement_meters": 0.08837835531695293,
+      "unrelated_displacement_meters": 0.0,
+      "moving_hull_blender_minimum": [
+        -0.09304052591323853,
+        0.7673438787460327,
+        0.4750947654247284
+      ],
+      "moving_hull_blender_maximum": [
+        0.06243447959423065,
+        0.9864160418510437,
+        0.6176234483718872
+      ]
+    }
+  },
+  "real_contact_geometry": "four clawed pads"
+}

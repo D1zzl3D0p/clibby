@@ -1,0 +1,11 @@
+{
+  "authoring_source": "tools/author_final_humanoids.py",
+  "source_sha256": "32937ea1cf6d48b5c51672955db95853a52dcc2d8bd85affc18b448bc130a9ef",
+  "helper_sha256": "de52ece6f24a0fa2905f09afac7dcaeec3a76e608e50acd37f8a3933b9a2a1d9",
+  "license": "MIT",
+  "original_geometry": true,
+  "original_texture": true,
+  "art_direction": "Refined pixel-rendered low-poly catalogue; original authored forms",
+  "blender_version": "5.2.2 LTS",
+  "humanoid_helper_sha256": "30b652fa6e4c0342174c92b635c62f0b8467466f52755a770339755a51bb8d59"
+}

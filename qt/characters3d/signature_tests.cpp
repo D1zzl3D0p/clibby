@@ -7,7 +7,7 @@
 #include <stdexcept>
 using namespace pets::character3d;
 namespace {
-constexpr std::array<const char*,26> assets{{"marmalade","pip","biscuit","clover","mossback","rivet","paper-heron","acorn-custodian","puddle","pocket-observatory","night-librarian","sprig","hearthling","crumb-golem","nell","alden","saffron","tess","rowan","vesper","iona","milo","orris","fen","oona","quillan"}};
+constexpr std::array<const char*,32> assets{{"marmalade","pip","biscuit","clover","mossback","rivet","paper-heron","acorn-custodian","puddle","pocket-observatory","night-librarian","sprig","hearthling","crumb-golem","nell","alden","saffron","tess","rowan","vesper","iona","milo","orris","fen","oona","quillan","maren","tarn","pell","serein","nacre","windle"}};
 void check(bool b,const char* m){if(!b)throw std::runtime_error(m);}
 double norm(pets::motion::Vec3 v){return std::hypot(std::hypot(v.x,v.y),v.z);}
 double delta(const std::vector<SignatureOffset>& a,const std::vector<SignatureOffset>& b){
@@ -30,7 +30,7 @@ void allProfiles(){for(const char* asset:assets){
  s.advance(1e-5);check(delta(rest,s.offsets())<1e-8,"nonzero start derivative");
  s.reset();check(s.start(),"reset prevents restart");double peak=0;
  for(int frame=0;frame<900;++frame){s.advance(1./120);const auto p=s.offsets();peak=std::max(peak,delta(rest,p));
-  for(const auto& o:p){check(std::isfinite(norm(o.rotation))&&std::isfinite(norm(o.translation)),"nonfinite offset");check(norm(o.rotation)<1.75&&norm(o.translation)<=.151,"unbounded signature");}}
+  for(const auto& o:p){check(std::isfinite(norm(o.rotation))&&std::isfinite(norm(o.translation)),"nonfinite offset");check(norm(o.rotation)<1.75&&norm(o.translation)<=((o.joint=="pattern_left"||o.joint=="pattern_right")?.181:.151),"unbounded signature");}}
  check(peak>.03,"signature does not move");check(!s.active(),"signature never finishes");zero(s.offsets());
  s.advance(1000);zero(s.offsets());
  s.start();s.advance(2.1);const auto before=s.offsets();s.advance(0);check(delta(before,s.offsets())==0,"zero dt changes action");
@@ -42,7 +42,7 @@ void cancellation(){for(const char* asset:assets)for(double time:{.001,.7,2.1,4.
  SignatureMotion s(asset);s.start();s.advance(time);if(!s.active())continue;
  const auto before=s.offsets();s.cancel();check(delta(before,s.offsets())<1e-12,"cancel snaps pose");
  s.cancel();check(delta(before,s.offsets())<1e-12,"repeated cancel snaps pose");
- for(int i=0;i<34;++i){s.advance(.01);for(const auto& o:s.offsets())check(std::isfinite(norm(o.rotation))&&norm(o.rotation)<1.75&&norm(o.translation)<=.151,"cancel escapes motion bounds");}
+ for(int i=0;i<34;++i){s.advance(.01);for(const auto& o:s.offsets())check(std::isfinite(norm(o.rotation))&&norm(o.rotation)<1.75&&norm(o.translation)<=((o.joint=="pattern_left"||o.joint=="pattern_right")?.181:.151),"cancel escapes motion bounds");}
  const auto fading=s.offsets();bool rejected=false;try{s.advance(-.1);}catch(const std::invalid_argument&){rejected=true;}
  check(rejected&&delta(fading,s.offsets())==0,"invalid dt mutates cancellation");
  s.advance(.009);check(s.active(),"cancel completes too early");s.advance(.0011);
@@ -50,7 +50,7 @@ void cancellation(){for(const char* asset:assets)for(double time:{.001,.7,2.1,4.
  s.reset();check(!s.active(),"reset remains active");zero(s.offsets());
  }}
 void continuity(){constexpr double h=1e-5;for(const char* asset:assets)
- for(double time:{.35,.5,.8,1.,1.1,1.8,2.5,2.6,2.9,4.4,4.6,6.2,6.3,6.4}){
+ for(double time:{.35,.5,.6,.7,.8,1.,1.1,1.8,2.4,2.5,2.6,2.9,4.4,4.6,4.8,5.4,5.8,6.2,6.3,6.4}){
  SignatureMotion a(asset),b(asset),c(asset);a.start();b.start();c.start();
  a.advance(time-h);b.advance(time);c.advance(time+h);
  auto previous=a.offsets(),at=b.offsets(),next=c.offsets();b.cancel();b.advance(h);
@@ -196,6 +196,39 @@ void wayfarerActivities(){
   }
  }
 }
+void finalActivities(){
+ const std::array<std::pair<const char*,std::vector<std::string_view>>,6> contracts{{
+  {"maren",{"head","upper_arm_left","forearm_left","hand_left","held_prop","upper_arm_right","forearm_right","hand_right","rope_loop","rope_knot"}},
+  {"tarn",{"head","wing_fold_left","wing_fold_right","wing_tip_left","wing_tip_right","tail_base","tail_tip"}},
+  {"pell",{"head","upper_arm_left","forearm_left","hand_left","held_prop"}},
+  {"serein",{"head","upper_arm_left","forearm_left","hand_left","held_prop","upper_arm_right","forearm_right","hand_right"}},
+  {"nacre",{"head","gather_arm_left","gather_arm_right","fin_left","fin_right","pattern_left","pattern_right"}},
+  {"windle",{"head","wisp_left","wisp_right","scarf_end"}}
+ }};
+ for(const auto& contract:contracts){
+  SignatureMotion action(contract.first);check(action.supported(),"missing final companion signature");
+  const auto required=action.requiredJoints();
+  check(required==contract.second,"final companion required anatomy differs from contract");
+  std::vector<double> peaks(required.size(),0);
+  action.start();
+  for(int frame=0;frame<770;++frame){
+   action.advance(1./120);const auto pose=action.offsets();
+   for(size_t i=0;i<pose.size();++i){
+    const auto& offset=pose[i];const bool patch=offset.joint=="pattern_left"||offset.joint=="pattern_right";
+    peaks[i]=std::max(peaks[i],patch?norm(offset.translation):norm(offset.rotation));
+    check(patch?norm(offset.rotation)==0:norm(offset.translation)==0,"final companion moves joint through wrong channel");
+    const bool wingTip=offset.joint=="wing_tip_left"||offset.joint=="wing_tip_right";
+    check(offset.rotationSpace==(wingTip?SignatureRotationSpace::JointLocal:SignatureRotationSpace::Model),"final companion hinge rotation space mismatch");
+    if(wingTip)check(offset.rotation.x==0&&offset.rotation.z==0,"Tarn tip rotates away from its actual local-Y membrane seam");
+    check(norm(offset.rotation)<1.4&&norm(offset.translation)<=.181,"final companion unbounded channel");
+    if(patch)check(offset.translation.y==0&&offset.translation.z==0&&
+     (offset.joint=="pattern_left"?offset.translation.x>=0:offset.translation.x<=0),"mantle patch does not reveal toward its own side");
+   }
+  }
+  check(!action.active(),"final companion exceeds 6.4-second capture window");zero(action.offsets());
+  for(size_t i=0;i<peaks.size();++i)check(peaks[i]>.035,"final companion required channel never moves");
+ }
+}
 void rivetDirection(){
  SignatureMotion rivet("rivet");rivet.start();rivet.advance(2);
  const auto pose=rivet.offsets();bool antenna=false,salute=false;
@@ -218,4 +251,4 @@ void rivetDirection(){
  check(antenna&&salute,"missing Rivet signature joints");
 }
 }
-int main(){try{allProfiles();cancellation();continuity();absentAnatomy();timeAndReadPurity();humanoidIntent();humanoidInspectionHeight();wayfarerActivities();rivetDirection();std::cout<<"Twenty-six bounded signature actions, cancellation, exact rest and support isolation passed\n";return 0;}catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}
+int main(){try{allProfiles();cancellation();continuity();absentAnatomy();timeAndReadPurity();humanoidIntent();humanoidInspectionHeight();wayfarerActivities();finalActivities();rivetDirection();std::cout<<"Thirty-two bounded signature actions, cancellation, exact rest and support isolation passed\n";return 0;}catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}
