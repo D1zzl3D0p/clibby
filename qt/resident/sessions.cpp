@@ -130,6 +130,7 @@ SessionResult Sessions::update(const SessionUpdate &update, double now) {
     advance(now);
     if (!validId(update.key.sourceId) || !validId(update.key.sessionId) || !validLabel(update.label)
         || !validText(update.sourceUrl, 2048, 2048)
+        || (!update.attentionId.empty() && !validId(update.attentionId))
         || update.sequence > MaximumSequence || !validStatus(update.status)
         || update.ttlSeconds < 1 || update.ttlSeconds > 3600) return {SessionResultCode::InvalidParameters};
     auto found = std::find_if(records_.begin(), records_.end(),
@@ -141,10 +142,12 @@ SessionResult Sessions::update(const SessionUpdate &update, double now) {
         found = records_.end() - 1;
         found->cleared = true; // Fresh creation is a status transition.
     }
-    const bool transition = found->cleared || found->status != update.status;
+    const bool transition = found->cleared || found->status != update.status
+        || found->attentionId != update.attentionId;
     found->key = update.key;
     found->label = update.label;
     found->sourceUrl = update.sourceUrl;
+    found->attentionId = update.attentionId;
     found->sequence = update.sequence;
     found->status = update.status;
     found->expiresAt = future(now, update.ttlSeconds).value_or(std::numeric_limits<double>::max());

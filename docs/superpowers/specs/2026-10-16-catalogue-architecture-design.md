@@ -14,7 +14,7 @@ implementation stages, rather than the current completed-feature inventory.
 
 ## Intent and decisions
 
-The user requested architecture for all 18 concepts in the [expansion catalogue](../../../reports/Better%20Pets%20expansion%20catalogue.md), plus progress toward quadruped implementation. The purpose is to attract people not served by Mallow, Bramble and Corvid through different forms, materials, personalities and activity levels. Audience appeal remains a hypothesis to test.
+The user requested architecture for all 18 concepts in the [expansion catalogue](../../research/reports/Better%20Pets%20expansion%20catalogue.md), plus progress toward quadruped implementation. The purpose is to attract people not served by Mallow, Bramble and Corvid through different forms, materials, personalities and activity levels. Audience appeal remains a hypothesis to test.
 
 This design keeps the existing C++17 resident, Qt Quick presentation, Qt-free character core, data-only packs and single application timer. These choices follow the current project direction. My proposed delivery choices are layered 2D reference packs first, Marmalade as the reference quadruped, a conservative four-beat walk, and a separate subsequent spatial adapter. These are recommendations, not preferences the user has already confirmed.
 

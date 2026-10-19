@@ -1,5 +1,5 @@
 {
-  "triangles": 1428,
+  "triangles": 1444,
   "exported_vertices": 3128,
   "materials": 1,
   "deform_joints": 19,
@@ -40,32 +40,32 @@
   "humanoid_deformation": {
     "upper_arm_left": {
       "weighted_vertices": 92,
-      "displacement_meters": 0.19660369633565047,
+      "displacement_meters": 0.18572009253342098,
       "unrelated_displacement_meters": 0.0
     },
     "forearm_left": {
       "weighted_vertices": 58,
-      "displacement_meters": 0.12014537404003174,
+      "displacement_meters": 0.11998402960496943,
       "unrelated_displacement_meters": 0.0
     },
     "hand_left": {
       "weighted_vertices": 34,
-      "displacement_meters": 0.04284531865071769,
+      "displacement_meters": 0.042845171714395044,
       "unrelated_displacement_meters": 0.0
     },
     "upper_arm_right": {
       "weighted_vertices": 92,
-      "displacement_meters": 0.19660369633565047,
+      "displacement_meters": 0.18572009253342098,
       "unrelated_displacement_meters": 0.0
     },
     "forearm_right": {
       "weighted_vertices": 58,
-      "displacement_meters": 0.12014537404003174,
+      "displacement_meters": 0.11998402960496943,
       "unrelated_displacement_meters": 0.0
     },
     "hand_right": {
       "weighted_vertices": 34,
-      "displacement_meters": 0.04284531865071769,
+      "displacement_meters": 0.042845171714395044,
       "unrelated_displacement_meters": 0.0
     },
     "fastening": {

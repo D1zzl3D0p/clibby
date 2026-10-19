@@ -54,7 +54,7 @@ struct Soles {
    if(pose.grounded[i])++supported;
    require(std::isfinite(actual.x())&&std::isfinite(actual.y())&&std::isfinite(actual.z()),"quadruped presented nonfinite sole");
   }
-  if(walking)require(supported>=3,"resident quadruped walk lost three-foot support");
+  if(walking)require(supported>=2,"resident quadruped walk lost its declared contact support");
   require(!pose.arms[0]&&!pose.arms[1],"resident quadruped acquired human arm chains");
  }
 };
@@ -89,7 +89,7 @@ int main(int argc,char** argv){
   require(stage->property("logicalPixelsPerMeter").toDouble()==80,"quadruped pixel density changed");
   require(std::abs(stage->property("cameraTiltDegrees").toDouble()-15.4)<1e-6,"quadruped camera elevation changed");
   const auto bias=stage->property("facingBiasDegrees").toDouble()*pi/180;
-  require(std::abs(bias+10.8*pi/180)<1e-6,"quadruped facing calibration changed");
+  require(std::abs(bias+35*pi/180)<1e-6,"quadruped facing does not use the authored default angle");
   const auto output=stage->findChild<QObject*>("pixelOutput");
   require(output&&!output->property("smooth").toBool()&&output->property("textureSize").toSize()==QSize(96,96),"quadruped presentation is not nearest 96-pixel output");
   require(motion.findChildren<QTimer*>().isEmpty(),"quadruped binding owns an animation timer");

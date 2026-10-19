@@ -11,7 +11,7 @@ class PerchWindow : public QRasterWindow {
 int main(int argc,char** argv) {
   QGuiApplication app(argc,argv);
   if(argc==2 && QString::fromLocal8Bit(argv[1])=="--fixture") {
-    PerchWindow window; window.setTitle("Better Pets perch check");
+    PerchWindow window; window.setTitle("Clibby perch check");
     window.setGeometry(480,300,600,240); window.show();
     QTimer::singleShot(250,&app,[&]{window.raise(); window.requestActivate(); std::cout<<"READY\n"<<std::flush;});
     QTimer::singleShot(120000,&app,&QCoreApplication::quit);

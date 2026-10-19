@@ -151,7 +151,7 @@ int main(int argc, char **argv) {
         format.setAlphaBufferSize(8); format.setSamples(0); format.setSwapInterval(1);
         QSurfaceFormat::setDefaultFormat(format);
         QGuiApplication app(argc, argv);
-        app.setApplicationName("Better Pets Qt");
+        app.setApplicationName("Clibby Qt");
         QImage atlas(rig.atlas);
         require(!atlas.isNull(), "atlas is not a readable image");
         atlas = atlas.convertToFormat(QImage::Format_RGBA8888_Premultiplied);
@@ -159,7 +159,7 @@ int main(int argc, char **argv) {
         RenderStats rendering;
         QString error;
         PetWindow window;
-        window.setTitle("Better Pets Qt");
+        window.setTitle("Clibby Qt");
         window.setFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::WindowDoesNotAcceptFocus);
         window.setColor(Qt::transparent); window.resize(256, 256);
         window.setMinimumSize(QSize(256, 256)); window.setMaximumSize(QSize(256, 256));

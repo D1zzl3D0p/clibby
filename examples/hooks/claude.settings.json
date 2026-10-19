@@ -1,0 +1,12 @@
+{
+  "hooks": {
+    "PostToolUse": [{"hooks": [{"type": "command", "command": "python3 /ABSOLUTE/PATH/clibby/tools/pet_agent_hook.py --provider claude --petctl /ABSOLUTE/PATH/petctl", "timeout": 3}]}],
+    "PostToolUseFailure": [{"hooks": [{"type": "command", "command": "python3 /ABSOLUTE/PATH/clibby/tools/pet_agent_hook.py --provider claude --petctl /ABSOLUTE/PATH/petctl", "timeout": 3}]}],
+    "UserPromptSubmit": [{"hooks": [{"type": "command", "command": "python3 /ABSOLUTE/PATH/clibby/tools/pet_agent_hook.py --provider claude --petctl /ABSOLUTE/PATH/petctl", "timeout": 3}]}],
+    "PermissionRequest": [{"hooks": [{"type": "command", "command": "python3 /ABSOLUTE/PATH/clibby/tools/pet_agent_hook.py --provider claude --petctl /ABSOLUTE/PATH/petctl", "timeout": 3}]}],
+    "Stop": [{"hooks": [{"type": "command", "command": "python3 /ABSOLUTE/PATH/clibby/tools/pet_agent_hook.py --provider claude --petctl /ABSOLUTE/PATH/petctl", "timeout": 3}]}],
+    "StopFailure": [{"hooks": [{"type": "command", "command": "python3 /ABSOLUTE/PATH/clibby/tools/pet_agent_hook.py --provider claude --petctl /ABSOLUTE/PATH/petctl", "timeout": 3}]}],
+    "SessionEnd": [{"hooks": [{"type": "command", "command": "python3 /ABSOLUTE/PATH/clibby/tools/pet_agent_hook.py --provider claude --petctl /ABSOLUTE/PATH/petctl", "timeout": 3}]}],
+    "Notification": [{"matcher": "permission_prompt|idle_prompt", "hooks": [{"type": "command", "command": "python3 /ABSOLUTE/PATH/clibby/tools/pet_agent_hook.py --provider claude --petctl /ABSOLUTE/PATH/petctl", "timeout": 3}]}]
+  }
+}

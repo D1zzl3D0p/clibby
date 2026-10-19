@@ -4,6 +4,7 @@
 #include "characters/expression.h"
 #include <array>
 #include <optional>
+#include <memory>
 namespace pets::character3d {
 using Vec3 = pets::motion::Vec3;
 using pets::character::LimbArray;
@@ -16,6 +17,10 @@ struct ArmPose { Vec3 shoulder,elbow,hand,grip; };
 ArmPose solveArm(const Arm &, Vec3 gripTarget);
 struct Pose {
  double rootX=0, yaw=0, lean=0, follower=0;
+ bool pivoting=false;
+ // Minimum downward body offset allowed by this contact configuration.
+ double minimumBodyDown=0;
+ Vec3 bodyShift{};
  Vec3 head{}, tail{};
  std::array<Vec3,2> ears{}, wrists{};
  std::array<pets::character::WingState,2> wings{};
@@ -100,16 +105,38 @@ private:
  LimbArray<int> swingFacing_{};
  LimbArray<double> supportRestLength_{};
 
- Vec3 turnStart_;
- int turningFoot_=-1;
- double turnTime_=0, turnStartYaw_=0, turnEndYaw_=0, turnCooldown_=0;
+ // Persistent spatial root offset: X is scene depth; Z is host quantization residual.
+ Vec3 turnBodyShift_{};
+ Vec3 turnRootStart_{},turnRootEnd_{},turnPivot_{};
+ double turnHostStart_=0; // Authoritative host root at the directional plan origin.
+ double turnBodyDown_=0,turnDesiredRoot_=0;
+ double standingBodyDown_=0,turnBodyStartDown_=0,turnBodyGoalDown_=0;
+ int turnPivotLeg_=0;
+ bool turnFaceOnly_=false,turnRejected_=false,turnRecovering_=false;
+ double turnRequestedYaw_=0;
+ std::shared_ptr<Motion> pendingTurn_;
+ void copyTurn(const Motion&);
+ LimbArray<Vec3> turnStarts_;
+ LimbArray<bool> turningLegs_;
+ int turnBeat_=0,turnBeats_=0;
+ double turnOriginYaw_=0,turnPlanYaw_=0,turnDuration_=.2;
+ void advanceTurn(double dt);
+ void advancePairedTurn(double dt);
+ void advanceDirectionalTurn(double dt);
+ bool directionalTurn_=false;
+ LimbArray<Vec3> directionGoals_,directionFinal_;
+ Vec3 directionRootFirst_{},directionRootSecond_{};
+ int directionLead_=0,directionKeep_=2;
+ double directionFirstYaw_=0,directionSecondYaw_=0,directionForeYaw_=0;
+ bool turnGeometryFeasible() const;
+ bool turnActive_=false;
+ double turnTime_=0, turnStartYaw_=0, turnEndYaw_=0;
  double footPlantDuration_=pets::character::defaultFootPlantDuration;
  double yawTarget_=0, requestedTarget_=0, facingBias_=0;
- bool cameraFacingTurns_=false, facingLeft_=false;
+ bool cameraFacingTurns_=false, facingLeft_=false, quietAdjustment_=false;
  double supportFloor_=0;
  std::optional<pets::character::GroundSpan> supportBounds_;
  bool quadruped() const { return legs_.size()==4; }
- double yawStepGoal(int foot, double increment) const;
  bool feetTurning() const;
  void boundTouchdown(Vec3&) const;
  void retargetYaw();

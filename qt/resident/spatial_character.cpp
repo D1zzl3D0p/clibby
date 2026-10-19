@@ -44,6 +44,7 @@ struct SpatialCharacter::Impl {
   QPointer<QObject> camera;
   QPointer<QObject> avatar;
   std::unique_ptr<QQuickItem> prepared;
+  double companionScale = 1;
   double pixelsPerCentimeter = 1.2;
   double verticalPixelsPerCentimeter = 1.2;
   Impl(const QString& asset) : binding(residentRigPath(asset)) {
@@ -116,7 +117,7 @@ std::pair<double,double> SpatialCharacter::supportFootprint()const {
  for(std::size_t side=0;side<pose.contacts.size();++side) {
   // Resident basis maps the motion Z travel plane to scene X. The camera's
   // pitch changes vertical calibration but leaves this lateral axis exact.
-  const double offset=(pose.contacts[side].z*100-pose.rootX)*impl_->pixelsPerCentimeter;
+  const double offset=(pose.contacts[side].z*100-pose.rootX)*impl_->pixelsPerCentimeter/impl_->companionScale;
   if(side==0)left=right=offset;else {left=std::min(left,offset);right=std::max(right,offset);}
  }
  return {left-2,right+2};
@@ -132,8 +133,8 @@ void SpatialCharacter::setSupportBounds(std::optional<character::GroundSpan> log
   // Footprint includes a two-pixel sole radius. Keep contact centers inside
   // that same inset, otherwise a valid touchdown immediately loses support.
   const double center=(logicalBounds->minimum+logicalBounds->maximum)/2;
-  logicalBounds->minimum=std::min(center,logicalBounds->minimum+2);
-  logicalBounds->maximum=std::max(center,logicalBounds->maximum-2);
+  logicalBounds->minimum=std::min(center,logicalBounds->minimum+2*impl_->companionScale);
+  logicalBounds->maximum=std::max(center,logicalBounds->maximum-2*impl_->companionScale);
   logicalBounds->minimum/=impl_->pixelsPerCentimeter;
   logicalBounds->maximum/=impl_->pixelsPerCentimeter;
  }
@@ -179,6 +180,19 @@ bool SpatialCharacter::signature() { return impl_->binding.signature(); }
 void SpatialCharacter::cancelSignature(bool immediate) { impl_->binding.cancelSignature(immediate); }
 bool SpatialCharacter::signatureActive() const { return impl_->binding.signatureActive(); }
 void SpatialCharacter::setSpeed(double multiplier) { impl_->binding.setWalkingSpeed(multiplier); }
+void SpatialCharacter::setAppearance(double scale, double pixelation) {
+  if (!std::isfinite(scale) || scale < .5 || scale > 2 ||
+      !std::isfinite(pixelation) || pixelation < .25 || pixelation > 4)
+    throw std::invalid_argument("invalid companion appearance");
+  const double ratio = scale / impl_->companionScale;
+  impl_->pixelsPerCentimeter *= ratio;
+  impl_->verticalPixelsPerCentimeter *= ratio;
+  impl_->companionScale = scale;
+  if (impl_->item) {
+    impl_->item->setProperty("pixelation", pixelation);
+    QMetaObject::invokeMethod(impl_->item, "refresh", Qt::DirectConnection);
+  }
+}
 void SpatialCharacter::reaction(const QString &semantic, double progress) { impl_->binding.setReaction(semantic,progress); }
 void SpatialCharacter::apply(DesktopHost &host) {
   impl_->binding.apply();
@@ -191,11 +205,11 @@ void SpatialCharacter::setRenderingEnabled(bool enabled) {
 }
 QPoint SpatialCharacter::cardAnchor() const {
   if (!impl_->item) return {};
-  return impl_->binding.projectAnchor(impl_->item,impl_->binding.cardAnchor()).toPoint();
+  return (impl_->binding.projectAnchor(impl_->item,impl_->binding.cardAnchor()) * impl_->companionScale).toPoint();
 }
 QPoint SpatialCharacter::headAnchor() const {
   if (!impl_->item) return {};
-  return impl_->binding.projectAnchor(impl_->item,impl_->binding.headAnchor()).toPoint();
+  return (impl_->binding.projectAnchor(impl_->item,impl_->binding.headAnchor()) * impl_->companionScale).toPoint();
 }
 motion::Vec3 SpatialCharacter::cursorLookDirection(motion::Vec3 direction) const {
   if (!impl_->camera || !impl_->avatar || !std::isfinite(direction.x)
@@ -241,6 +255,7 @@ bool SpatialCharacter::signature() { return false; }
 void SpatialCharacter::cancelSignature(bool) {}
 bool SpatialCharacter::signatureActive() const { return false; }
 void SpatialCharacter::setSpeed(double) {}
+void SpatialCharacter::setAppearance(double,double) {}
 character::ExpressionMotion &SpatialCharacter::expressions() { static character::ExpressionMotion unavailable; return unavailable; }
 bool SpatialCharacter::reach(int, motion::Vec3) { return false; }
 void SpatialCharacter::releaseReach(int) {}

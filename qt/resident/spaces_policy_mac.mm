@@ -16,8 +16,8 @@ void allowTransparentWindowPlacement(QWindow *window) {
     if (!nativeWindow) return;
     Class base = object_getClass(nativeWindow);
     const std::string name = class_getName(base);
-    if (name.rfind("BetterPetsFreePlacement_",0)==0) return;
-    const std::string subclassName = "BetterPetsFreePlacement_" + name;
+    if (name.rfind("ClibbyFreePlacement_",0)==0) return;
+    const std::string subclassName = "ClibbyFreePlacement_" + name;
     Class subclass = objc_getClass(subclassName.c_str());
     if (!subclass) {
         subclass = objc_allocateClassPair(base,subclassName.c_str(),0);

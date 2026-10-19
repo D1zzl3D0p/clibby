@@ -24,6 +24,7 @@ struct SessionUpdate {
     SessionStatus status = SessionStatus::Working;
     unsigned ttlSeconds = 120;
     std::string sourceUrl; // Optional action metadata; never interpreted by the core.
+    std::string attentionId; // Internal semantic occurrence; legacy publishers leave empty.
 };
 
 struct SessionRecord {
@@ -36,6 +37,7 @@ struct SessionRecord {
     bool acknowledged = false;
     bool cleared = false;
     std::string sourceUrl;
+    std::string attentionId;
 };
 
 enum class SessionResultCode { Accepted, InvalidParameters, StaleSequence, Capacity };

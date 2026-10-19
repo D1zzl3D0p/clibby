@@ -47,6 +47,8 @@ int main(int argc, char** argv) {
         check(error(rpc(R"({"jsonrpc":"2.0","id":1,"method":"hello","params":{"api_major":2}})")) == -32001, "unit incompatible version");
         check(rpc(R"({"jsonrpc":"2.0","id":"hello","method":"hello","params":{"api_major":1}})").value("id") == QJsonValue("hello"), "unit string ID echoed");
         check(rpc(R"({"jsonrpc":"2.0","id":2,"method":"state.get"})").contains("result") && dispatched == 1, "unit state dispatched");
+        check(rpc(R"({"jsonrpc":"2.0","id":3,"method":"productivity.list","params":{}})").value("result").toObject().value("method") == "productivity.list", "productivity dispatch uses authenticated protocol");
+        check(error(rpc(R"({"jsonrpc":"2.0","id":4,"method":"productivity.bogus"})")) == -32601, "unknown productivity operations rejected");
         for (const auto& pair : QList<QPair<QByteArray,int>>{
             {"{", -32700}, {"[]", -32600}, {"null", -32600},
             {R"({"jsonrpc":"2.0","method":"state.get"})", -32600},

@@ -58,6 +58,27 @@ int main(int argc,char** argv) {
     host.moveInWorld(0,1600);
     check(host.groundWorldY()==tallFloor && host.elevation()==0,
           "host realizes a large swept touchdown without an artificial per-frame stop");
+    DesktopHost scaled(loaded);
+    check(scaled.setCompanionScale(.5), "half-size support test configures size");
+    scaled.setSupportFootprint(-20,20);
+    const double scaledEdge=area.top()+300;
+    scaled.restorePlacement({area.left()+200,qRound(scaledEdge-scaled.localGroundAnchor().y())},scaled.displayName());
+    const double scaledRoot=scaled.groundRootX();
+    character::SupportSurface narrow{"synthetic:scaled",scaledEdge,{{scaledRoot-12,scaledRoot+12}},5};
+    scaled.setSurfaceObservations({narrow},5);
+    check(scaled.acquireSupportAt(5), "half-size stance fits a narrow support");
+    for(int repeat=0;repeat<3;++repeat) {
+      scaled.setSupportFootprint(-20,20);
+      check(scaled.selectedSurfaceId()==narrow.id,
+            "repeated canonical footprint updates preserve half-size support");
+    }
+    scaled.clearSupport();
+    check(scaled.setCompanionScale(2), "double-size support test configures size");
+    scaled.setSupportFootprint(-20,20);
+    scaled.restorePlacement({area.left()+200,qRound(scaledEdge-scaled.localGroundAnchor().y())},scaled.displayName());
+    narrow.segments={{scaled.groundRootX()-12,scaled.groundRootX()+12}};
+    scaled.setSurfaceObservations({narrow},5);
+    check(!scaled.acquireSupportAt(5), "double-size stance rejects the same narrow support");
     DesktopHost ceilingHost(loaded);
     ceilingHost.moveInWorld(0,-2000);
     const double ceilingY=ceilingHost.minimumGroundWorldY();

@@ -4,6 +4,9 @@ target_include_directories(pet_character3d_core PUBLIC ${CMAKE_CURRENT_SOURCE_DI
 add_executable(character3d_tests tests.cpp)
 target_link_libraries(character3d_tests PRIVATE pet_character3d_core)
 add_test(NAME character3d_motion COMMAND character3d_tests)
+add_executable(locomotion_polish_tests locomotion_polish_tests.cpp)
+target_link_libraries(locomotion_polish_tests PRIVATE pet_character3d_core)
+add_test(NAME locomotion_polish COMMAND locomotion_polish_tests)
 add_executable(character3d_flight_tests flight_tests.cpp)
 target_link_libraries(character3d_flight_tests PRIVATE pet_character3d_core)
 add_test(NAME character3d_flight COMMAND character3d_flight_tests)
@@ -52,19 +55,19 @@ if(EXISTS "${WOLF_SOURCE}" AND EXISTS "${WOLF_RIG}")
   # Trusted converted resources travel beside either executable. Blender/Balsam
   # are build tools only, and no source-directory paths reach resident code.
   add_custom_target(werewolf_resident_resources ALL
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/better-pets-3d"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${WOLF_OUTPUT}" "${CMAKE_BINARY_DIR}/better-pets-3d/WolfAsset"
-    COMMAND ${CMAKE_COMMAND} -E copy "${WOLF_RIG}" "${CMAKE_BINARY_DIR}/better-pets-3d/rig.json"
-    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/../preview3d/ResidentStage.qml" "${CMAKE_BINARY_DIR}/better-pets-3d/ResidentStage.qml"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/clibby-3d"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${WOLF_OUTPUT}" "${CMAKE_BINARY_DIR}/clibby-3d/WolfAsset"
+    COMMAND ${CMAKE_COMMAND} -E copy "${WOLF_RIG}" "${CMAKE_BINARY_DIR}/clibby-3d/rig.json"
+    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/../preview3d/ResidentStage.qml" "${CMAKE_BINARY_DIR}/clibby-3d/ResidentStage.qml"
     DEPENDS werewolf_qt_asset)
   add_dependencies(pet_character3d_render werewolf_resident_resources)
-  install(DIRECTORY "${WOLF_OUTPUT}/" DESTINATION bin/better-pets-3d/WolfAsset)
-  install(FILES "${WOLF_RIG}" "${CMAKE_CURRENT_SOURCE_DIR}/../preview3d/ResidentStage.qml" DESTINATION bin/better-pets-3d)
+  install(DIRECTORY "${WOLF_OUTPUT}/" DESTINATION bin/clibby-3d/WolfAsset)
+  install(FILES "${WOLF_RIG}" "${CMAKE_CURRENT_SOURCE_DIR}/../preview3d/ResidentStage.qml" DESTINATION bin/clibby-3d)
   add_executable(character_preview_3d ../preview3d/main.cpp)
   target_link_libraries(character_preview_3d PRIVATE pet_character3d_render)
   target_compile_definitions(character_preview_3d PRIVATE WOLF_QML_DIR="${WOLF_OUTPUT}" WOLF_RIG_PATH="${WOLF_RIG}" WOLF_STAGE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/../preview3d/Stage.qml")
   add_dependencies(character_preview_3d werewolf_qt_asset)
-  target_compile_definitions(character_preview_3d PRIVATE CATALOGUE_RESOURCE_ROOT="${CMAKE_BINARY_DIR}/better-pets-3d")
+  target_compile_definitions(character_preview_3d PRIVATE CATALOGUE_RESOURCE_ROOT="${CMAKE_BINARY_DIR}/clibby-3d")
   set(RAVEN_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/../../characters/raven-3d/raven.glb")
   set(RAVEN_RIG "${CMAKE_CURRENT_SOURCE_DIR}/../../characters/raven-3d/rig.json")
   if(EXISTS "${RAVEN_SOURCE}" AND EXISTS "${RAVEN_RIG}")
@@ -76,15 +79,15 @@ if(EXISTS "${WOLF_SOURCE}" AND EXISTS "${WOLF_RIG}")
         "${CMAKE_CURRENT_SOURCE_DIR}/../../tools/png_metadata.py")
     add_custom_target(raven_qt_asset DEPENDS "${RAVEN_OUTPUT}/Raven.qml")
     add_custom_target(raven_resident_resources ALL
-      COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/better-pets-3d/raven"
-      COMMAND ${CMAKE_COMMAND} -E copy_directory "${RAVEN_OUTPUT}" "${CMAKE_BINARY_DIR}/better-pets-3d/raven/RavenAsset"
-      COMMAND ${CMAKE_COMMAND} -E copy "${RAVEN_RIG}" "${CMAKE_BINARY_DIR}/better-pets-3d/raven/rig.json"
+      COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/clibby-3d/raven"
+      COMMAND ${CMAKE_COMMAND} -E copy_directory "${RAVEN_OUTPUT}" "${CMAKE_BINARY_DIR}/clibby-3d/raven/RavenAsset"
+      COMMAND ${CMAKE_COMMAND} -E copy "${RAVEN_RIG}" "${CMAKE_BINARY_DIR}/clibby-3d/raven/rig.json"
       DEPENDS raven_qt_asset)
     add_dependencies(pet_character3d_render raven_resident_resources)
     add_dependencies(character_preview_3d raven_qt_asset)
     target_compile_definitions(character_preview_3d PRIVATE RAVEN_QML_DIR="${RAVEN_OUTPUT}" RAVEN_RIG_PATH="${RAVEN_RIG}")
-    install(DIRECTORY "${RAVEN_OUTPUT}/" DESTINATION bin/better-pets-3d/raven/RavenAsset)
-    install(FILES "${RAVEN_RIG}" DESTINATION bin/better-pets-3d/raven)
+    install(DIRECTORY "${RAVEN_OUTPUT}/" DESTINATION bin/clibby-3d/raven/RavenAsset)
+    install(FILES "${RAVEN_RIG}" DESTINATION bin/clibby-3d/raven)
     add_test(NAME raven3d_joint_binding COMMAND character_preview_3d --character raven --verify-joints)
     add_test(NAME raven3d_presentation COMMAND character_preview_3d --character raven --verify-presentation)
     set_tests_properties(raven3d_joint_binding raven3d_presentation PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
@@ -100,15 +103,15 @@ if(EXISTS "${WOLF_SOURCE}" AND EXISTS "${WOLF_RIG}")
         "${CMAKE_CURRENT_SOURCE_DIR}/../../tools/png_metadata.py")
     add_custom_target(marmalade_qt_asset DEPENDS "${MARMALADE_OUTPUT}/Marmalade.qml")
     add_custom_target(marmalade_resident_resources ALL
-      COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/better-pets-3d/marmalade"
-      COMMAND ${CMAKE_COMMAND} -E copy_directory "${MARMALADE_OUTPUT}" "${CMAKE_BINARY_DIR}/better-pets-3d/marmalade/MarmaladeAsset"
-      COMMAND ${CMAKE_COMMAND} -E copy "${MARMALADE_RIG}" "${CMAKE_BINARY_DIR}/better-pets-3d/marmalade/rig.json"
+      COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/clibby-3d/marmalade"
+      COMMAND ${CMAKE_COMMAND} -E copy_directory "${MARMALADE_OUTPUT}" "${CMAKE_BINARY_DIR}/clibby-3d/marmalade/MarmaladeAsset"
+      COMMAND ${CMAKE_COMMAND} -E copy "${MARMALADE_RIG}" "${CMAKE_BINARY_DIR}/clibby-3d/marmalade/rig.json"
       DEPENDS marmalade_qt_asset)
     add_dependencies(pet_character3d_render marmalade_resident_resources)
     add_dependencies(character_preview_3d marmalade_qt_asset)
     target_compile_definitions(character_preview_3d PRIVATE MARMALADE_QML_DIR="${MARMALADE_OUTPUT}" MARMALADE_RIG_PATH="${MARMALADE_RIG}")
-    install(DIRECTORY "${MARMALADE_OUTPUT}/" DESTINATION bin/better-pets-3d/marmalade/MarmaladeAsset)
-    install(FILES "${MARMALADE_RIG}" DESTINATION bin/better-pets-3d/marmalade)
+    install(DIRECTORY "${MARMALADE_OUTPUT}/" DESTINATION bin/clibby-3d/marmalade/MarmaladeAsset)
+    install(FILES "${MARMALADE_RIG}" DESTINATION bin/clibby-3d/marmalade)
     add_test(NAME marmalade3d_joint_binding COMMAND character_preview_3d --character marmalade --verify-joints)
     add_test(NAME marmalade3d_presentation COMMAND character_preview_3d --character marmalade --verify-presentation)
     set_tests_properties(marmalade3d_joint_binding marmalade3d_presentation PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
@@ -144,13 +147,13 @@ if(EXISTS "${WOLF_SOURCE}" AND EXISTS "${WOLF_RIG}")
           "${CMAKE_CURRENT_SOURCE_DIR}/../../tools/convert_catalogue_qt.py" "${CMAKE_CURRENT_SOURCE_DIR}/../../tools/png_metadata.py")
       add_custom_target(${ASSET}_qt_asset DEPENDS "${ASSET_OUTPUT}/${ASSET_TYPE_NAME}.qml")
       add_custom_target(${ASSET}_resident_resources ALL
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/better-pets-3d/${ASSET}"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${ASSET_OUTPUT}" "${CMAKE_BINARY_DIR}/better-pets-3d/${ASSET}/${ASSET_TYPE_NAME}Asset"
-        COMMAND ${CMAKE_COMMAND} -E copy "${ASSET_DIR}/rig.json" "${CMAKE_BINARY_DIR}/better-pets-3d/${ASSET}/rig.json"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/clibby-3d/${ASSET}"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${ASSET_OUTPUT}" "${CMAKE_BINARY_DIR}/clibby-3d/${ASSET}/${ASSET_TYPE_NAME}Asset"
+        COMMAND ${CMAKE_COMMAND} -E copy "${ASSET_DIR}/rig.json" "${CMAKE_BINARY_DIR}/clibby-3d/${ASSET}/rig.json"
         DEPENDS ${ASSET}_qt_asset)
       add_dependencies(pet_character3d_render ${ASSET}_resident_resources)
-      install(DIRECTORY "${ASSET_OUTPUT}/" DESTINATION bin/better-pets-3d/${ASSET}/${ASSET_TYPE_NAME}Asset)
-      install(FILES "${ASSET_DIR}/rig.json" DESTINATION bin/better-pets-3d/${ASSET})
+      install(DIRECTORY "${ASSET_OUTPUT}/" DESTINATION bin/clibby-3d/${ASSET}/${ASSET_TYPE_NAME}Asset)
+      install(FILES "${ASSET_DIR}/rig.json" DESTINATION bin/clibby-3d/${ASSET})
       add_test(NAME catalogue3d_${ASSET} COMMAND catalogue3d_tests --asset "${ASSET}")
       set_tests_properties(catalogue3d_${ASSET} PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
     endif()

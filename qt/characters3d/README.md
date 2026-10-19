@@ -1,10 +1,10 @@
 # Optional original low-poly werewolf preview
 
-The resident remains 2D. This separate preview is a real Qt Quick 3D scene,
-using the original Blender model from `characters/werewolf-3d/`.
+The resident and separate preview share the optional Qt Quick 3D motion path.
+The original Blender werewolf model lives in `characters/werewolf-3d/`.
 
 With compatible Qt Quick 3D, ShaderTools, QuickTimeline and Balsam installed,
-configure normally with `BETTER_PETS_WITH_3D=ON` (default). The optional module
+configure normally with `CLIBBY_WITH_3D=ON` (default). The optional module
 always builds its Qt-free motion tests; unavailable modules or assets leave the
 working 2D application independently buildable.
 
@@ -51,13 +51,32 @@ from the Blender rig. The 2D affine pose never becomes a 3D pose format.
 
 Blender meters +Z up/-Y forward convert to glTF/Qt meters +Y up/+Z forward.
 Preview target units are centimeters. World ground anchors are transformed back
-into the yawing body's coordinate frame before solving. Both legs can lower the
-pelvis to maintain reach during a turn. Rest quaternions and parent world
-rotation convert solved directions into actual deform-node local rotations.
-A reversal pauses navigation for alternating lifted foot replants in small yaw
-increments. A supported foot retains both its world sole contact and its own
-world yaw; a lifted foot turns with its replant. The torso follows the supported
-stance, preventing the legs from crossing during a body-only half-turn.
+into the yawing body's coordinate frame before solving. Turns preserve upright body height. A biped plants its leading foot before the
+body follows, then brings the trailing foot through. A quadruped authors a world
+step along the requested heading independently of the future body pose, plants
+that leading paw with the torso held, then follows the new support through
+staggered fore/hind transfers. Ordinary resident turns use two biped or six
+quadruped placements; quad duration stays .84s and at least two contacts remain
+grounded. Loaded yaw stays fixed. Short/wide rigs can temporarily narrow the
+fore stance, restored by the final placements. Admission checks entire plans for
+reach, upright height and bounds; reconciliation translates all stored waypoints.
+Retargeting waits for an all-landed boundary. Errors <=.1° align without paw
+steps. Explicit API reversals above140° retain the earlier bounded paired
+fallback (up to ten placements), rather than claiming the new directional style.
+This is authored kinematic support transfer, not a force-balance simulation.
+Resident quadrupeds use rig `presentation.yaw_bias_degrees` (default -35°) rather
+than the former hardcoded -10.8°; runtime view/geometry probes define audit input.
+The host realizes the travel-axis arc; transverse pose offsets remain through
+later walking and pickup. Completed spatial contacts synchronize shared stance
+positions, preventing redundant recovery steps. Spatial biped walking forecasts the midpoint of the following stance and
+allows longer anatomy-limited swings. Quadruped travel uses diagonal pairs
+and forecasts the actual load-transfer interval. Ground travel speed is 0.85
+times the shortest measured hip–knee–ankle chain length per second (bounded
+to the planner's supported speed range). Longer legs therefore cover more
+ground at roughly the same stepping rhythm. The saved travel-speed control
+multiplies each companion's natural pace; winged ground walkers use the same
+rule. Swing timing retains separate biped/quadruped coordination and turns
+retain their own timing. Flight is unchanged.
 Body/head/arm/tail response is generated from acceleration and velocity, with
 no imported walk animation. The motion timer stops at exact settling and pause;
 hiding via the preview's command suspends it too. Native rendering quiescence

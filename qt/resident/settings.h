@@ -9,6 +9,8 @@ struct Preferences {
     bool hasPosition = false;
     bool paused = false;
     double walkingSpeed = 2.0;
+    double companionScale = 1.0;
+    double pixelation = 1.0;
     QString character = "fixture-animal";
 };
 Preferences loadPreferences(const QString& file);

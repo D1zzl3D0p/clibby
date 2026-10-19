@@ -34,6 +34,7 @@ int main(int argc,char** argv){
  try{
   const auto args=app.arguments();QString only,out;int index=args.indexOf("--asset");if(index>=0){check(index+1<args.size(),"missing asset");only=args[index+1];}
   index=args.indexOf("--capture-dir");if(index>=0){check(index+1<args.size(),"missing capture directory");out=args[index+1];check(QDir().mkpath(out),"capture directory unavailable");}
+  double walkingSpeed=1.;index=args.indexOf("--speed");if(index>=0){bool valid=false;check(index+1<args.size(),"missing speed multiplier");walkingSpeed=args[index+1].toDouble(&valid);check(valid&&std::isfinite(walkingSpeed)&&walkingSpeed>0,"invalid speed multiplier");}
   const std::array<const char*,6> wayfarers{{"iona","milo","orris","fen","oona","quillan"}};
   check(pets::character3d::builtinAssets.size()==34,"trusted built-in catalogue count changed");
   for(const auto* name:wayfarers){
@@ -58,8 +59,13 @@ int main(int argc,char** argv){
    check(stage->property("logicalPixelsPerMeter").toDouble()==80,"catalogue pixel density changed");
    auto output=stage->findChild<QObject*>("pixelOutput");check(output&&!output->property("smooth").toBool()&&output->property("textureSize").toSize()==QSize(96,96),"catalogue is not nearest96");
    const auto bias=stage->property("facingBiasDegrees").toDouble()*3.141592653589793/180;
-   motion.motion().setFacingBias(bias);motion.motion().setCameraFacingTurns(true);motion.motion().reset(0,{-120,120});motion.setWalkingSpeed(1);motion.advancePresentation(0);
+   motion.motion().setFacingBias(bias);motion.motion().setCameraFacingTurns(true);motion.motion().reset(0,{-120,120});motion.setWalkingSpeed(walkingSpeed);motion.advancePresentation(0);
    QFile f(residentRigPath(name));check(f.open(QIODevice::ReadOnly),"rig missing");const auto rig=QJsonDocument::fromJson(f.readAll()).object();
+   if(asset.quadruped){
+    const double authoredBias=rig["presentation"].toObject()["yaw_bias_degrees"].toDouble(-35);
+    check(std::abs(bias-authoredBias*3.141592653589793/180)<1e-8,
+          name+": resident facing ignores the authored yaw angle");
+   }
    const bool hasArms=rig.value("arms").toBool(false);
    const bool wayfarer=std::any_of(wayfarers.begin(),wayfarers.end(),[&](const char* entry){return name==QLatin1String(entry);});
    const bool finalCompanion=std::any_of(finalCompanions.begin(),finalCompanions.end(),[&](const char* entry){return name==QLatin1String(entry);});
@@ -129,7 +135,7 @@ int main(int argc,char** argv){
      auto local=vector(pose.contacts[i]);local.setZ(local.z()-float(pose.rootX/100));auto expected=basis.rotatedVector(local);
      check((actual-expected).length()<.0004,name+": rendered sole differs from actual contact");supported+=pose.grounded[i];
     }
-    if(walking)check(supported>=int(roles.size())-1,name+": insufficient stance support");
+    if(walking)check(supported>=(roles.size()==4?2:int(roles.size())-1),name+": insufficient stance support");
     check(bool(pose.arms[0])==hasArms&&bool(pose.arms[1])==hasArms,name+": solved arm anatomy differs from rig capability");
     for(const auto& attachment:attachments){
      bool invertible=false;const auto inverse=attachment.parent->property("sceneTransform").value<QMatrix4x4>().inverted(&invertible);
@@ -144,12 +150,25 @@ int main(int argc,char** argv){
    motion.motion().clearArmGoal(0);motion.motion().reset(0,{-120,120});motion.advancePresentation(0);
    check(!motion.motion().flightCapable(),name+": decorative wings claim powered flight");
    inspect(true);check(!motion.projectedVisualRegion(stage.get()).isEmpty(),name+": visual mask missing");
+   auto inspectPickup=[&]{
+    const auto grab=motion.projectedGrabRegion(stage.get());
+    check(!grab.isEmpty()&&!grab.contains(QPoint(0,0))&&!grab.contains(QPoint(383,383)),
+          name+": pickup mask includes transparent stage corners");
+    for(const char* role:{"pelvis","spine","head"}){
+     auto joint=stage->findChild<QObject*>(QString::fromLatin1(role));
+     check(joint&&grab.contains(motion.projectAnchor(stage.get(),
+           joint->property("scenePosition").value<QVector3D>()).toPoint()),
+           name+": visible "+QString::fromLatin1(role)+" cannot be picked up");
+    }
+   };
+   inspectPickup();
    std::unique_ptr<QQuickWindow> window;
    if(!out.isEmpty()){window=std::make_unique<QQuickWindow>();window->setColor(Qt::transparent);window->resize(384,384);stage->setParentItem(window->contentItem());window->show();capture(app,*window,stage.get(),out+"/"+name+"-rest");}
    for(double target:{55.,-55.}){
     motion.target(target);int frames=0;
     for(;frames<6000&&!motion.settled();++frames){motion.advance(1./120);inspect(true);if(frames==25&&window)capture(app,*window,stage.get(),out+"/"+name+(target>0?"-walk":"-turn"));}
     check(motion.settled()&&frames>10,name+": navigation never settles");
+    inspectPickup();
    }
    motion.look({.2f,.1f,1});for(int i=0;i<900&&!motion.settled();++i){motion.advance(1./120);inspect(true);}check(motion.settled(),name+": held gaze never settles");
    motion.clearExpression();for(int i=0;i<900&&!motion.settled();++i)motion.advance(1./120);
@@ -246,6 +265,7 @@ int main(int argc,char** argv){
    check(!motion.settled(),name+": action failed to wake");
    for(int i=0;i<180;++i){motion.advance(1./120);inspect(true);sampleLocalActions();}
    const auto expressive=actionPose();check(expressive!=resting,name+": signature does not deform actual joints");
+   inspectPickup();
    for(const auto& arm:restingActionArms){
     if(wayfarer||finalCompanion)continue; // Staged gestures are sampled over the whole action below.
     const auto current=arm.first->property("rotation").value<QQuaternion>().normalized();

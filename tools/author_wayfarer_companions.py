@@ -102,7 +102,7 @@ def oona():
     a.taper('open helmet neck ring',(0,.01,2.13),(0,.01,2.20),.18,.19,'accent','spine',10)
     a.box('geology suit chest panel',(0,-.22,1.80),(.17,.035,.18),'accent','spine')
     for s in (-1,1):
-        a.box('suit cuff',(s*.38,-.20,1.62),(.075,.075,.045),'accent','forearm_left' if s>0 else 'forearm_right')
+        a.box('suit cuff',(s*(a.shoulder_half_span+.025),-.20,1.62),(.075,.075,.045),'accent','forearm_left' if s>0 else 'forearm_right')
     p=a.prop_joint((-.005,-.05,.015))
     a.wedge('held faceted mineral',[(p.x+dx,p.y+dy,p.z+dz) for dx,dy,dz in [(-.075,-.01,-.06),(.07,-.02,-.06),(.085,.025,.035),(0,.02,.15),(-.065,.03,.075),(0,-.07,.06)]],
             [(0,1,5),(1,2,5),(2,3,5),(3,4,5),(4,0,5),(0,4,3,2,1)],'metal','held_prop')

@@ -1,4 +1,4 @@
-# Better Pets session context
+# Clibby session context
 
 Start with `docs/handoff.md`, then `docs/architecture.md` and
 `docs/results/2026-10-08-comparison.md`.
@@ -15,7 +15,9 @@ Start with `docs/handoff.md`, then `docs/architecture.md` and
 - CPU/RSS and offscreen tests do not establish battery impact or desktop parity.
 - The user requested effective use of subagents; delegate independent work with
   explicit file ownership when useful.
-- Prefix shell commands with `rtk`, per the user's `/Users/dizzler/.codex/RTK.md`.
+- In the maintainer's agent environment, prefix shell commands with `rtk`
+  (`rtk proxy <command>` for passthrough). RTK is an optional local wrapper,
+  not a project dependency; public setup instructions use ordinary commands.
 - Use `.venv/bin/python` for Python tests; system Python may lack Pillow/psutil.
 - Follow current user instructions over archived process notes. Do not create
   extra approval rounds for work the user has already authorized.

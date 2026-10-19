@@ -10,6 +10,8 @@ Item {
  property real facingBiasDegrees: catalogueModel ? (motion.reachSupported ? -55 : catalogueFacingBias) : -35
  property point rootFloorAnchor: Qt.point(width/2,height/2+1.1*logicalPixelsPerMeter)
  property bool renderingEnabled: true
+ property real pixelation: 1
+ property int pixelFringe: Math.max(2, Math.ceil(Math.max(width/view.width, height/view.height)))
  function refresh() { pixelOutput.scheduleUpdate() }
  function project(point) {
   const projected=view.mapFrom3DScene(point)
@@ -17,7 +19,8 @@ Item {
  }
  View3D {
   id: view; objectName: "view3d"
-  width: catalogueModel ? 96 : 128; height: catalogueModel ? 96 : ravenModel ? 112 : 128
+  width: Math.max(24, Math.round((catalogueModel ? 96 : 128) / stage.pixelation))
+  height: Math.max(24, Math.round((catalogueModel ? 96 : ravenModel ? 112 : 128) / stage.pixelation))
   camera: residentCamera
   renderMode: View3D.Offscreen
   explicitTextureWidth: width; explicitTextureHeight: height

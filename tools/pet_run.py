@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run a command and publish its explicit outcome to Better Pets."""
+"""Run a command and publish its explicit outcome to Clibby."""
 import argparse
 from pathlib import Path
 import re

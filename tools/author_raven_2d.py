@@ -146,7 +146,7 @@ def author():
         return preview
     preview_pose(False).save(OUT/"preview.png")
     preview_pose(True).save(OUT/"preview-flight.png")
-    (OUT/"ATTRIBUTION.md").write_text("Original raven geometry and layered artwork authored for Better Pets. Source: tools/author_raven_2d.py. MIT license. No external artwork. Anatomy reference: Cornell Lab, Common Raven identification (https://www.allaboutbirds.org/guide/Common_Raven/id); no reference artwork copied.\n")
+    (OUT/"ATTRIBUTION.md").write_text("Original raven geometry and layered artwork authored for Clibby. Source: tools/author_raven_2d.py. MIT license. No external artwork. Anatomy reference: Cornell Lab, Common Raven identification (https://www.allaboutbirds.org/guide/Common_Raven/id); no reference artwork copied.\n")
 
 if __name__ == "__main__":
     author()

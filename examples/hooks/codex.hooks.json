@@ -1,0 +1,11 @@
+{
+  "description": "Advisory Clibby lifecycle events; no permission or continuation decisions.",
+  "hooks": {
+    "PostToolUse": [{"hooks": [{"type": "command", "command": "python3 /ABSOLUTE/PATH/clibby/tools/pet_agent_hook.py --provider codex --petctl /ABSOLUTE/PATH/petctl", "timeout": 3}]}],
+    "UserPromptSubmit": [{"hooks": [{"type": "command", "command": "python3 /ABSOLUTE/PATH/clibby/tools/pet_agent_hook.py --provider codex --petctl /ABSOLUTE/PATH/petctl", "timeout": 3}]}],
+    "PermissionRequest": [{"hooks": [{"type": "command", "command": "python3 /ABSOLUTE/PATH/clibby/tools/pet_agent_hook.py --provider codex --petctl /ABSOLUTE/PATH/petctl", "timeout": 3}]}],
+    "Stop": [{"hooks": [{"type": "command", "command": "python3 /ABSOLUTE/PATH/clibby/tools/pet_agent_hook.py --provider codex --petctl /ABSOLUTE/PATH/petctl", "timeout": 3}]}],
+    "Interrupt": [{"hooks": [{"type": "command", "command": "python3 /ABSOLUTE/PATH/clibby/tools/pet_agent_hook.py --provider codex --petctl /ABSOLUTE/PATH/petctl", "timeout": 3}]}],
+    "SessionEnd": [{"hooks": [{"type": "command", "command": "python3 /ABSOLUTE/PATH/clibby/tools/pet_agent_hook.py --provider codex --petctl /ABSOLUTE/PATH/petctl", "timeout": 3}]}]
+  }
+}

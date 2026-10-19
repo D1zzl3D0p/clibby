@@ -1,5 +1,214 @@
 # New-session handoff
 
+## Final pre-upload validation passed (2026-10-18)
+
+Independent fresh Release/app build in `build/github-edge-fix-2026-10-18/`
+succeeds; all **88 Qt checks pass with five environment skips**, including both
+edge-turn regressions, the six original motion failures and app relocation.
+Python passes 109 tests. Runtime, assets and tests stayed unchanged during the
+final build/suite. Read the [final checkpoint](results/2026-10-18-pre-upload-check.md).
+Publication hygiene and link checks pass. No commit or upload was performed;
+repository-wide source/brand licensing remains unselected.
+
+## Current: Biscuit rightward movement and cursor attention (2026-10-18)
+
+Biscuit now moves right after reaching the left desktop edge through both the
+context-menu action and cursor attention. An edge-only hind-first alternative
+keeps the accepted six-placement/.84s turn; directional host movement now
+preserves the body offset left by integer presentation rather than requesting
+an outward recenter. The accepted normal turns and anatomy-derived walking pace
+are preserved. Held cursor intent no longer reverses when the turn arc carries
+the body past the pointer. Automatic signatures defer during active cursor
+attention, preventing interrupted head tracking; manual signatures remain.
+
+Fresh full app build and relocation pass. Combined Qt verification: **88 passes,
+five environment skips, zero failures** (93 total). Clean final native spatial
+regressions pass, including menu-to-cursor turn, head up/down/left/right,
+stationary/vertical pointer heading retention, deliberate crossing, sustained
+attention past 25s, and automatic idle resumption afterward. Independent native
+host checks pass all 36 Biscuit speed/size edge trips. Existing leftward mask
+rounding up to two pixels and exact-edge destination shortfall remain recorded.
+Read the [result record](results/2026-10-18-rightward-cursor.md); raw evidence is
+in ignored `results/rightward-cursor-2026-10-18/`. This supersedes the two failures
+in the pre-upload checkpoint below. Restart `build/qt-humanoids/Clibby.app`.
+No commit/push; unrelated dirty work preserved. Python/2D-only not rerun here.
+
+## Latest pre-upload check after cursor work (2026-10-18)
+
+The stable 1,000-file checkout builds and passes app relocation and 109 Python
+tests. Combined Qt results: **86 passes, five environment skips, two failures**.
+`resident_spatial` still fails Biscuit's cursor turn back right after left-edge
+arrival; `resident_quadruped3d` also fails manual rightward movement from that
+edge. Both reproduce in a focused rerun. No source changed during validation.
+See the [updated checkpoint](results/2026-10-18-pre-upload-check.md) and ignored
+logs under `results/pre-upload-final-2026-10-18/`. Upload hygiene/link checks
+pass; no commit or upload was made.
+
+## Pre-upload revalidation (2026-10-18)
+
+All six original motion failures now pass in a rebuilt combined suite: 88 passes,
+five environment skips; Python passes 109 tests. The app build and relocation
+also pass. A newer, concurrently added `resident_spatial` cursor regression
+fails after rebuilding: Biscuit cannot turn back right toward the cursor after
+manual travel to the left desktop edge. That separate investigation is active;
+do not treat the earlier suite as certifying this latest test snapshot. See the
+[revalidation record](results/2026-10-18-pre-upload-check.md). No commit or upload.
+
+## Current: anatomy-derived walking pace (2026-10-18)
+
+User approved roughly shared stepping rhythm with leg length determining speed,
+and the existing speed control retained as a multiplier. Spatial ground speed
+now uses 0.85 measured leg-chain lengths/second (shortest chain, planner bounds),
+including winged ground walkers. Strides already scale with reach; swing timing
+now stays roughly invariant across scaled anatomy. Turns and flight are unchanged.
+This supersedes universal 70 cm/s base / 140 cm/s default claims below.
+
+New scaled-anatomy travel/rhythm/multiplier/plant regression passes, as do existing
+short-rig walking, turns, arrivals and recovery checks. Fresh full app build and
+bundle relocation pass. Combined Qt: 88 passed, five environment skips, zero
+failures; Python: 109 passed. Independent review found no actionable defects.
+Read the [pace record](results/2026-10-18-anatomy-pace.md). Restart rebuilt
+`build/qt-humanoids/Clibby.app` to assess feel. No native visual assessment or
+battery measurement here. No commit/push; unrelated dirty work preserved.
+
+## Current: directional leading plant (2026-10-18)
+
+The user rejected the prior foot-yaw-led turn as still spinning. The replacement
+chooses a world step into the requested heading first, plants the leading paw
+with torso/root held, then follows that actual fixed plant. Ordinary turns keep
+two biped/six quad placements and .84s quad duration, with two or more quad
+supports. Longer walking strides and original70cm/s base/default140cm/s remain.
+Tiny <=.1° corrections no longer launch paw steps or proxy catch-up placements.
+An extra finite .58R lead alternative fixes Mossback's fast rounded-arrival
+reversal without changing previously successful plans.
+
+Important calibration finding: prior audits guessed the authored rig angles,
+but the old live app used -10.8° for all quads (158.4° reversal). Those old
+metrics were not native-angle validation. The app now intentionally reads
+quadruped authored yaw metadata (legacy default -35°): five use110° turns,
+Tarn130°. This restores the authored three-quarter resting view. Other biped
+views are unchanged, including Nacre/Windle=-35°. Final audit input comes from
+fresh Qt probes of all34 live view properties and all80 leg chains, not guesses.
+API turns above140° retain the bounded paired fallback, outside the new resident
+plant-style claim. Kinematic support transfer does not establish force balance.
+
+Fresh verification: all1,632 ordinary direction/speed/rate/host/face-navigation
+cases pass; exactly2/6 stationary placements, first plant <=.0378° torso yaw,
+turn hip/rest>=.901444, max extension1.00309, planted translation/yaw drift0,
+and unchanged35/140/210cm/s selected paces. Final combined Qt checks:88 passed,
+five environment skips, zero failures (93 total, including separate bundle
+relocation). Full app build passes. Fresh24-case critical review, subpixel
+zero-step regression and post-quiet navigation pass. Native Biscuit/Mossback/Tarn
+checks pass;180 captured frames are unclipped. The preceding144 full180° fallback
+checks remain labeled with their own snapshot rather than as a new-style result.
+
+Evidence: ignored `results/directional-plant-2026-10-17/`; controlled same-view
+before/after is `biscuit-leading-plant.gif`. Its horizontal host motion comes from
+exact-rig root traces, since the raw preview follows the root. Read the
+[result record](results/2026-10-17-natural-turning.md) for provenance and limits.
+Restart `build/qt-humanoids/Clibby.app`. Visual feel still needs the user's eye.
+No commit/push; unrelated dirty work preserved. Python/2D-only not rerun here.
+
+## Previous candidate: foot-led turns (rejected for still spinning)
+
+The user rejected the upright point-pivot below because it still read as a spin.
+The replacement plants the leading biped foot before the torso follows, then
+brings the trailing foot through. Quadrupeds use three staggered fore/hind/fore
+transfers with two or more supports throughout, rather than spinning on one paw.
+Ordinary turns use two biped or six quadruped placements; difficult full 180°
+quadruped turns can use five transfers. Original travel speed and longer walking
+strides remain. Loaded feet neither slide nor swivel.
+
+Fresh independent checks pass 816 ordinary cases and 72 full-180° cases across
+actual rigs, rates, speeds and host rounding policies. Foot translation and yaw
+lead torso yaw; first touchdown occurs by 32° torso rotation. The minimum
+turn hip/rest ratio is .919 ordinary/.907 full-180°. A blocked-recovery
+regression now preserves a newly requested destination. Evidence is under ignored
+`results/foot-led-turn-2026-10-17/`; see the current result record for final build
+and capture results. Earlier geometry success was not visual acceptance, and
+this kinematic support-transfer gesture still needs the user’s visual assessment.
+
+Delivery: full app build and bundle relocation pass; fresh combined Qt suite
+passes 88 checks with five environment skips (93 total), zero failures. Native
+Biscuit/Nell/Mossback/Puddle pass, with 240 unclipped animation frames. Restart
+`build/qt-humanoids/Clibby.app`. The comparison clip and complete logs are under
+`results/foot-led-turn-2026-10-17/`. No commit or push. Previous Python and 2D
+results below were not rerun for this pose-only correction.
+
+
+## Pre-upload checkpoint (2026-10-17; motion failures subsequently fixed)
+
+> The six motion failures recorded at this concurrent checkpoint are superseded
+> by the upright-turn correction below: the later complete combined run passes
+> 88 checks with five environment skips, including all six former failures.
+> The publication/licensing findings remain a separate checkpoint record.
+
+The stable checkout passes 109 Python tests and completes the Release/app build,
+but the fresh combined Qt run has **82 passes, five environment skips and six
+failures**. All six reproduce in a focused rerun: raven perch recovery, stationary
+turn placement count, upright bounded pivot, quadruped support, Marmalade binding
+support and werewolf elbow clearance. These results supersede earlier passing
+counts for this checkout. See the [pre-upload record](results/2026-10-17-pre-upload-check.md).
+Publication hygiene/link checks pass; repository-wide licensing is still
+unselected. No fixes, commits, remote configuration or upload were performed.
+
+## Historical correction: upright point-pivot (subsequently rejected)
+
+The user rejected the previous gait again: excessive placements and a visible
+crouch/spin. Fresh diagnosis found Biscuit dropping to 56.2% of standing hip
+height because lifted feet constrained the whole body's height. The prior
+extension-only checks did not establish upright posture.
+
+The replacement uses a planted body/root arc and one finishing placement:
+two foot placements for bipeds, four paws for quadrupeds on open ground.
+This is an authored dynamic point-pivot approximation (three quadruped paws
+briefly unload), not verified casual-animal biomechanics. The host consumes the
+travel-axis arc; persistent transverse offsets survive subsequent walking and
+pickup. Completed stance synchronization removes additional planner recovery
+steps. Original nonwing travel remains 70 cm/s base, 140 cm/s at default 2×.
+Centered stance forecasts reduce Nell's default walking placements from 37 to 24
+per 12 m; ordinary biped walking stays above 94.7% standing height in the
+102-case audit. Mossback walking remains more compressed (87.8% at default).
+Unreachable bounded arcs cancel quietly; unexpected blocking lands lifted feet.
+
+Read the [correction record](results/2026-10-17-natural-turning.md), which marks
+the rejected candidate as historical. Fresh checks pass: combined Qt 88/five environment skips, 2D-only 36/four
+skips, Python 109, and both bundle relocation checks. The 816-case turn audit,
+102 steady-walk cases and 240 unclipped native frames are recorded there.
+Restart rebuilt `build/qt-humanoids/Clibby.app` to try the candidate. Shoulder and pickup-envelope fixes
+remain. Existing appearance/utility changes in this dirty checkout are preserved.
+
+## Latest: companion appearance controls (2026-10-17)
+
+**Appearance** in the menu-bar/context menu now offers companion sizes 50–200%
+and five pixelation levels, independently applied and remembered across launches
+and companion changes. Host geometry/masks, support footprints, planar/spatial
+motion and notification anchors scale together. Coarse pixels retain a sufficient
+visual fringe. The archived fixture disables pixelation.
+
+Fresh checks: 109 Python tests; 87 combined Qt passes/five environment skips;
+native macOS spatial regression passed at 50%/200% with fine/chunky captures in
+`results/appearance-controls-2026-10-17/`. Rebuilt
+`build/qt-humanoids/Clibby.app` passes relocation. See the
+[delivery record](results/2026-10-17-appearance-controls.md).
+
+## Latest: shared companion polish (2026-10-17)
+
+Spatial companions now use anatomy-scaled strides/cadence, step-phase propulsion,
+reachable support height and brisk stepping turns that brake before reversal.
+Ordinary-walk link extension is about .309% in the 34-rig anatomy audit, with
+planted contacts preserved. Biscuit and other companion heads/torso areas use
+pose-following grab envelopes. Twelve original human packages have connected,
+sloped shoulders and less arm splay, with armour/cuffs adjusted.
+
+Fresh Release app build succeeds. Python: 109 passed. Combined Qt: 87 passed,
+five environment skips, no failures. True 2D-only build: 35 passed, four skips.
+Native captures cover Biscuit, Nell, Paper
+Heron and Marmalade (240 unclipped walking/turning frames). Read the
+[delivery record](results/2026-10-17-companion-polish.md) for evidence and limits.
+Use rebuilt `build/qt-humanoids/Clibby.app`. Other final-companion and appearance
+changes arrived concurrently and were preserved; no automatic commit was made.
+
 ## Latest: approved eighteen-companion expansion complete (2026-10-17)
 
 Maren, Tarn, Pell, Serein, Nacre and Windle are implemented with original models
@@ -33,6 +242,26 @@ Use rebuilt `build/qt-humanoids/Clibby.app` → **Companions**. Read the
 [delivery record](results/2026-10-17-wayfarer-companions.md) for checks and first-pass
 activity limits. Maren, Tarn, Pell, Serein, Nacre and Windle remain approved backlog.
 
+## Latest correction: macOS menu-bar click crash (2026-10-17)
+
+The Qt 6.10.3 tray observer reads a mouse-only event property on a macOS 27
+gesture event (QTBUG-147449), raising an AppKit exception. macOS now uses a
+native status item attached to the existing Qt menu; other platforms retain
+the Qt tray. The original event exception was reproduced in a native regression.
+The user confirmed the rebuilt `build/qt-humanoids/Clibby.app` works. See the
+[correction record](results/2026-10-17-menu-bar-crash.md).
+
+## Latest: documentation navigation (2026-10-17)
+
+The root README now covers overview, status, setup, launch and guide links.
+Detailed commands are preserved in [the resident guide](resident-guide.md),
+[character previews](character-preview.md), and [benchmark/motion validation](benchmark.md).
+Commands in those guides still run from the repository root. Research reports
+and supporting notes moved from the repository root into
+`docs/research/reports/` and `docs/research/notes/`; the [research index](research/README.md)
+links all eight files. Repository references and moved documents' relative links
+were updated. Historical evidence and archive contents were preserved.
+
 ## Latest: six original humanoid companions (2026-10-17)
 
 Nell, Alden, Saffron, Tess, Rowan and Vesper are implemented and selectable in
@@ -50,6 +279,75 @@ Use the fresh `build/qt-humanoids/Clibby.app` after the repository rename.
 Read [the delivery record](results/2026-10-17-humanoid-companions.md) for checks,
 reproduction paths and the limits of the first signature vignettes.
 
+## Latest correction: portable Clibby app startup (2026-10-17)
+
+The repository is now `/Users/dizzler/Projects/Repos/clibby`. The initial app
+bundle still referenced Qt at the former `better-pets/.deps` path and aborted
+in dyld before startup after the directory move. The build was freshly configured
+against the current SDK. The macOS target now runs `macdeployqt` after linking,
+including generated 3D QML imports, and carries frameworks, plugins and QML
+modules inside the bundle. Signing/notarization for public distribution remain
+separate work.
+
+`clibby_bundle_relocation` first reproduced the missing QtWidgets failure and now
+passes after copying the app to a temporary location with Qt/DYLD environment
+overrides cleared, verifying that loaded Qt frameworks come from that copy.
+Native Cocoa 3D startup stayed alive and answered live IPC with a temporary state
+directory. Fresh full Qt checks: 76 passed, two environment skips, zero failures.
+Original crash evidence is in ignored `results/clibby-startup-2026-10-17/`.
+
+
+## Latest: GitHub preparation (2026-10-17)
+
+Repository housekeeping refreshed the README's implemented-feature status and
+standard setup commands, added [contributor guidance](../CONTRIBUTING.md), text/
+binary Git attributes, and preventive credential/editor/Blender-backup ignores.
+Forty-one machine-local research/report links now resolve within the repository.
+Historical evidence, source assets and existing runtime work were preserved.
+No remote, commit, push or repository-wide license was created by this cleanup.
+Character package licenses remain scoped to their packages.
+
+Verification during cleanup: 94 Python tests pass; relative Markdown links,
+ignore probes and `git diff --check` pass. A fresh Release build in ignored
+`build/github-check/` compiles; its 71-test CTest snapshot has 66 passes, four
+environment skips, and one failure: `resident_quadruped3d` reports `3D rig missing`.
+A focused rerun reproduces it. Humanoid source/assets were arriving concurrently
+in this checkout, so these results describe a changing working tree and are not
+a final release gate. Rebuild and rerun the full checks after that work settles.
+The old `build/qt/` cache points to the checkout's former name; use a fresh build
+directory after a move, as described in the contributor guide.
+
+Publication audit found no likely credential patterns in the inspected current
+files, archive text or 868 Git-history blobs. Tracked content was about 14 MB,
+with no oversized history blobs requiring LFS. Pattern scans are limited checks;
+historical evidence intentionally retains original machine paths and metadata.
+
+## Latest: Clibby identity and rename (2026-10-17)
+
+The product is now **Clibby** (executable `build/qt/clibby`). The approved
+crescent/head mark is exported reproducibly from `art-studies/clibby/build.py`
+through `tools/build_brand_assets.py` to `assets/brand/`: SVGs, PNGs,
+monochrome menu template, macOS icon and tokens. The shared scoped Widgets theme
+covers cards, Toolbox, productivity panels and the 2D authoring preview; 3D
+preview controls follow the system palette. Pet artwork and scheduling are unchanged.
+
+macOS also builds `build/qt/Clibby.app`, including the icon, character packages
+and 3D resources, synchronized on every app rebuild. It uses local Qt libraries;
+distribution packaging is still separate work. Read [the identity guide](brand.md)
+for typography, colour, spacing, asset generation and compatibility details;
+the [delivery record](results/2026-10-17-clibby-identity.md) lists verification.
+
+The resident and `petctl` discover the same Clibby state directory. Existing
+legacy data is reused in place when a Clibby directory does not yet exist;
+explicit `--state-dir` still wins. Hook counters retain their own legacy locks.
+The `bp-` socket prefix and protocol are preserved. Setup paths are relative to the checkout root. Historical sections and evidence
+below keep their original product/executable names and machine paths.
+
+Release build passes; the full Python suite passes 93 checks. Qt checks pass
+67 with four environment skips (IPC transport, native Spaces and GPU render).
+Light/dark UI captures are under `results/clibby-brand-2026-10-17/ui/`.
+Native menu appearance and app launch interaction still require desktop review.
+
 ## Latest: first signature-action pass
 
 All fourteen live catalogue-style pets now have finite planted-feet signature
@@ -61,6 +359,34 @@ drag/hide/reset discard them. No extra reach or flight capability is implied.
 Supported flops/sitting/hops, owned props and experimental-family promotion
 remain pending. Read the [per-pet signature record](results/2026-10-16-signature-actions.md).
 Restart the rebuilt resident to use the new actions.
+
+## Latest: shared attention inbox and productivity foundation
+
+The functionality-first direction is specified in the
+[productivity design](superpowers/specs/2026-10-16-productivity-system-design.md).
+The first working slice adds an atomic persistent inbox with search, pagination,
+acknowledge/snooze/local follow-up completion, quick task capture, countdowns and
+configurable manual-transition Pomodoro. One shared Qt Core service feeds a new
+Productivity… panel, menu/Toolbox entry and additive local IPC/CLI methods. Existing
+temporary session API semantics remain intact. Timers share the single resident
+timer and can create missed items while the pet is hidden. Source-defined occurrence
+IDs let distinct approval requests rearm attention without inventing progress.
+
+Claude Code/Codex adapters and configuration templates translate documented hooks;
+they do not install themselves or make approval decisions. Local IPC tests have
+actually replayed both helpers through petctl into a running offscreen resident.
+Installed desktop/CLI hook delivery, native UX and all-app notification capture
+remain separate validation; macOS's documented UserNotifications API covers our
+own notifications, not a verified universal feed. Read the
+[API](api/productivity-v1.md), [hook setup](api/agent-hooks.md) and
+[delivery/verification record](results/2026-10-16-productivity-foundation.md).
+
+All 92 Python tests pass. Full combined Qt run: 57 passed, four environment skips,
+nine pre-existing catalogue signature/rest failures; the two socket tests separately
+pass outside the sandbox. The baseline also had a character3d_joint_binding failure
+which did not recur after rebuilding; no binding fix is claimed. Existing dirty
+signature/character work was preserved. Restart the rebuilt resident and choose
+Productivity… to try this slice. Native daily-use and battery acceptance remain open.
 
 ## Latest: first implementation across all remaining pets
 
@@ -553,7 +879,7 @@ GPU pixels and battery acceptance remain open. No coding/chat adapter exists.
 Current user goal for the fresh session: make the pets useful through an
 attention inbox, a summoned toolbox and shared status cards, and add the body
 fixtures needed to present them. Read
-[the utility research report](../reports/Pet%20utility%20and%20toolbox%20design.md)
+[the utility research report](research/reports/Pet%20utility%20and%20toolbox%20design.md)
 and [the utility handoff](utility-handoff.md) before choosing implementation scope.
 The research is complete. The latest utility implementation above supersedes
 the original proposal-only status; broader launcher/timer providers remain proposals. The user requested a fresh session with this goal.
@@ -718,7 +1044,7 @@ Controlled whole-system battery testing follows functional validation.
 Suggested opening message:
 
 > Continue Better Pets utility and body-fixture work from `docs/utility-handoff.md`,
-> `docs/handoff.md` and `reports/Pet utility and toolbox design.md`. Develop the
+> `docs/handoff.md` and `docs/research/reports/Pet utility and toolbox design.md`. Develop the
 > first useful notification round trip and reusable presentation fixtures while
 > preserving procedural grounded motion and quiet scheduling.
 

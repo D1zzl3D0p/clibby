@@ -1,8 +1,12 @@
 # Utility and body fixtures handoff
 
+> Historical session notes. Use [the current handoff](handoff.md) for implemented
+> features, repository status and remaining checks. Paths and future-tense claims
+> below describe the original session.
+
 The user requested clearing conversational context and starting a fresh session
 with the utility direction below. Workspace:
-`/Users/dizzler/Projects/Repos/better-pets`. Read root AGENTS.md, docs/handoff.md
+`/Users/dizzler/Projects/Repos/clibby`. Read root AGENTS.md, docs/handoff.md
 and docs/architecture.md. Shell commands use rtk; Python uses .venv/bin/python.
 This directory has no Git repository. Preserve shared/, benchmark and raw evidence.
 
@@ -39,8 +43,8 @@ The user wants useful pets rather than creatures that only walk: moving arms,
 speech bubbles, held signs and attention effects; work/chat notifications; perhaps
 a power menu/toolbox with tools, notifications and displays. They requested
 comparison and usefulness ratings for equivalent projects. Research is saved in
-`reports/Pet utility and toolbox design.md`; underlying sourced notes are in
-`research_notes/Pet utility and toolbox design/`.
+`docs/research/reports/Pet utility and toolbox design.md`; underlying sourced notes are in
+`docs/research/notes/Pet utility and toolbox design/`.
 
 Recommended direction (not yet implemented):
 
@@ -82,7 +86,7 @@ sandbox checks and native GPU capture). Battery/native acceptance is unverified.
 
 Preview binaries: build/qt/character_preview and
 build/qt/characters3d/character_preview_3d --target 60. Resident:
-build/qt/better_pets. Old 2D Bramble remains separate.
+build/qt/clibby. Old 2D Bramble remains separate.
 
 ## Outstanding reference
 

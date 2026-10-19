@@ -86,4 +86,38 @@ class HumanoidAssets(unittest.TestCase):
                     self.assertTrue((folder/file).exists(),file)
         self.assertEqual(len(hashes),6)
         self.assertGreaterEqual(len(face_ratios),5)
+
+    def test_shoulders_join_the_chest_and_arms_rest_beside_it(self):
+        # This catches the old wide socket / tapered ellipsoid mismatch in
+        # the exported mesh, rather than trusting authoring metadata.
+        from test_wayfarer_companions import read_glb
+        spans = {}
+        for name in IDS + ('iona','milo','orris','fen','oona','quillan'):
+            with self.subTest(name=name):
+                folder = ROOT/'characters'/(name+'-3d')
+                rig = json.loads((folder/'rig.json').read_text())
+                joints = {j['name']:j for j in rig['joints']}
+                shoulder = joints['upper_arm_left']['head']
+                elbow = joints['forearm_left']['head']
+                spans[name] = 2*shoulder[0]
+                self.assertLessEqual(elbow[0]-shoulder[0], .04,
+                                     'resting upper arm splays away from chest')
+                gltf, rows = read_glb(folder/(name+'.glb'))
+                names = [gltf['nodes'][i]['name'] for i in gltf['skins'][0]['joints']]
+                chest = []
+                for mesh in gltf['meshes']:
+                    for primitive in mesh['primitives']:
+                        attrs = primitive['attributes']
+                        for point, js, ws in zip(rows(attrs['POSITION']), rows(attrs['JOINTS_0']), rows(attrs['WEIGHTS_0'])):
+                            if any(names[j]=='spine' and w>.99 for j,w in zip(js,ws)):
+                                chest.append(point)
+                # glTF +Y is Blender +Z. A real chest ring must reach the
+                # arm socket; a low belly maximum cannot satisfy this.
+                socket_chest = [p for p in chest if abs(p[1]-shoulder[2])<.075 and abs(p[2])<.15]
+                self.assertTrue(socket_chest)
+                self.assertGreaterEqual(max(p[0] for p in socket_chest), shoulder[0]-.025,
+                                        'sleeve socket sits beyond upper chest')
+        self.assertGreater(spans['alden'], spans['rowan']*1.4)
+        self.assertGreater(spans['orris'], spans['iona']*1.4)
+        self.assertLess(spans['quillan'], spans['milo']*.8)
 if __name__=='__main__': unittest.main()

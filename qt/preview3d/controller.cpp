@@ -27,6 +27,12 @@ WolfMotion::WolfMotion(const QString& path,QObject* parent,std::function<double(
  auto document=QJsonDocument::fromJson(f.readAll());
  if(!document.isObject())throw std::runtime_error("invalid 3D rig document");
  auto rig=document.object();std::map<QString,pets::character3d::Vec3> heads;
+ const auto authoredYaw=rig["presentation"].toObject().value("yaw_bias_degrees");
+ if(!authoredYaw.isUndefined()){
+  if(!authoredYaw.isDouble()||!std::isfinite(authoredYaw.toDouble())||authoredYaw.toDouble()<-90||authoredYaw.toDouble()>0)
+   throw std::runtime_error("invalid authored facing angle");
+  authoredFacingBiasDegrees_=authoredYaw.toDouble();
+ }
  const auto gait=rig.value("gait");
  if(gait.isUndefined()||gait.toString()=="biped")gait_=pets::character::Gait::Biped;
  else if(gait.toString()=="quadrupedWalk")gait_=pets::character::Gait::QuadrupedWalk;
@@ -298,7 +304,7 @@ void WolfMotion::apply(){
  }
  auto p=motion_->pose();
  // Pelvis follows grounded support; ankle articulation retains world soles.
- auto& pelvis=joints_.at("pelvis");QVector3D shift(0,p.legs[0].hip.y-legs_[0].hip.y,0);
+ auto& pelvis=joints_.at("pelvis");const auto shift=vector(p.legs[0].hip)-vector(legs_[0].hip);
  pelvis.node->setProperty("position",QVariant::fromValue(pelvis.restPosition+shift));
  // The renderer applies only solved snapshots from the procedural core.
  auto rotation=[](pets::motion::Vec3 r){
@@ -442,7 +448,7 @@ bool WolfMotion::verifyDeformation(){
     articulated[i]=articulated[i]||std::abs(pose.footPitch[i])>.01;
     moved=moved||pose.swing[i];
    }
-   if(supportCount<int(legRoles_.size())-1)throw std::runtime_error("walking lost required foot support");
+   if(supportCount<(legRoles_.size()==4?2:1))throw std::runtime_error("walking lost required foot support");
   };
   check();
   for(double targetX:{60.,-60.,0.}){
@@ -483,7 +489,8 @@ bool WolfMotion::verifyDeformation(){
  auto checkArmClearance=[&](const QString& side) {
   auto body=avatar_->property("sceneRotation").value<QQuaternion>();
   auto origin=avatar_->property("scenePosition").value<QVector3D>();
-  auto local=[&](const QString& joint){return body.conjugated().rotatedVector(joints_.at(joint+"_"+side).node->property("scenePosition").value<QVector3D>()-origin);};
+  const auto torsoOffset=vector(motion_->pose().bodyShift);
+  auto local=[&](const QString& joint){return body.conjugated().rotatedVector(joints_.at(joint+"_"+side).node->property("scenePosition").value<QVector3D>()-origin)-torsoOffset;};
   const auto shoulder=local("upper_arm"), elbow=local("forearm"), hand=local("hand");
   const double sign=shoulder.x()>0?1:-1;
   // The authored elbow/forearm radius is .12; lateral room beyond the .36
@@ -579,7 +586,7 @@ bool WolfMotion::verifyDeformation(){
  reach(0,{.6f,1.3f,.3f});for(int frame=0;frame<600&&!settled();++frame)advance(1./120);checkContacts();
  auto body=avatar_->property("sceneRotation").value<QQuaternion>();
  auto origin=avatar_->property("scenePosition").value<QVector3D>();
- auto localGrip=body.conjugated().rotatedVector(leftGrip()-origin);
+ auto localGrip=body.conjugated().rotatedVector(leftGrip()-origin)-vector(motion_->pose().bodyShift);
  if((localGrip-QVector3D(.6f,1.3f,.3f)).length()>2e-4)throw std::runtime_error("live grip misses target");
  release(0);
  gesture("wave");if(settled())throw std::runtime_error("gesture did not wake");

@@ -1,4 +1,6 @@
 #include "application.h"
+#include "app_identity.h"
+#include "brand_assets.h"
 #include <QApplication>
 #include <QDir>
 #include <QStandardPaths>
@@ -12,7 +14,7 @@ int main(int argc, char **argv) {
     for (int index = 1; index < argc; ++index) {
       const QString arg = QString::fromLocal8Bit(argv[index]);
       if (arg == "--help" || arg == "-h") {
-        std::cout << "Usage: better_pets [--character ABS_DIR | --assets "
+        std::cout << "Usage: clibby [--character ABS_DIR | --assets "
                      "ABS_DIR] [--state-dir ABS_DIR]\n"
                      "Resident desktop pet. Use the menu-bar controls or pet "
                      "context menu to quit.\n"
@@ -41,14 +43,16 @@ int main(int argc, char **argv) {
         state = value;
     }
     QApplication app(argc, argv);
-    app.setApplicationName("Better Pets");
-    app.setOrganizationName("Better Pets");
+    app.setApplicationName("Clibby");
+    app.setOrganizationName("Clibby");
+    app.setApplicationDisplayName("Clibby");
+    app.setWindowIcon(pets::branding::appIcon());
     app.setQuitOnLastWindowClosed(false);
     if (assets.isEmpty())
       assets =
           QCoreApplication::applicationDirPath() + "/characters/soft-creature";
     if (state.isEmpty())
-      state = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+      state = pets::defaultStateDirectory();
     if (state.isEmpty())
       throw std::runtime_error(
           "per-user application data directory is unavailable");

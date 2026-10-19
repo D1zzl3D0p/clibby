@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "urn:better-pets:session-api:1",
-  "title": "Better Pets session API major 1",
+  "$id": "urn:clibby:session-api:1",
+  "title": "Clibby session API major 1",
   "description": "Accepted JSON-RPC requests and successful/error response envelopes. LF framing, UTF-8 validity, handshake, rate/size limits, monotonic sequence/TTL and OS permissions are enforced outside JSON Schema. Unknown object fields are additive and tolerated. CLI success output is the result object, not its envelope.",
   "oneOf": [
     {

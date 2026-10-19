@@ -1,5 +1,5 @@
 [project]
-name = "better-pets-tools"
+name = "clibby-tools"
 version = "0.1.0"
 description = "Development, validation, and resource profiling tools for the Qt desktop pet"
 requires-python = ">=3.12"

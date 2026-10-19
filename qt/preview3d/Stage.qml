@@ -5,6 +5,9 @@ import QtQuick3D
 import WolfAsset
 Window {
  id: window
+ palette.accent: "#B9ADEB"
+ palette.highlight: "#B9ADEB"
+ palette.highlightedText: "#292638"
  property bool showContacts: false
  function screenXForTarget(units) {
   return view.mapFrom3DScene(Qt.vector3d(0,0,units/100)).x * pixelOutput.width/view.width
@@ -14,8 +17,8 @@ Window {
   return Math.max(-120,Math.min(120,-120+240*(screenX-start)/(end-start)))
  }
  width: 768; height: 680; visible: previewVisible; color: "transparent"
- title: "Better Pets — " + previewCharacterName
- Rectangle { anchors.fill: parent; color: "#18222e"; visible: !captureTransparent }
+ title: "Clibby — " + previewCharacterName
+ Rectangle { anchors.fill: parent; color: window.palette.window; visible: !captureTransparent }
  View3D {
   id: view; objectName: "view3d"
   width: 192; height: 128
@@ -74,22 +77,22 @@ Window {
   x: 18; y: 525; spacing: 8; visible: !captureTransparent
   Row {
    spacing: 10
-   CheckBox { text: "Curious"; checked: motion.autonomous; onToggled: motion.autonomous=checked }
-   TextField { width: 74; text: motion.seed; placeholderText: "Seed"; validator: IntValidator { bottom: 0 } onEditingFinished: motion.seed=Number(text) }
-   Text { anchors.verticalCenter: parent.verticalCenter; color: "white"; text: "Travel speed" }
+   CheckBox { palette: window.palette; text: "Curious"; checked: motion.autonomous; onToggled: motion.autonomous=checked }
+   TextField { palette: window.palette; width: 74; text: motion.seed; placeholderText: "Seed"; validator: IntValidator { bottom: 0 } onEditingFinished: motion.seed=Number(text) }
+   Text { anchors.verticalCenter: parent.verticalCenter; color: window.palette.windowText; text: "Travel speed" }
    Slider {
-    objectName: "walkingSpeed"; width: 190
+    objectName: "walkingSpeed"; palette: window.palette; width: 190
     from: .5; to: 3; stepSize: .1; value: motion.walkingSpeed
     onMoved: motion.walkingSpeed=value
     ToolTip.visible: hovered
     ToolTip.text: "Moves the body at the selected speed. Feet follow and catch up when needed."
    }
-   Text { anchors.verticalCenter: parent.verticalCenter; color: "white"; width: 38; text: motion.walkingSpeed.toFixed(1)+"×" }
-   Button { text: "Normal 1×"; onClicked: motion.walkingSpeed=1 }
+   Text { anchors.verticalCenter: parent.verticalCenter; color: window.palette.windowText; width: 38; text: motion.walkingSpeed.toFixed(1)+"×" }
+   Button { palette: window.palette; text: "Normal 1×"; onClicked: motion.walkingSpeed=1 }
   }
-  Text { color: "white"; text: motion.status }
-  Text { color: "#b9c7d5"; text: motion.reachSupported ? "Click to move • W wave • H hold • R release • L look • E ear • T tail • C clear" : "Click to move • L look • C clear" }
-  Text { color: "#b9c7d5"; text: "192×128 GPU composition • nearest atlas/output • ground / hop / powered flight" }
+  Text { color: window.palette.windowText; text: motion.status }
+  Text { color: window.palette.windowText; opacity: 0.7; text: motion.reachSupported ? "Click to move • W wave • H hold • R release • L look • E ear • T tail • C clear" : "Click to move • L look • C clear" }
+  Text { color: window.palette.windowText; opacity: 0.7; text: "192×128 GPU composition • nearest atlas/output • ground / hop / powered flight" }
  }
  property bool paused: false
  Shortcut { sequence: "Left"; onActivated: motion.target(90) }

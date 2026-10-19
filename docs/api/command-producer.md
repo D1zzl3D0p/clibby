@@ -9,9 +9,8 @@ completion inference.
 Start the resident, then run a command from its project directory:
 
 ```sh
-/Users/dizzler/Projects/Repos/better-pets/.venv/bin/python \
-  /Users/dizzler/Projects/Repos/better-pets/tools/pet_run.py \
-  --label "Run project tests" -- python -m unittest discover
+.venv/bin/python tools/pet_run.py \
+  --label "Run project tests" -- .venv/bin/python -m unittest discover -s tests
 ```
 
 The wrapper's default `petctl` path is resolved relative to its own checkout,

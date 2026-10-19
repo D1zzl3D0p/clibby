@@ -3,6 +3,7 @@
 #include "desktop_host.h"
 #include "characters3d/builtin_assets.h"
 #include <QApplication>
+#include <QAction>
 #include <QQuickWindow>
 #include <QSGRendererInterface>
 #include <QTemporaryDir>
@@ -31,6 +32,37 @@ int main(int argc,char** argv){
    // would omit the hind stance and report only a few pixels of support.
    require(footprint.second-footprint.first>90,"spatial support footprint omits hind paws");
    host.setSupportFootprint(footprint.first,footprint.second);
+  }
+  // A desktop edge must leave a real path back inward, including after the
+  // opaque silhouette changes during a leading-plant turn.
+  for(double scale:{.5,1.,2.}) {
+   pets::DesktopHost host(pets::character::loadCharacter(root+"/soft-creature"));
+   pets::SpatialCharacter biscuit(root+"/biscuit-3d");biscuit.install(host);
+   host.setCompanionScale(scale);biscuit.setAppearance(scale,1);biscuit.reset(host);biscuit.apply(host);
+   auto tick=[&](){const auto p=biscuit.propose(1./60);const auto actual=host.moveInWorld(p.displacement,p.displacementY);
+    biscuit.realize(actual.rootX,actual.blocked,actual.elevation);biscuit.apply(host);};
+   for(int i=0;i<240;++i)tick();
+   for(int round=0;round<2;++round){
+    biscuit.target(host.groundSpan().minimum);for(int i=0;i<1800&&!biscuit.settled();++i)tick();
+    const double left=biscuit.state().rootX;
+    biscuit.target(host.groundSpan().maximum);for(int i=0;i<1800&&!biscuit.settled();++i)tick();
+    require(biscuit.settled()&&biscuit.state().rootX>left+50,"Biscuit cannot move right after reaching the left desktop edge");
+   }
+  }
+  {
+   QTemporaryDir edgeStorage;double edgeTime=0;
+   pets::ResidentApplication shell(root+"/biscuit-3d",edgeStorage.path(),false,[&]{return edgeTime;},
+       pets::IpcMode::DisabledForTests,nullptr,false,[]{return std::optional<QPointF>{};});
+   auto *left=shell.findChild<QAction*>("walkLeft"),*right=shell.findChild<QAction*>("walkRight");
+   require(left&&right,"Biscuit has both context-menu walking actions");
+   auto settle=[&](){for(int i=0;i<1800&&shell.groundMotionActive();++i){
+    edgeTime+=1./60;require(QMetaObject::invokeMethod(shell.findChild<QTimer*>(),"timeout",Qt::DirectConnection),"Biscuit edge action timer");}};
+   for(int round=0;round<2;++round){
+    left->trigger();settle();const double leftRoot=shell.groundedState()->rootX;
+    right->trigger();settle();
+    require(!shell.groundMotionActive()&&shell.groundedState()->rootX>leftRoot+50,
+            "Biscuit context-menu Walk right fails after Walk left");
+   }
   }
   QTemporaryDir storage;double now=0;
   {

@@ -32,6 +32,12 @@ int main(int argc, char **argv) {
     options.resolution = 64;
     auto image = renderCharacter(d, atlas, pose, options);
     check(image.pixelColor(0, 0).alpha() == 0, "transparent canvas");
+    for (int resolution : {24, 48, 192, 384, 512}) {
+      auto adjusted = options; adjusted.resolution = resolution;
+      const auto frame = renderCharacter(d, atlas, pose, adjusted);
+      check(frame.size() == QSize(resolution,resolution), "bounded adjustable pixel density");
+      check(frame.pixelColor(0,0).alpha()==0, "pixel density preserves transparency");
+    }
     check(image.pixelColor(19, 11) == QColor(Qt::red),
           "parent-after-child transforms");
     d.bones[0].rest.x = 0;

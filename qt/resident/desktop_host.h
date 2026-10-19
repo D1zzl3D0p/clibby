@@ -59,6 +59,9 @@ public:
   void updatePresentationMask(QRegion visual, QRegion grab = {});
   QPointF localGroundAnchor() const { return {rootAnchorX_, floorAnchorY_}; }
   QSize presentationSize() const;
+  bool setCompanionScale(double scale);
+  bool setPixelation(double pixelation);
+  double companionScale() const { return companionScale_; }
   void restorePlacement(QPoint position, QString display);
   void reconcileScreens();
   QPoint position() const;
@@ -125,6 +128,14 @@ private:
   QRegion visualRegion_;
   QRect occupiedBounds() const;
   void updateVisualMask();
+  void refreshScaledPresentation();
+  QRegion scaledRegion(const QRegion &) const;
+  QSize canonicalSize_;
+  QPointF canonicalGroundAnchor_;
+  QRegion canonicalInteraction_, canonicalVisual_;
+  double companionScale_ = 1;
+  double pixelation_ = 1;
+  double canonicalLeftFoot_ = -24, canonicalRightFoot_ = 24;
   QPoint dragOffset_;
   bool dragging_ = false;
   bool grounded_ = false;

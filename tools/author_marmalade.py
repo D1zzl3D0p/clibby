@@ -108,7 +108,7 @@ def generate_marmalade(destination):
     validate(character)
     generate(character, destination)
     (destination / 'ATTRIBUTION.md').write_text(
-        '# Marmalade\n\nOriginal Better Pets pixel artwork and four-leg anatomy, '
+        '# Marmalade\n\nOriginal Clibby pixel artwork and four-leg anatomy, '
         'authored as editable polygon, line and ellipse recipes in '
         '`tools/author_marmalade.py`. No downloaded art, traced sprites, '
         'AI-generated images or animation frames are included. MIT licensed.\n\n'

@@ -11,7 +11,7 @@
 #include <stdexcept>
 namespace {
 void check(bool ok,const char* why){if(!ok)throw std::runtime_error(why);}
-QQuickWindow* petWindow(){for(auto* w:QGuiApplication::topLevelWindows())if(w->title()=="Better Pets")return dynamic_cast<QQuickWindow*>(w);throw std::runtime_error("pet window missing");}
+QQuickWindow* petWindow(){for(auto* w:QGuiApplication::topLevelWindows())if(w->title()=="Clibby")return dynamic_cast<QQuickWindow*>(w);throw std::runtime_error("pet window missing");}
 void tick(pets::ResidentApplication& app,double& now,double seconds){for(int i=0;i<int(std::ceil(seconds*120));++i){now+=1./120;auto* timer=app.findChild<QTimer*>();check(timer&&QMetaObject::invokeMethod(timer,"timeout",Qt::DirectConnection),"resident timer missing");}}
 }
 int main(int argc,char** argv){

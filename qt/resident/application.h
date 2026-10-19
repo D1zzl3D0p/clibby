@@ -19,8 +19,9 @@
 
 class QAction;
 class QMenu;
-class QSystemTrayIcon;
 namespace pets {
+class MenuBarIcon;
+namespace productivity { class Service; class Panel; }
 class DesktopHost;
 class SpatialCharacter;
 class Instance;
@@ -31,11 +32,12 @@ enum class UtilityAction;
 enum class IpcMode { Enabled, DisabledForTests };
 class AlreadyRunning final : public std::runtime_error {
 public:
-  AlreadyRunning() : std::runtime_error("Better Pets is already running") {}
+  AlreadyRunning() : std::runtime_error("Clibby is already running") {}
 };
 class ResidentApplication final : public QObject {
 public:
   using Clock = std::function<double()>;
+  using WallClock = std::function<qint64()>;
   // Global logical pixel observation; an absent sample means no visible target.
   using CursorSource = std::function<std::optional<QPointF>()>;
   using SurfaceSource = std::function<WindowSurfaceSnapshot(double)>;
@@ -43,7 +45,7 @@ public:
                       const QString &stateDirectory, bool showTray = true,
                       Clock clock = {}, IpcMode ipcMode = IpcMode::Enabled,
                       QObject *parent = nullptr,
-                      bool restoreCharacterSelection = true, CursorSource cursorSource = {}, SurfaceSource surfaceSource = {});
+                      bool restoreCharacterSelection = true, CursorSource cursorSource = {}, SurfaceSource surfaceSource = {}, WallClock wallClock = {});
   ~ResidentApplication() override;
   void control(Control command);
   const Runtime &runtime() const { return runtime_; }
@@ -60,6 +62,8 @@ public:
   void setGroundTarget(double worldX);
   bool setWalkingSpeed(double multiplier);
   double walkingSpeed() const { return preferences_.walkingSpeed; }
+  bool setCompanionScale(double scale);
+  bool setPixelation(double strength);
   bool groundMotionActive() const { return groundDeadline_.has_value(); }
   bool flightCapable() const;
   bool hop(double height = 35);
@@ -74,8 +78,12 @@ private:
   void schedule();
   void persist();
   void updateMenu();
+  void updateAppearanceMenu();
   void shutdown();
   void synchronizeSessions(double now);
+  void advanceProductivity();
+  void showProductivity();
+  void signalProductivity(const QJsonObject &item);
   void updateSessionMenu(const SessionSnapshot &snapshot);
   void updateLabel();
   QString dispatchUtilityAction(SessionKey key, std::uint64_t sequence, UtilityAction action);
@@ -105,9 +113,11 @@ private:
   bool hasGroundMotion() const;
   bool groundSettled() const;
   Clock clock_;
+  WallClock wallClock_;
   CursorSource cursorSource_;
   SurfaceSource surfaceSource_;
   std::optional<QPointF> cursorPosition_;
+  std::optional<QPointF> cursorHeadingPosition_;
   std::optional<motion::Vec3> cursorDirection_;
   std::optional<double> cursorDeadline_;
   double cursorTurnAfter_ = 0;
@@ -153,11 +163,14 @@ private:
   std::unique_ptr<Instance> instance_;
   std::unique_ptr<DesktopHost> host_;
   std::unique_ptr<QMenu> menu_;
-  std::unique_ptr<QSystemTrayIcon> tray_;
+  std::unique_ptr<MenuBarIcon> tray_;
   std::unique_ptr<SleepObserver> sleep_;
   std::unique_ptr<IpcServer> ipc_;
   std::unique_ptr<StatusLabel> statusLabel_;
   std::unique_ptr<UtilityToolbox> toolbox_;
+  std::unique_ptr<productivity::Service> productivity_;
+  std::unique_ptr<productivity::Panel> productivityPanel_;
+  QString productivityError_;
   QMenu *sessionsMenu_ = nullptr;
   QList<QAction *> sessionActions_;
   QStringList sessionMenuSignature_;

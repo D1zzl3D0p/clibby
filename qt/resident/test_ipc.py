@@ -52,6 +52,9 @@ def main():
             run(base + ["--ttl", "3601"], 2)
             run(base + ["--ttl", "120\n"], 2)
             run(["clear", "--source", "x", "--session", "one", "--seq", "1", "--status", "working"], 2)
+            run(["productivity", "--method", "list", "--json", "{}"], 3)
+            run(["productivity", "--method", "list", "--json", "[]"], 2)
+            run(["productivity", "--method", "bogus", "--json", "{}"], 2)
             run(["state"], 3)
             run(base, 3)
             result = run(["--help"], 0)
@@ -91,6 +94,33 @@ def main():
                 assert time.monotonic() < deadline, result.stderr
                 time.sleep(0.02)
             assert cli("state")["sessions"] == []
+            # Real productivity API/CLI round trip and both hook translators.
+            event = {"source_id": "example", "event_id": "review", "seq": 1,
+                     "kind": "needs_input", "title": "Review needs attention"}
+            published = cli("productivity", "--method", "publish", "--json", json.dumps(event))
+            assert published["item"]["kind"] == "needs_input", published
+            listed = cli("productivity", "--method", "list", "--json", '{"attention_only":true}')
+            assert len(listed["items"]) == 1, listed
+            action = {"source_id": "example", "event_id": "review", "seq": 1,
+                      "action": "acknowledge"}
+            seen = cli("productivity", "--method", "act", "--json", json.dumps(action))
+            assert seen["item"]["acknowledged"] and not seen["item"]["completed"], seen
+            helper = Path(__file__).resolve().parents[2] / "tools/pet_agent_hook.py"
+            for provider in ("claude", "codex"):
+                for hook_event in ("UserPromptSubmit", "PermissionRequest", "Stop"):
+                    delivered = subprocess.run([sys.executable, str(helper),
+                        "--provider", provider, "--petctl", petctl, "--state-dir", state,
+                        "--sequence-dir", str(Path(state) / "hook-sequences")],
+                        input=json.dumps({"session_id": "real-replay", "hook_event_name": hook_event,
+                                          "tool_name": "Bash"}), text=True, capture_output=True, timeout=5)
+                    assert delivered.returncode == 0 and delivered.stdout.strip() == "{}" and not delivered.stderr, delivered
+                items = cli("productivity", "--method", "list",
+                            "--json", json.dumps({"query": provider}))["items"]
+                assert len(items) == 1 and items[0]["kind"] == "response_ready", items
+            # Clear transient bridge state so legacy lifecycle assertions stay independent.
+            for record in cli("state")["sessions"]:
+                cli("clear", "--source", record["source_id"], "--session", record["session_id"],
+                    "--seq", str(record["seq"] + 1))
             # Actual child exit -> wrapper -> petctl -> resident session round trip.
             wrapper = Path(__file__).resolve().parents[2] / "tools/pet_run.py"
             for session, exit_code, status in (("success", 0, "completed"), ("failure", 7, "failed")):

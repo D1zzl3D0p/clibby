@@ -26,9 +26,8 @@ void reducePalette(QImage &image, bool dither) {
 }
 QImage renderCharacter(const Definition &d, const QImage &atlas,
                        const Pose &pose, const RasterOptions &options) {
-  if (options.resolution != 64 && options.resolution != 96 &&
-      options.resolution != 128)
-    throw std::invalid_argument("canvas resolution must be 64, 96 or 128");
+  if (options.resolution < 24 || options.resolution > 512)
+    throw std::invalid_argument("canvas resolution must be between 24 and 512");
   const auto world = worldTransforms(d, pose);
   const auto art = artworkTransforms(d, pose);
   QImage result(options.resolution, options.resolution,

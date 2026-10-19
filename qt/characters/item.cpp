@@ -107,7 +107,7 @@ void CharacterItem::setMode(RenderMode m) {
   }
 }
 void CharacterItem::setResolution(int r) {
-  if (r != 64 && r != 96 && r != 128)
+  if (r < 24 || r > 512)
     return;
   if (r != options_.resolution) {
     options_.resolution = r;

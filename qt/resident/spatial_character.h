@@ -41,6 +41,7 @@ public:
   void cancelSignature(bool immediate = false);
   bool signatureActive() const;
   void setSpeed(double multiplier);
+  void setAppearance(double scale, double pixelation);
   character::ExpressionMotion &expressions();
   bool reach(int side, motion::Vec3 normalizedTarget);
   void releaseReach(int side);

@@ -11,6 +11,7 @@
 #include <QQuickItem>
 #include <QScreen>
 #include <QSurfaceFormat>
+#include <QTransform>
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -92,6 +93,9 @@ DesktopHost::DesktopHost(const Rig &rig, const QImage &atlas, QObject *parent)
     polygon.append(point.toPoint());
   interactionRegion_ = QRegion(polygon);
   visualRegion_ = interactionRegion_;
+  canonicalSize_ = window_->size();
+  canonicalInteraction_ = interactionRegion_;
+  canonicalVisual_ = visualRegion_;
   window_->setMask(interactionRegion_);
   initialPlacement();
 }
@@ -103,7 +107,7 @@ DesktopHost::DesktopHost(const character::LoadedCharacter &loaded,
 }
 DesktopHost::DesktopHost(QObject *parent)
     : QObject(parent), window_(std::make_unique<QQuickWindow>()) {
-  window_->setTitle("Better Pets");
+  window_->setTitle("Clibby");
   // macOS tool panels hide on application deactivation. The resident is an
   // independent, nonactivating top-level window and stays visible until Hide.
   window_->setFlags(Qt::Window | Qt::FramelessWindowHint |
@@ -205,8 +209,10 @@ void DesktopHost::setCharacter(const character::LoadedCharacter &loaded) {
   const bool preserveRoot=grounded_;
   const double previousRoot=groundRootX(), previousFloor=groundWorldY();
   grounded_ = loaded.definition.locomotion.has_value();
-  rootAnchorX_ = margin + loaded.definition.origin.x;
-  floorAnchorY_ = margin + (grounded_ ? loaded.definition.locomotion->groundY : 0);
+  canonicalGroundAnchor_ = {margin + loaded.definition.origin.x,
+      margin + (grounded_ ? loaded.definition.locomotion->groundY : 0)};
+  rootAnchorX_ = canonicalGroundAnchor_.x() * companionScale_;
+  floorAnchorY_ = canonicalGroundAnchor_.y() * companionScale_;
   fractionX_ = fractionY_ = 0;
   delete item_;
   item_ = nullptr;
@@ -215,13 +221,16 @@ void DesktopHost::setCharacter(const character::LoadedCharacter &loaded) {
   presentationItem_ = nullptr;
   characterItem_ = replacement.release();
   characterItem_->setParentItem(window_->contentItem());
+  setPixelation(pixelation_);
   window_->setMinimumSize({1, 1});
   window_->setMaximumSize({16777215, 16777215});
   window_->resize(size);
   window_->setMinimumSize(size);
   window_->setMaximumSize(size);
-  interactionRegion_ = mask;
-  updateVisualMask();
+  canonicalSize_ = size;
+  canonicalInteraction_ = mask;
+  canonicalVisual_ = characterItem_->visualRegion();
+  refreshScaledPresentation();
   if (preserveRoot && grounded_)
     window_->setPosition({qRound(previousRoot-rootAnchorX_),qRound(previousFloor-floorAnchorY_)});
   reconcileScreens();
@@ -253,43 +262,98 @@ void DesktopHost::setPresentation(QQuickItem *item, QSize size,
   item->setParentItem(window_->contentItem());
   item->setSize(QSizeF(size));
   grounded_ = true;
-  rootAnchorX_ = rootFloorAnchor.x();
-  floorAnchorY_ = rootFloorAnchor.y();
+  canonicalSize_ = size;
+  canonicalGroundAnchor_ = rootFloorAnchor;
+  canonicalInteraction_ = grab;
+  canonicalVisual_ = visual;
+  rootAnchorX_ = rootFloorAnchor.x() * companionScale_;
+  floorAnchorY_ = rootFloorAnchor.y() * companionScale_;
   fractionX_ = fractionY_ = 0;
   window_->setMinimumSize({1, 1});
   window_->setMaximumSize({16777215, 16777215});
   window_->resize(size);
   window_->setMinimumSize(size);
   window_->setMaximumSize(size);
-  interactionRegion_ = grab;
-  visualRegion_ = visual;
-  window_->setMask(grab | visual);
+  refreshScaledPresentation();
   if (preserveRoot)
     window_->setPosition({qRound(previousRoot - rootAnchorX_), qRound(previousFloor-floorAnchorY_)});
   reconcileScreens();
   if (!preserveRoot) rebaseGround();
 }
+QRegion DesktopHost::scaledRegion(const QRegion &region) const {
+  if (companionScale_ == 1) return region;
+  QTransform transform;
+  transform.scale(companionScale_, companionScale_);
+  return transform.map(region);
+}
+void DesktopHost::refreshScaledPresentation() {
+  auto *art = presentationItem_ ? presentationItem_ :
+      (characterItem_ ? static_cast<QQuickItem*>(characterItem_) : static_cast<QQuickItem*>(item_));
+  if (art) {
+    art->setTransformOrigin(QQuickItem::TopLeft);
+    art->setScale(companionScale_);
+  }
+  const QSize size(std::max(1, int(std::ceil(canonicalSize_.width()*companionScale_))),
+                   std::max(1, int(std::ceil(canonicalSize_.height()*companionScale_))));
+  window_->setMinimumSize({1,1});
+  window_->setMaximumSize({16777215,16777215});
+  window_->resize(size);
+  window_->setMinimumSize(size);
+  window_->setMaximumSize(size);
+  rootAnchorX_ = canonicalGroundAnchor_.x()*companionScale_;
+  floorAnchorY_ = canonicalGroundAnchor_.y()*companionScale_;
+  leftFoot_ = canonicalLeftFoot_*companionScale_;
+  rightFoot_ = canonicalRightFoot_*companionScale_;
+  interactionRegion_ = scaledRegion(canonicalInteraction_).intersected(QRect(QPoint(),size));
+  visualRegion_ = scaledRegion(canonicalVisual_).intersected(QRect(QPoint(),size));
+  const auto mask = interactionRegion_ | visualRegion_;
+  if (window_->mask() != mask) window_->setMask(mask);
+}
+bool DesktopHost::setPixelation(double pixelation) {
+  if (!std::isfinite(pixelation) || pixelation < .25 || pixelation > 4) return false;
+  pixelation_ = pixelation;
+  if (characterItem_) {
+    characterItem_->setResolution(qRound(96/pixelation));
+    characterItem_->setMode(grounded_ || pixelation != 1
+        ? character::RenderMode::Composited : character::RenderMode::Direct);
+    characterItem_->setSmooth(false);
+    updateVisualMask();
+  }
+  return true;
+}
+bool DesktopHost::setCompanionScale(double scale) {
+  if (!std::isfinite(scale) || scale < .5 || scale > 2) return false;
+  if (scale == companionScale_) return true;
+  cancelDrag();
+  const double root = groundRootX(), floor = groundWorldY();
+  companionScale_ = scale;
+  refreshScaledPresentation();
+  fractionX_ = fractionY_ = 0;
+  window_->setPosition({qRound(root-rootAnchorX_), qRound(floor-floorAnchorY_)});
+  reconcileScreens();
+  if (placementChanged) placementChanged();
+  return true;
+}
 void DesktopHost::updatePresentationMask(QRegion visual, QRegion grab) {
   if (!presentationItem_) return;
-  const QRect canvas(QPoint(), window_->size());
+  const QRect canvas(QPoint(), canonicalSize_);
   visual &= canvas;
   if (visual.isEmpty()) return;
-  visualRegion_ = visual;
+  canonicalVisual_ = visual;
   if (!grab.isEmpty()) {
     grab &= canvas;
-    if (!grab.isEmpty()) interactionRegion_ = grab;
+    if (!grab.isEmpty()) canonicalInteraction_ = grab;
   }
-  const auto mask = visual | interactionRegion_;
+  // Pose updates only change masks; avoid touching window geometry per frame.
+  visualRegion_ = scaledRegion(canonicalVisual_).intersected(QRect(QPoint(),window_->size()));
+  interactionRegion_ = scaledRegion(canonicalInteraction_).intersected(QRect(QPoint(),window_->size()));
+  const auto mask = visualRegion_ | interactionRegion_;
   if (window_->mask() != mask) window_->setMask(mask);
 }
 QSize DesktopHost::presentationSize() const { return window_->size(); }
 void DesktopHost::updateVisualMask() {
-  // Qt's public mask couples native visual and input shape. Keep the actual
-  // silhouette visible, while all host gestures and placement use the authored
-  // region. Transparent corners stay outside this tight mask; on platforms
-  // supporting masks they pass through. Visible fringe may receive native
-  // clicks, but never starts a drag or menu outside the authored grab region.
-  visualRegion_ = characterItem_->visualRegion();
+  canonicalVisual_ = characterItem_->visualRegion();
+  visualRegion_ = scaledRegion(canonicalVisual_).intersected(QRect(QPoint(),window_->size()));
   const auto mask = interactionRegion_ | visualRegion_;
   if (window_->mask() != mask) window_->setMask(mask);
 }
@@ -448,8 +512,9 @@ void DesktopHost::finishDrag(bool released) {
 }
 void DesktopHost::setSupportFootprint(double left,double right) {
   if(!std::isfinite(left)||!std::isfinite(right)||left>right || right-left>2000) return;
-  leftFoot_=left; rightFoot_=right;
-  if(support_ && !character::usableSurface(*support_,groundRootX(),left,right,surfaceNow_)) clearSupport();
+  canonicalLeftFoot_=left; canonicalRightFoot_=right;
+  leftFoot_=left*companionScale_; rightFoot_=right*companionScale_;
+  if(support_ && !character::usableSurface(*support_,groundRootX(),leftFoot_,rightFoot_,surfaceNow_)) clearSupport();
 }
 bool DesktopHost::refreshSurfaces(double now) {
   if(!std::isfinite(now)) return false;
@@ -588,7 +653,7 @@ bool DesktopHost::eventFilter(QObject *watched, QEvent *event) {
       const auto before = position();
       place(mouse->globalPosition().toPoint() - dragOffset_);
       if (dragDisplacement && position() != before)
-        dragDisplacement(QPointF(position() - before));
+        dragDisplacement(QPointF(position() - before) / companionScale_);
     }
     event->accept();
     return true;

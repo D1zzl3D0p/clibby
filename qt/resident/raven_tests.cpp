@@ -20,7 +20,7 @@ void check(bool value, const char *message) {
   if (!value) throw std::runtime_error(message);
 }
 QQuickWindow *petWindow() {
-  for(auto *w:QGuiApplication::topLevelWindows()) if(w->title()=="Better Pets") return dynamic_cast<QQuickWindow*>(w);
+  for(auto *w:QGuiApplication::topLevelWindows()) if(w->title()=="Clibby") return dynamic_cast<QQuickWindow*>(w);
   throw std::runtime_error("pet window missing");
 }
 void mouse(QEvent::Type type,QPoint global,Qt::MouseButton button,Qt::MouseButtons buttons) {

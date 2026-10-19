@@ -20,7 +20,7 @@ def main():
     subprocess.run(["cmake", "--build", str(build), "--parallel", "4"], check=True)
     subprocess.run(["ctest", "--test-dir", str(build), "--output-on-failure"], check=True)
     print(build / "pet_qt")
-    print(build / "better_pets")
+    print(build / "clibby")
     print(build / "character_preview")
 
 

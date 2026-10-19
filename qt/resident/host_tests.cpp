@@ -13,6 +13,7 @@
 #include <QScreen>
 #include <QTemporaryDir>
 #include <iostream>
+#include <limits>
 #include <stdexcept>
 
 namespace {
@@ -95,11 +96,19 @@ void malformedSettings() {
     const auto path = dir.filePath("preferences.json");
     write(path, R"({"version":1,"paused":true})");
     check(pets::loadPreferences(path).paused, "valid typed pause preference accepted before malformed cases");
+    check(pets::loadPreferences(path).companionScale == 1.0 && pets::loadPreferences(path).pixelation == 1.0,
+          "older preferences retain default companion appearance");
     const QList<QByteArray> invalid{
         "not json", "[]", R"({"version":2,"paused":true})",
         R"({"version":1,"paused":"true"})",
         R"({"version":1,"walkingSpeed":"2"})", R"({"version":1,"walkingSpeed":0.4})",
         R"({"version":1,"walkingSpeed":3.1})", R"({"version":1,"position":{"x":1.5,"y":0}})",
+        R"({"version":1,"companionScale":"1","paused":true})",
+        R"({"version":1,"companionScale":0.49,"paused":true})",
+        R"({"version":1,"companionScale":2.01,"paused":true})",
+        R"({"version":1,"pixelation":null,"paused":true})",
+        R"({"version":1,"pixelation":0.24,"paused":true})",
+        R"({"version":1,"pixelation":4.01,"paused":true})",
         R"({"version":1,"position":{"x":1000001,"y":0},"paused":true})",
         R"({"version":1,"position":{"x":5},"paused":true})",
         R"({"version":1,"display":42,"paused":true})",
@@ -112,21 +121,24 @@ void malformedSettings() {
         check(!p.hasPosition && !p.paused && p.display.isEmpty() && p.character == "fixture-animal", "malformed settings reset all preferences safely");
     }
     const auto missing = pets::loadPreferences(dir.filePath("missing.json"));
-    check(!missing.hasPosition && !missing.paused, "missing settings use defaults");
+    check(!missing.hasPosition && !missing.paused && missing.companionScale == 1.0 && missing.pixelation == 1.0, "missing settings use defaults");
 }
 void settingsRoundTrip() {
     QTemporaryDir dir;
     const auto path = dir.filePath("preferences.json");
     pets::Preferences p;
     p.walkingSpeed = 2.75;
+    p.companionScale = 1.5;
+    p.pixelation = 2.5;
     p.position = {-1280, -200}; p.display = "External Display"; p.hasPosition = true; p.paused = true;
     check(pets::savePreferences(path, p), "preferences saved atomically");
     const auto loaded = pets::loadPreferences(path);
     check(loaded.hasPosition && loaded.position == QPoint(-1280, -200) && loaded.display == "External Display" && loaded.paused && loaded.walkingSpeed == 2.75, "typed placement and pause survive restart");
+    check(loaded.companionScale == 1.5 && loaded.pixelation == 2.5, "companion appearance survives restart");
     QFile file(path); check(file.open(QIODevice::ReadOnly), "saved preferences readable");
     const auto before = file.readAll(); file.close();
     const auto object = QJsonDocument::fromJson(before).object();
-    check(object.keys() == QStringList({"character", "display", "paused", "position", "version", "walkingSpeed"}), "only allowed preferences persisted");
+    check(object.keys() == QStringList({"character", "companionScale", "display", "paused", "pixelation", "position", "version", "walkingSpeed"}), "only allowed preferences persisted");
     p.position.setX(1000001);
     check(!pets::savePreferences(path, p), "invalid preference write rejected");
     check(file.open(QIODevice::ReadOnly) && file.readAll() == before, "rejected write preserves previous complete file");
@@ -136,10 +148,31 @@ void settingsRoundTrip() {
         p.walkingSpeed = speed;
         check(!pets::savePreferences(path, p), "unsupported walking speed rejected before saving");
     }
+    p.walkingSpeed = 2.75;
+    for (double scale : {0.49, 2.01, std::numeric_limits<double>::infinity(), std::numeric_limits<double>::quiet_NaN()}) {
+        p.companionScale = scale;
+        check(!pets::savePreferences(path, p), "invalid companion scale rejected before saving");
+    }
+    p.companionScale = 1.5;
+    for (double pixelation : {0.24, 4.01, std::numeric_limits<double>::infinity(), std::numeric_limits<double>::quiet_NaN()}) {
+        p.pixelation = pixelation;
+        check(!pets::savePreferences(path, p), "invalid pixelation rejected before saving");
+    }
+    check(file.open(QIODevice::ReadOnly) && file.readAll() == before, "invalid appearance preserves saved preferences");
+    file.close();
+    for (double scale : {0.5, 2.0}) {
+        for (double pixelation : {0.25, 4.0}) {
+            p.companionScale = scale;
+            p.pixelation = pixelation;
+            check(pets::savePreferences(path, p), "appearance range boundaries accepted");
+            const auto boundary = pets::loadPreferences(path);
+            check(boundary.companionScale == scale && boundary.pixelation == pixelation, "appearance boundaries survive restart");
+        }
+    }
     p = {};
     check(pets::savePreferences(path, p), "replace previous complete preferences");
     const auto defaults = pets::loadPreferences(path);
-    check(!defaults.hasPosition && !defaults.paused, "absence of saved placement survives round trip");
+    check(!defaults.hasPosition && !defaults.paused && defaults.companionScale == 1.0 && defaults.pixelation == 1.0, "default appearance and absent placement survive round trip");
     check(!pets::savePreferences(dir.filePath("absent/prefs.json"), p), "unwritable destination reports failure");
 }
 void characterPreferences() {
@@ -157,7 +190,7 @@ void characterPreferences() {
 }
 QQuickWindow* petWindow() {
     for (auto* window : QGuiApplication::topLevelWindows())
-        if (window->title() == "Better Pets") return dynamic_cast<QQuickWindow*>(window);
+        if (window->title() == "Clibby") return dynamic_cast<QQuickWindow*>(window);
     throw std::runtime_error("host owns a discoverable pet window");
 }
 void mouse(QQuickWindow* window, QEvent::Type type, QPoint local, QPoint global,
@@ -362,6 +395,53 @@ void preparedPresentation(const QString& assets) {
     check(owned.isNull() && window->contentItem()->childItems().size() == 1,
           "switching back to 2D destroys owned prepared scene");
 }
+void companionScaling(const QString& assets) {
+    const auto rig = loadRig(assets);
+    pets::DesktopHost host(rig, QImage(rig.atlas));
+    auto *item = new QQuickItem;
+    const QRegion grab(QRect(70, 90, 40, 70)), visual(QRect(40, 20, 100, 170));
+    host.setPresentation(item, {180, 200}, {90, 180}, grab, visual);
+    host.setSupportFootprint(-12, 18);
+    const double root = host.groundRootX(), floor = host.groundWorldY();
+    check(host.setCompanionScale(1.5), "valid companion scale accepted");
+    check(host.presentationSize() == QSize(270, 300) && item->size() == QSizeF(180, 200)
+          && item->scale() == 1.5 && item->transformOrigin() == QQuickItem::TopLeft,
+          "scale transforms canonical art and resizes native presentation");
+    check(host.localGroundAnchor() == QPointF(135, 270) &&
+          host.groundRootX() == root && host.groundWorldY() == floor,
+          "resizing preserves planted world root and floor");
+    check(host.supportFootprint() == std::pair<double,double>(-18,27), "support footprint scales once");
+    check(host.interactionRegion().contains(QPoint(120,150)) &&
+          !host.interactionRegion().contains(QPoint(75,100)), "native grab region follows companion scale");
+    const QRegion posed(QRect(20, 25, 90, 150));
+    host.updatePresentationMask(posed, grab);
+    check(petWindow()->mask().contains(QPoint(35,40)), "posed visual mask scales from canonical coordinates");
+    check(host.setCompanionScale(.5) && host.setCompanionScale(1), "repeated size changes accepted");
+    check(host.interactionRegion() == grab && host.presentationSize() == QSize(180,200)
+          && petWindow()->mask() == (posed | grab), "size changes never compound canonical metadata");
+    for (double invalid : {0.0, .49, 2.01, std::numeric_limits<double>::quiet_NaN()})
+      check(!host.setCompanionScale(invalid) && host.companionScale() == 1,
+            "invalid scale preserves active presentation");
+    check(host.setCompanionScale(1.5), "size set before character swap");
+    host.setCharacter(pets::character::loadCharacter(assets+"/../characters/soft-creature"));
+    check(host.companionScale() == 1.5 && petWindow()->contentItem()->childItems().front()->scale() == 1.5,
+          "size remains selected after switching to planar companion");
+    host.setPetVisible(true);
+    auto *window = petWindow();
+    const auto hit = host.interactionRegion().boundingRect().center();
+    const auto position = host.position();
+    QPointF realized;
+    host.dragDisplacement = [&](QPointF displacement) { realized += displacement; };
+    mouse(window,QEvent::MouseButtonPress,hit,position+hit,Qt::LeftButton,Qt::LeftButton);
+    mouse(window,QEvent::MouseMove,hit,position+hit-QPoint(0,30),Qt::NoButton,Qt::LeftButton);
+    check(realized == QPointF(0,-20), "drag impulses remain in canonical character units");
+    host.cancelDrag();
+    const auto loaded = pets::character::loadCharacter(assets+"/../characters/soft-creature");
+    pets::character::Controller controller(loaded.definition);
+    host.applyPose(controller.pose(pets::character::Action::Attend, .3));
+    check((host.interactionRegion() - window->mask()).isEmpty(), "posed planar art retains scaled grab geometry");
+    host.dragDisplacement = {};
+}
 void restoreGroundedFloor(const QString& assets) {
     const auto rig = loadRig(assets);
     pets::DesktopHost host(rig, QImage(rig.atlas));
@@ -447,6 +527,7 @@ int main(int argc, char** argv) {
         try { test(); std::cout << "PASS " << name << '\n'; }
         catch (const std::exception& error) { ++failures; std::cerr << "FAIL " << name << ": " << error.what() << '\n'; }
     };
+    run("companion size geometry", [&] { companionScaling(QString::fromLocal8Bit(argv[1])); });
     run("grounded restoration floor repair", [&] { restoreGroundedFloor(QString::fromLocal8Bit(argv[1])); });
     run("prepared presentation ownership and ground", [&] { preparedPresentation(QString::fromLocal8Bit(argv[1])); });
     run("production silhouette preservation", [&] { check(argc == 2, "asset argument required"); productionSilhouettes(QString::fromLocal8Bit(argv[1])); });

@@ -52,7 +52,18 @@ int main(int argc,char** argv) {
   require(!stage->findChild<QObject*>("targetMarker")&&!stage->findChild<QObject*>("leftContact"),"resident contains preview markers");
   auto output=stage->findChild<QObject*>("pixelOutput");
   require(output&&!output->property("smooth").toBool()&&output->property("textureSize").toSize()==QSize(128,128),"nearest resident presentation invalid");
+  require(stage->setProperty("pixelation",2.0),"pixelation property exists");
+  require(output->property("textureSize").toSize()==QSize(64,64),"coarser pixelation lowers render resolution");
+  require(stage->width()==384 && motion.projectAnchor(stage.get(),QVector3D(1,0,0))==travel,"pixelation preserves size and projection");
+  stage->setProperty("pixelation",.25);
+  require(output->property("textureSize").toSize()==QSize(512,512),"fine pixelation increases render resolution");
+  stage->setProperty("pixelation",1.0);
   auto grab=motion.projectedGrabRegion(stage.get()), visual=motion.projectedVisualRegion(stage.get());
+  stage->setProperty("pixelation",4.0);
+  const auto chunkyMask=motion.projectedVisualRegion(stage.get());
+  require((visual-chunkyMask).isEmpty() && !(chunkyMask-visual).isEmpty(),
+          "coarse pixel blocks need a wider visual fringe");
+  stage->setProperty("pixelation",1.0);
   require(!grab.isEmpty()&&!visual.isEmpty(),"resident interaction envelopes missing");
   require(!visual.contains(QPoint(0,0))&&!visual.contains(QPoint(383,383)),"conservative mask covers transparent corners");
   for(auto semantic:{QString("look"),QString("nod"),QString("wave"),QString("success"),QString("failure")}) {

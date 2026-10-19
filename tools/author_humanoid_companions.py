@@ -29,7 +29,7 @@ def alden():
     a=make('alden','Alden',2.76,.42,skin=(.52,.33,.22,1),hair=(.43,.42,.36,1),coat=(.30,.34,.35,1),accent=(.37,.23,.16,1))
     a.blob('short grey beard',(0,-.14,a.face_z-.12),(.15,.11,.13),'hair','head')
     a.box('breast plate',(0,-.19,1.84),(.27,.065,.25),'metal','spine')
-    for s in [-1,1]: a.blob('armour shoulder',(s*.38,.005,2.10),(.17,.23,.12),'coat','upper_arm_left' if s>0 else 'upper_arm_right',8,4)
+    for s in [-1,1]: a.blob('armour shoulder',(s*a.shoulder_half_span,.005,a.neck-.14),(.125,.20,.10),'coat','upper_arm_left' if s>0 else 'upper_arm_right',8,4)
     a.wedge('short travel cloak',[(-.40,.17,2.13),(.40,.17,2.13),(-.44,.29,1.40),(.44,.29,1.40),(0,.39,1.68)],[(0,1,4),(0,4,2),(1,3,4),(2,4,3)],'accent','spine')
     a.joint('fastening',(.12,-.265,2.03),(.12,-.265,2.13),'spine')
     a.blob('coat fastening',(.12,-.267,2.03),(.055,.035,.055),'linen','fastening',8,4)

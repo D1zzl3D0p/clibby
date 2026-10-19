@@ -12,7 +12,7 @@
 #include <stdexcept>
 
 namespace {
-QString resources() { return QCoreApplication::applicationDirPath()+"/better-pets-3d"; }
+QString resources() { return QCoreApplication::applicationDirPath()+"/clibby-3d"; }
 }
 QString residentRigPath(QString asset) {
  if(!pets::character3d::builtinAsset(asset))throw std::runtime_error("Unknown built-in 3D asset");
@@ -25,7 +25,8 @@ QQuickItem* createResidentStage(QQmlEngine& engine,WolfMotion& motion,QString* e
  const auto* info=pets::character3d::builtinAsset(asset);
  if(!info)throw std::runtime_error("Unknown built-in 3D asset");
  engine.rootContext()->setContextProperty("catalogueModel",info->catalogueStyle);
- engine.rootContext()->setContextProperty("catalogueFacingBias",info->quadruped?-10.8:-35.);
+ // A camera target offset is measured in pixels; facing uses the rig's yaw angle.
+ engine.rootContext()->setContextProperty("catalogueFacingBias",info->quadruped?motion.authoredFacingBiasDegrees():-35.);
  const auto type=QString::fromLatin1(info->type);
  const QString source=asset=="werewolf"?"/WolfAsset/Werewolf.qml":"/"+asset+"/"+type+"Asset/"+type+".qml";
  engine.rootContext()->setContextProperty("assetSource",QUrl::fromLocalFile(resources()+source));
@@ -43,6 +44,7 @@ QPointF WolfMotion::projectAnchor(QQuickItem* stage,QVector3D point) const {
 }
 QRegion WolfMotion::projectedVisualRegion(QQuickItem* stage) const {
  if(!stage)return {};
+ const int fringe=std::max(2,stage->property("pixelFringe").toInt());
  const double ppm=stage->property("logicalPixelsPerMeter").toDouble();
  QRegion result;
  if(!skinBounds_.empty()) {
@@ -68,8 +70,8 @@ QRegion WolfMotion::projectedVisualRegion(QQuickItem* stage) const {
    for(auto i=points.rbegin()+1;i!=points.rend();++i){while(hull.size()>lower&&cross(hull[hull.size()-2],hull.back(),*i)<=0)hull.pop_back();hull.push_back(*i);}
    QPolygon polygon;for(const auto point:hull)polygon<<point.toPoint();
    const QRegion projected(polygon,Qt::WindingFill);
-   // Two logical pixels cover corner rounding and the nearest sampled output.
-   for(int x=-2;x<=2;++x)for(int y=-2;y<=2;++y)result|=projected.translated(x,y);
+   // Include the full nearest-sampled pixel block beyond the geometric hull.
+   for(const auto &rect:projected) result|=rect.adjusted(-fringe,-fringe,fringe,fringe);
   }
   return result.intersected(QRect(0,0,int(stage->width()),int(stage->height())));
  }
@@ -90,14 +92,14 @@ QRegion WolfMotion::projectedVisualRegion(QQuickItem* stage) const {
   else if(!wings_ && name.startsWith("tail"))radius=.27;
   else if(name.startsWith("hand")||name.startsWith("foot"))radius=.25;
   const auto point=projectAnchor(stage,joint.node->property("scenePosition").value<QVector3D>());
-  const int r=int(std::ceil(radius*ppm))+2;
+  const int r=int(std::ceil(radius*ppm))+fringe;
   result|=QRegion(QRect(int(std::floor(point.x()))-r,int(std::floor(point.y()))-r,2*r+1,2*r+1),QRegion::Ellipse);
   const auto parent=joints_.find(joint.parent);
   if(parent!=joints_.end()&&parent->second.node) {
    const auto end=projectAnchor(stage,parent->second.node->property("scenePosition").value<QVector3D>());
    const double distance=std::hypot(end.x()-point.x(),end.y()-point.y());
    const int count=std::max(1,int(std::ceil(distance/8)));
-   const int limbRadius=int(std::ceil(.17*ppm))+2;
+   const int limbRadius=int(std::ceil(.17*ppm))+fringe;
    for(int sample=1;sample<count;++sample) {
     const auto center=point+(end-point)*(double(sample)/count);
     result|=QRegion(QRect(int(center.x())-limbRadius,int(center.y())-limbRadius,2*limbRadius+1,2*limbRadius+1),QRegion::Ellipse);
@@ -111,7 +113,32 @@ QRegion WolfMotion::projectedGrabRegion(QQuickItem* stage) const {
  const double ppm=stage->property("logicalPixelsPerMeter").toDouble();
  auto pelvis=joints_.find("pelvis");
  if(pelvis==joints_.end()||!pelvis->second.node)return {};
- const auto center=projectAnchor(stage,pelvis->second.node->property("scenePosition").value<QVector3D>()+QVector3D(0,.32,0));
- const int halfWidth=int(std::ceil(.34*ppm)),halfHeight=int(std::ceil(.50*ppm));
- return QRegion(QRect(int(center.x())-halfWidth,int(center.y())-halfHeight,2*halfWidth,2*halfHeight),QRegion::Ellipse);
+ QRegion result;
+ auto envelope=[&](QPointF center,double width,double height){
+  const int halfWidth=int(std::ceil(width*ppm)),halfHeight=int(std::ceil(height*ppm));
+  result|=QRegion(QRect(int(center.x())-halfWidth,int(center.y())-halfHeight,
+                       2*halfWidth,2*halfHeight),QRegion::Ellipse);
+ };
+ // Retain the established upright torso target, then follow the actual core
+ // anatomy. A long quadruped's head is well outside the old pelvis ellipse.
+ envelope(projectAnchor(stage,pelvis->second.node->property("scenePosition").value<QVector3D>()
+                        +QVector3D(0,.32,0)),.34,.50);
+ QPointF previous;bool havePrevious=false;
+ for(const char* role:{"pelvis","spine","head"}){
+  const auto joint=joints_.find(role);
+  if(joint==joints_.end()||!joint->second.node){havePrevious=false;continue;}
+  const auto point=projectAnchor(stage,joint->second.node->property("scenePosition").value<QVector3D>());
+  const bool head=joint->first=="head";
+  envelope(point,head?.42:.34,head?.42:.50);
+  if(havePrevious){
+   const double distance=std::hypot(point.x()-previous.x(),point.y()-previous.y());
+   const int samples=std::clamp(int(std::ceil(distance/std::max(1.,.34*ppm))),1,64);
+   for(int sample=1;sample<samples;++sample)
+    envelope(previous+(point-previous)*(double(sample)/samples),.34,.42);
+  }
+  previous=point;havePrevious=true;
+ }
+ // Deliberately exclude wings, limbs, tails and owned props: their visual
+ // envelopes must not turn remote decorations into pickup targets.
+ return result.intersected(QRect(0,0,int(stage->width()),int(stage->height())));
 }

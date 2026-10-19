@@ -1,4 +1,6 @@
 #include "application.h"
+#include "brand_assets.h"
+#include "menu_bar_icon.h"
 #include "spatial_character.h"
 #include "characters3d/builtin_assets.h"
 #include "characters/loader.h"
@@ -8,9 +10,14 @@
 #include "reaction_motion.h"
 #include "sleep_observer.h"
 #include "status_label.h"
+#include "productivity/service.h"
+#include "productivity/panel.h"
 #include <QAction>
+#include <QActionGroup>
 #include <QApplication>
 #include <QDebug>
+#include <QDateTime>
+#include <QCryptographicHash>
 #include <QCursor>
 #include <QDir>
 #include <QUrl>
@@ -23,7 +30,6 @@
 #include <QMenu>
 #include <QPixmap>
 #include <QScreen>
-#include <QSystemTrayIcon>
 #include <QToolTip>
 #include <algorithm>
 #include <chrono>
@@ -31,11 +37,17 @@
 #include <limits>
 namespace pets {
 namespace {
+// Planar controllers retain authored units; desktop placement uses logical pixels.
+character::GroundSpan canonicalSpan(const DesktopHost &host) {
+  const auto span = host.groundSpan();
+  return {span.minimum / host.companionScale(), span.maximum / host.companionScale()};
+}
 std::optional<character::GroundSpan> soleBounds(const DesktopHost &host) {
   auto bounds=host.supportBounds();
   if(bounds) {
-    const double margin=std::min(2.,(bounds->maximum-bounds->minimum)/2);
-    bounds->minimum+=margin; bounds->maximum-=margin;
+    const double margin=std::min(2.*host.companionScale(),(bounds->maximum-bounds->minimum)/2);
+    bounds->minimum=(bounds->minimum+margin)/host.companionScale();
+    bounds->maximum=(bounds->maximum-margin)/host.companionScale();
   }
   return bounds;
 }
@@ -74,12 +86,13 @@ ResidentApplication::ResidentApplication(const QString &assets,
                                          const QString &stateDirectory,
                                          bool showTray, Clock clock,
                                          IpcMode ipcMode, QObject *parent,
-                                         bool restoreCharacterSelection, CursorSource cursorSource, SurfaceSource surfaceSource)
+                                         bool restoreCharacterSelection, CursorSource cursorSource, SurfaceSource surfaceSource, WallClock wallClock)
     : QObject(parent), clock_(clock ? std::move(clock) : Clock([] {
         return std::chrono::duration<double>(
                    std::chrono::steady_clock::now().time_since_epoch())
             .count();
       })),
+      wallClock_(wallClock ? std::move(wallClock) : WallClock([] { return QDateTime::currentMSecsSinceEpoch(); })),
       cursorSource_(cursorSource ? std::move(cursorSource) : CursorSource([] { return std::optional<QPointF>{QCursor::pos()}; })),
       surfaceSource_(std::move(surfaceSource)),
       runtime_(clock_()), sessions_(clock_()), timer_(this),
@@ -89,7 +102,14 @@ ResidentApplication::ResidentApplication(const QString &assets,
     throw AlreadyRunning();
   if (instance_->result() != Instance::Result::Acquired)
     throw std::runtime_error(instance_->error().toStdString());
-  if (showTray && !QSystemTrayIcon::isSystemTrayAvailable())
+  productivity_ = std::make_unique<productivity::Service>(stateDirectory + "/productivity.json");
+  productivityError_ = productivity_->error();
+  productivityPanel_ = std::make_unique<productivity::Panel>([this](const QString &operation, const QJsonObject &params) {
+    const auto reply = handleRequest("productivity." + operation, params);
+    if (reply.errorCode) throw productivity::Error(reply.errorCode, reply.errorMessage);
+    return reply.result;
+  });
+  if (showTray && !MenuBarIcon::isAvailable())
     throw std::runtime_error(
         "menu-bar/system-tray controls are unavailable on this desktop");
   preferences_ = loadPreferences(settingsFile_);
@@ -136,6 +156,8 @@ ResidentApplication::ResidentApplication(const QString &assets,
     preferences_.character = "fixture-animal";
     host_ = std::make_unique<DesktopHost>(rig_, atlas);
   }
+  host_->setCompanionScale(preferences_.companionScale);
+  host_->setPixelation(preferences_.pixelation);
   statusLabel_ = std::make_unique<StatusLabel>();
   toolbox_ = std::make_unique<UtilityToolbox>();
   const auto dispatch = [this](SessionKey key, std::uint64_t sequence, UtilityAction action) { return dispatchUtilityAction(key, sequence, action); };
@@ -247,6 +269,28 @@ ResidentApplication::ResidentApplication(const QString &assets,
     characterErrorAction_->setVisible(false);
     menu_->addSeparator();
   }
+  auto *appearance = menu_->addMenu("Appearance");
+  auto *sizes = appearance->addMenu("Companion size");
+  auto *sizeGroup = new QActionGroup(this);
+  for (int percent : {50, 75, 100, 125, 150, 200}) {
+    auto *action = sizes->addAction(QString::number(percent) + "%");
+    action->setParent(this);
+    action->setObjectName("companionSize" + QString::number(percent));
+    action->setCheckable(true); action->setData(percent / 100.);
+    sizeGroup->addAction(action);
+    connect(action, &QAction::triggered, this, [this, percent] { setCompanionScale(percent / 100.); });
+  }
+  auto *pixels = appearance->addMenu("Pixelation");
+  auto *pixelGroup = new QActionGroup(this);
+  for (const auto &choice : {std::pair<int,const char*>{25,"Fine"}, {50,"Light"}, {100,"Classic"}, {200,"Chunky"}, {400,"Very chunky"}}) {
+    auto *action = pixels->addAction(QString::fromLatin1(choice.second));
+    action->setParent(this);
+    action->setObjectName("pixelation" + QString::number(choice.first));
+    action->setCheckable(true); action->setData(choice.first / 100.);
+    pixelGroup->addAction(action);
+    connect(action, &QAction::triggered, this, [this, value = choice.first / 100.] { setPixelation(value); });
+  }
+  updateAppearanceMenu();
   auto* summon = addAction("Toolbox…");
   summon->setObjectName("summonToolbox");
   connect(summon, &QAction::triggered, this, [this] {
@@ -255,6 +299,10 @@ ResidentApplication::ResidentApplication(const QString &assets,
     toolbox_->show(); toolbox_->raise(); toolbox_->activateWindow();
   });
   sessionsMenu_ = menu_->addMenu("Sessions");
+  auto* productivityAction = addAction("Productivity…");
+  productivityAction->setObjectName("summonProductivity");
+  connect(productivityAction, &QAction::triggered, this, [this] { showProductivity(); });
+  toolbox_->addControl(productivityAction, "toolboxProductivity");
   settingsErrorAction_ = addAction("Settings could not be saved");
   settingsErrorAction_->setEnabled(false);
   settingsErrorAction_->setVisible(false);
@@ -266,14 +314,8 @@ ResidentApplication::ResidentApplication(const QString &assets,
       menu_->popup(global);
   };
   if (showTray) {
-    // A separate, small application mark avoids reading/uploading artwork on
-    // ticks.
-    QPixmap mark(32, 32);
-    mark.fill(QColor(105, 74, 48));
-    tray_ = std::make_unique<QSystemTrayIcon>(QIcon(mark));
-    tray_->setToolTip("Better Pets");
-    tray_->setContextMenu(menu_.get());
-    tray_->show();
+    // Static template artwork adapts to macOS appearance without animation ticks.
+    tray_ = std::make_unique<MenuBarIcon>(menu_.get());
   }
   timer_.setTimerType(Qt::PreciseTimer);
   timer_.setSingleShot(true);
@@ -302,9 +344,91 @@ ResidentApplication::ResidentApplication(const QString &assets,
   resetCuriosity();
   advanceSurfaces(clock_());
   persist();
+  advanceProductivity();
   schedule();
 }
 ResidentApplication::~ResidentApplication() { shutdown(); }
+namespace {
+SessionKey productivitySessionKey(const QJsonObject &item) {
+  const auto identity = item["source_id"].toString().toUtf8() + ':' + item["event_id"].toString().toUtf8();
+  return {"productivity", QCryptographicHash::hash(identity, QCryptographicHash::Sha256).toHex().toStdString()};
+}
+}
+void ResidentApplication::showProductivity() {
+  if (stopped_ || runtime_.state().suspended) return;
+  advanceProductivity();
+  productivityPanel_->refresh();
+  productivityPanel_->show();
+  productivityPanel_->raise();
+  productivityPanel_->activateWindow();
+  schedule();
+}
+void ResidentApplication::signalProductivity(const QJsonObject &item) {
+  const auto kind = item["kind"].toString();
+  if (kind == "cancelled" || kind == "info") {
+    sessions_.clear(productivitySessionKey(item), static_cast<std::uint64_t>(item["seq"].toDouble()), clock_());
+    synchronizeSessions(clock_());
+    return;
+  }
+  if (item["acknowledged"].toBool() || item["completed"].toBool() ||
+      item["snoozed_until"].toDouble() > double(wallClock_())) return;
+  std::optional<SessionStatus> status;
+  if (kind == "working") status = SessionStatus::Working;
+  else if (kind == "needs_input") status = SessionStatus::NeedsInput;
+  else if (kind == "failed") status = SessionStatus::Failed;
+  else if (kind == "completed" || kind == "response_ready") status = SessionStatus::Completed;
+  if (!status) return;
+  auto scalars = item["title"].toString().toUcs4();
+  scalars.resize(std::min<qsizetype>(80, scalars.size()));
+  const std::u32string text(scalars.cbegin(), scalars.cend());
+  auto label = QString::fromUcs4(text.data(), qsizetype(text.size()));
+  if (kind == "response_ready") label += " — Response ready";
+  const auto result = sessions_.update({productivitySessionKey(item), label.toStdString(),
+      static_cast<std::uint64_t>(item["seq"].toDouble()), *status, 120,
+      item["source_url"].toString().toStdString(),
+      item["source_id"] == "timer" ? ("interval-" + QByteArray::number(qint64(item["seq"].toDouble()))).toStdString()
+          : item["occurrence_id"].toString().toStdString()}, clock_());
+  if (result.accepted()) synchronizeSessions(clock_());
+}
+void ResidentApplication::advanceProductivity() {
+  if (!productivity_ || runtime_.state().suspended) return;
+  try {
+    const auto now = wallClock_();
+    QStringList dueIds;
+    // Collect only timers actually due now; history restoration never replays
+    // old attention gestures. Service::call also reconciles deadlines.
+    const auto due = productivity_->nextDeadline();
+    if (due && *due <= now) {
+      productivity_->advance(now);
+      const auto timers = productivity_->call("timers", {}, now)["timers"].toArray();
+      for (const auto &value : timers) {
+        const auto timer = value.toObject();
+        if (timer["state"] == "waiting" || timer["state"] == "finished")
+          dueIds << timer["id"].toString();
+      }
+      int offset = 0;
+      while (!dueIds.isEmpty()) {
+        const auto page = productivity_->call("list", {{"offset", offset}}, now);
+        const auto items = page["items"].toArray();
+        for (const auto &value : items) {
+          const auto item = value.toObject();
+          if (item["source_id"] == "timer" && dueIds.contains(item["event_id"].toString()) &&
+              !item["acknowledged"].toBool() && !item["completed"].toBool() &&
+              item["updated_at"].toDouble() == double(now)) signalProductivity(item);
+        }
+        offset += items.size();
+        if (items.isEmpty() || offset >= page["total"].toInt()) break;
+      }
+    }
+    productivityError_.clear();
+    if (productivityPanel_ && productivityPanel_->isVisible()) productivityPanel_->refresh();
+  } catch (const std::exception &error) {
+    const QString message = QString::fromUtf8(error.what());
+    if (productivityError_ != message) qWarning().noquote() << "Productivity storage:" << message;
+    productivityError_ = message;
+    if (productivityPanel_) productivityPanel_->setError(message);
+  }
+}
 bool ResidentApplication::petVisible() const {
   return host_ && host_->isPetVisible();
 }
@@ -349,14 +473,14 @@ void ResidentApplication::control(Control command) {
     dragSamples_.clear(); sampleDrag(now);
     manualNavigation_ = false;
     if (spatialCharacter_) spatialCharacter_->pickup(host_->groundRootX(),host_->elevation());
-    else groundedController_->pickup(host_->groundRootX(),host_->elevation());
+    else groundedController_->pickup(host_->groundRootX()/host_->companionScale(),host_->elevation()/host_->companionScale());
     runtime_.cancelReaction(now); reaction_.reset(); reactionSubmitted_=false; reactionDeadline_.reset();
     if (!runtime_.state().paused) { applyBasePose(); wakeMotion(now); }
   }
   if (command == Control::EndDrag && hasGroundMotion()) {
     const auto v=runtime_.state().paused ? QPointF{} : releaseVelocity(now);
     if (spatialCharacter_) spatialCharacter_->release(v);
-    else groundedController_->release({v.x(),v.y()});
+    else groundedController_->release({v.x()/host_->companionScale(),v.y()/host_->companionScale()});
     dragSamples_.clear(); wakeMotion(now);
   }
   if (command == Control::Hide || command == Control::Suspend || command == Control::Wake ||
@@ -379,6 +503,7 @@ void ResidentApplication::control(Control command) {
     host_->setPetVisible(runtime_.state().visible);
   if (command == Control::Suspend || command == Control::Wake)
     sessions_.reset(now);
+  if (command == Control::Wake) advanceProductivity();
   synchronizeSessions(now);
   if ((command == Control::Resume || command == Control::EndDrag ||
        command == Control::Wake || command == Control::Show) &&
@@ -395,6 +520,10 @@ void ResidentApplication::advance() {
   if (stopped_)
     return;
   const double now = clock_();
+  if (productivity_) {
+    const auto due = productivity_->nextDeadline();
+    if (due && *due <= wallClock_() && productivityError_.isEmpty()) advanceProductivity();
+  }
   if (const auto deadline = sessions_.nextDeadline();
       deadline && *deadline <= now)
     synchronizeSessions(now);
@@ -419,7 +548,12 @@ void ResidentApplication::advance() {
     else {
       const bool wasDropping=dropBusy();
       const auto dt = std::clamp(now-lastGroundTime_, 0.0, 1.0/30);
-      const auto proposal = spatialCharacter_ ? spatialCharacter_->propose(dt) : groundedController_->propose(dt);
+      auto proposal = spatialCharacter_ ? spatialCharacter_->propose(dt) : groundedController_->propose(dt);
+      if (!spatialCharacter_) {
+        proposal.displacement *= host_->companionScale();
+        proposal.displacementY *= host_->companionScale();
+        proposal.targetX *= host_->companionScale();
+      }
       lastGroundTime_ = now;
       realizingGround_ = true;
       const auto predicted=host_->predictedWorldPosition(proposal.displacement,proposal.displacementY);
@@ -427,7 +561,7 @@ void ResidentApplication::advance() {
           host_->acquireDescendingSupport(host_->groundWorldY(),predicted.y(),now,predicted.x())) {
         if(spatialCharacter_) spatialCharacter_->setSupportFrame(*host_);
         else {
-          groundedController_->setSupportFrame(host_->groundSpan(),host_->floorWorldY());
+          groundedController_->setSupportFrame(canonicalSpan(*host_),host_->floorWorldY()/host_->companionScale());
           groundedController_->setSupportBounds(soleBounds(*host_));
         }
         supportFrameId_=host_->selectedSurfaceId();
@@ -436,7 +570,7 @@ void ResidentApplication::advance() {
           : host_->moveInWorld(proposal.displacement,proposal.displacementY);
       realizingGround_ = false;
       if (spatialCharacter_) spatialCharacter_->realize(actual.rootX, actual.blocked, actual.elevation);
-      else groundedController_->realize(actual.rootX, actual.blocked, actual.elevation);
+      else groundedController_->realize(actual.rootX/host_->companionScale(), actual.blocked, actual.elevation/host_->companionScale(), 1/host_->companionScale());
       blockedNavigation_ = actual.blocked;
       if (wasDropping && !dropBusy()) {
         resetCuriosity();
@@ -499,6 +633,12 @@ void ResidentApplication::schedule() {
   if (const auto expiry = sessions_.nextDeadline();
       expiry && (!deadline || *expiry < *deadline))
     deadline = expiry;
+  if (productivity_ && productivityError_.isEmpty() && !runtime_.state().suspended) {
+    if (const auto due = productivity_->nextDeadline()) {
+      const double target = clock_() + std::max(0.0, double(*due) - double(wallClock_())) / 1000.;
+      if (!deadline || target < *deadline) deadline = target;
+    }
+  }
   if (!deadline)
     return;
   // Round upward: an early millisecond timer must not spin before a fractional
@@ -539,6 +679,33 @@ RpcReply ResidentApplication::handleRequest(const QString &method,
   // Keep expiry authoritative even for malformed or stale incoming updates.
   synchronizeSessions(now);
   schedule();
+  if (method.startsWith("productivity.")) {
+    const auto operation = method.mid(13);
+    try {
+      if (productivityError_.isEmpty()) {
+        const auto due = productivity_->nextDeadline();
+        if (due && *due <= wallClock_()) advanceProductivity();
+      }
+      auto result = productivity_->call(operation, params, wallClock_());
+      productivityError_ = productivity_->error();
+      if (!productivityError_.isEmpty()) result.insert("warning", productivityError_);
+      if (operation == "publish") signalProductivity(result["item"].toObject());
+      if (operation == "act") {
+        sessions_.acknowledge(productivitySessionKey(result["item"].toObject()), now);
+        synchronizeSessions(now);
+      }
+      schedule();
+      if (productivityPanel_->isVisible() && operation != "list" && operation != "timers" && operation != "capabilities")
+        productivityPanel_->refresh();
+      return {result};
+    } catch (const productivity::Error &error) {
+      if (error.code == -32010) productivityError_ = QString::fromUtf8(error.what());
+      schedule();
+      return {{}, error.code, QString::fromUtf8(error.what())};
+    } catch (const std::exception &error) {
+      return {{}, -32603, QString::fromUtf8(error.what())};
+    }
+  }
   if (method == "state.get") {
     if (!params.isEmpty())
       return {{}, -32602, "state.get takes no parameters"};
@@ -664,7 +831,8 @@ QPoint ResidentApplication::cardAnchor() const {
   if (!characterController_) return QPoint(128, 80);
   const auto anchors = character::utilityAnchors(characterController_->definition(), characterPose_);
   const int margin = int(std::ceil(characterController_->definition().motionEnvelope));
-  return QPoint(qRound(anchors.card.x) + margin, qRound(anchors.card.y) + margin);
+  return QPoint(qRound((anchors.card.x + margin)*host_->companionScale()),
+                qRound((anchors.card.y + margin)*host_->companionScale()));
 }
 QString ResidentApplication::dispatchUtilityAction(SessionKey key, std::uint64_t sequence, UtilityAction action) {
   if (stopped_ || runtime_.state().suspended || !runtime_.state().visible) return {};
@@ -679,7 +847,32 @@ QString ResidentApplication::dispatchUtilityAction(SessionKey key, std::uint64_t
       feedback = "Source could not be opened. Try again or open it directly.";
     break;
   case UtilityAction::Acknowledge:
-    if (found->status != SessionStatus::Working) sessions_.acknowledge(key, now);
+    if (found->status != SessionStatus::Working) {
+      if (key.sourceId == "productivity") {
+        try {
+          int offset = 0;
+          while (true) {
+            const auto page = productivity_->call("list", {{"offset", offset}}, wallClock_());
+            const auto items = page["items"].toArray();
+            bool matched = false;
+            for (const auto &value : items) {
+              const auto item = value.toObject();
+              if (productivitySessionKey(item) == key) {
+                if (item["seq"].toDouble() != double(sequence)) return "This notification has changed. Open Productivity for the current item.";
+                productivity_->call("act", {{"source_id", item["source_id"]}, {"event_id", item["event_id"]},
+                    {"seq", item["seq"]}, {"action", "acknowledge"}}, wallClock_());
+                matched = true;
+                break;
+              }
+            }
+            offset += items.size();
+            if (matched || items.isEmpty() || offset >= page["total"].toInt()) break;
+          }
+          if (productivityPanel_->isVisible()) productivityPanel_->refresh();
+        } catch (const std::exception &error) { return QString::fromUtf8(error.what()); }
+      }
+      sessions_.acknowledge(key, now);
+    }
     break;
   }
   synchronizeSessions(now); schedule();
@@ -803,7 +996,7 @@ void ResidentApplication::resetCuriosity() {
   blinkSupported_ = spatialCharacter_ ? spatialCharacter_->blinkSupported()
       : characterController_ && characterController_->definition().bindings.count("eyes");
   blinkDirty_ = false;
-  cursorPosition_.reset(); cursorDirection_.reset(); cursorDeadline_.reset();
+  cursorPosition_.reset(); cursorHeadingPosition_.reset(); cursorDirection_.reset(); cursorDeadline_.reset();
   cursorTurnAfter_=now;
   perchTargetId_.clear(); flightLandAt_.reset(); perchDescending_=false; cruising_=false;
   // Landing resets expressive behavior, but must not restart the pending
@@ -828,7 +1021,7 @@ void ResidentApplication::advanceCuriosity(double now) {
   behavior::Observation observation;
   observation.suppressed = !s.visible || s.paused || s.suspended || s.quitting || s.dragging || dropBusy();
   observation.reactionBusy = reaction_.has_value();
-  observation.width = characterController_ ? characterController_->definition().width
+  observation.width = characterController_ ? characterController_->definition().width*host_->companionScale()
                                            : std::max(1, host_->presentationSize().width());
   if (const auto state = groundedState()) {
     observation.rootX = state->rootX;
@@ -842,10 +1035,11 @@ void ResidentApplication::advanceCuriosity(double now) {
   const bool cursorAllowed = !observation.suppressed && !observation.manualBusy && !observation.reactionBusy
       && expressions()->supports(character::Role::Head);
   if (!cursorAllowed) {
-    cursorDeadline_.reset(); cursorPosition_.reset();
+    cursorDeadline_.reset(); cursorPosition_.reset(); cursorHeadingPosition_.reset();
   } else {
     if (cursorDeadline_ && *cursorDeadline_ > now+.5) cursorDeadline_.reset();
     if (!cursorDeadline_ || now >= *cursorDeadline_) cursorPosition_ = cursorSource_();
+    if (!cursorPosition_) cursorHeadingPosition_.reset();
     if (cursorPosition_) {
       QPointF head;
       if (spatialCharacter_) head = spatialCharacter_->headAnchor();
@@ -853,7 +1047,7 @@ void ResidentApplication::advanceCuriosity(double now) {
         const auto &definition = characterController_->definition();
         const auto anchors = character::utilityAnchors(definition, characterPose_);
         const double margin = std::ceil(definition.motionEnvelope);
-        head = QPointF(anchors.head.x+margin, anchors.head.y+margin);
+        head = QPointF(anchors.head.x+margin, anchors.head.y+margin)*host_->companionScale();
       }
       const QPointF displacement = *cursorPosition_-QPointF(host_->position())-head;
       // The 3D canvas includes large transparent margins; proximity follows
@@ -885,19 +1079,23 @@ void ResidentApplication::advanceCuriosity(double now) {
       if (signatureActive()) break;
       const double target = command.kind == Kind::Navigate ? command.targetX : observation.rootX;
       if (spatialCharacter_) spatialCharacter_->target(target);
-      else if (groundedController_) groundedController_->setTargetX(target);
+      else if (groundedController_) groundedController_->setTargetX(target/host_->companionScale());
       break;
     }
     }
   }
   if (curiosity_.activity()==behavior::Activity::Attention && cursorDirection_) {
     if (cursorTurnAfter_>now+.8) cursorTurnAfter_=now;
-    // A clear lateral side change invites an in-place turn. Center crossings
-    // retain the heading and a short cooldown avoids chasing pointer jitter.
-    if (cursorPosition_ && observation.cursorOffset
+    // A held pointer keeps its heading intent while the planted turn moves
+    // the body beneath it. Only a new pointer gesture can reverse that intent;
+    // the head continues following the pointer throughout.
+    const bool newHeadingGesture = cursorPosition_ && (!cursorHeadingPosition_ ||
+        std::abs(cursorPosition_->x()-cursorHeadingPosition_->x())>=4.);
+    if (newHeadingGesture && observation.cursorOffset
         && std::abs(observation.cursorOffset->x)>.35 && now>=cursorTurnAfter_) {
+      cursorHeadingPosition_=cursorPosition_;
       const bool turned=spatialCharacter_ ? spatialCharacter_->face(cursorPosition_->x())
-          : groundedController_ && groundedController_->face(cursorPosition_->x());
+          : groundedController_ && groundedController_->face(cursorPosition_->x()/host_->companionScale());
       if (turned) {
         cursorTurnAfter_=now+.8;
         wakeMotion(now);
@@ -989,10 +1187,10 @@ void ResidentApplication::dragMotion(QPointF displacement) {
     else sampleDrag(clock_());
     reconcileGround();
     if (spatialCharacter_) spatialCharacter_->hold(host_->groundRootX(),host_->elevation());
-    else groundedController_->hold(host_->groundRootX(),host_->elevation());
+    else groundedController_->hold(host_->groundRootX()/host_->companionScale(),host_->elevation()/host_->companionScale());
     if (!s.visible || s.paused || s.suspended || s.quitting) return;
     if (groundedController_) groundedController_->impulse({-displacement.x(),0},
-        std::min(2.,std::abs(displacement.x())/24.));
+        std::min(2.,std::abs(displacement.x())/(24.*host_->companionScale())));
     wakeMotion(clock_()); schedule(); return;
   }
   if (!characterController_) return;
@@ -1029,6 +1227,7 @@ bool ResidentApplication::selectCharacter(const QString &directory,
         throw std::runtime_error("3D character is outside the configured catalog");
       auto replacement = std::make_unique<SpatialCharacter>(directory);
       replacement->setSpeed(preferences_.walkingSpeed);
+      replacement->setAppearance(preferences_.companionScale, preferences_.pixelation);
       realizingGround_ = true;
       try { replacement->install(*host_); } catch (...) { realizingGround_ = false; throw; }
       realizingGround_ = false;
@@ -1092,15 +1291,24 @@ bool ResidentApplication::selectCharacter(const QString &directory,
 }
 std::optional<character::GroundedState> ResidentApplication::groundedState() const {
   if (spatialCharacter_) return spatialCharacter_->state();
-  return groundedController_ ? std::optional<character::GroundedState>{groundedController_->state()} : std::nullopt;
+  if (!groundedController_) return std::nullopt;
+  auto state = groundedController_->state();
+  const double scale = host_->companionScale();
+  state.rootX *= scale; state.targetX *= scale; state.velocity *= scale;
+  state.verticalVelocity *= scale; state.verticalAcceleration *= scale; state.elevation *= scale;
+  for (auto &foot : state.feet) {
+    foot.position.x *= scale; foot.position.y *= scale;
+    foot.landing.x *= scale; foot.landing.y *= scale;
+  }
+  return state;
 }
 void ResidentApplication::rebaseGround(bool preserveSecondary) {
   groundDeadline_.reset(); lastGroundTime_ = clock_();
   if (!hasGroundMotion() || !host_) return;
   if (spatialCharacter_) { spatialCharacter_->reset(*host_); spatialCharacter_->reconcile(*host_); }
   else {
-    groundedController_->reset(host_->groundRootX(), host_->groundSpan(), host_->floorWorldY(), preserveSecondary);
-    groundedController_->reconcile(host_->groundRootX(),host_->groundSpan(),host_->floorWorldY(),host_->elevation());
+    groundedController_->reset(host_->groundRootX()/host_->companionScale(), canonicalSpan(*host_), host_->floorWorldY()/host_->companionScale(), preserveSecondary);
+    groundedController_->reconcile(host_->groundRootX()/host_->companionScale(),canonicalSpan(*host_),host_->floorWorldY()/host_->companionScale(),host_->elevation()/host_->companionScale());
   }
   configureSupportFootprint();
   supportFrameId_=host_->selectedSurfaceId();
@@ -1129,11 +1337,11 @@ void ResidentApplication::reconcileGround() {
       previous->phase!=character::DropPhase::Airborne &&
       !runtime_.state().dragging && !id.empty() && id==supportFrameId_;
   if (spatialCharacter_) spatialCharacter_->reconcile(*host_);
-  else groundedController_->reconcile(host_->groundRootX(),host_->groundSpan(),host_->floorWorldY(),host_->elevation());
+  else groundedController_->reconcile(host_->groundRootX()/host_->companionScale(),canonicalSpan(*host_),host_->floorWorldY()/host_->companionScale(),host_->elevation()/host_->companionScale());
   if(translated && host_->groundRootX()!=previous->rootX) {
     const double target=previous->targetX+host_->groundRootX()-previous->rootX;
     if(spatialCharacter_) spatialCharacter_->target(target);
-    else groundedController_->setTargetX(target);
+    else groundedController_->setTargetX(target/host_->companionScale());
   }
   supportFrameId_=id;
   if(groundedController_) groundedController_->setSupportBounds(soleBounds(*host_));
@@ -1170,6 +1378,41 @@ void ResidentApplication::endDrag(bool released) {
   if (released && hasGroundMotion() && host_->acquireSupportAt(clock_())) dragSamples_.clear();
   if (!released) dragSamples_.clear();
   control(Control::EndDrag);
+}
+void ResidentApplication::updateAppearanceMenu() {
+  for (auto *action : findChildren<QAction*>()) {
+    if (action->objectName().startsWith("companionSize"))
+      action->setChecked(std::abs(action->data().toDouble() - preferences_.companionScale) < 1e-9);
+    if (action->objectName().startsWith("pixelation")) {
+      action->setChecked(std::abs(action->data().toDouble() - preferences_.pixelation) < 1e-9);
+      action->setEnabled(bool(characterController_) || bool(spatialCharacter_));
+    }
+  }
+}
+bool ResidentApplication::setCompanionScale(double scale) {
+  if (stopped_ || !std::isfinite(scale) || scale < .5 || scale > 2) return false;
+  if (scale == preferences_.companionScale) return true;
+  host_->cancelDrag();
+  realizingGround_ = true;
+  host_->setCompanionScale(scale);
+  realizingGround_ = false;
+  preferences_.companionScale = scale;
+  if (spatialCharacter_) spatialCharacter_->setAppearance(scale, preferences_.pixelation);
+  rebaseGround();
+  applyBasePose(); updateLabel(); updateAppearanceMenu();
+  resetCuriosity(); persist(); schedule();
+  return true;
+}
+bool ResidentApplication::setPixelation(double strength) {
+  if (stopped_ || !std::isfinite(strength) || strength < .25 || strength > 4) return false;
+  preferences_.pixelation = strength;
+  host_->setPixelation(strength);
+  if (spatialCharacter_) {
+    spatialCharacter_->setAppearance(preferences_.companionScale, strength);
+    spatialCharacter_->apply(*host_);
+  }
+  updateAppearanceMenu(); persist();
+  return true;
 }
 bool ResidentApplication::setWalkingSpeed(double multiplier) {
   if (stopped_ || !std::isfinite(multiplier) || multiplier < 0.5 || multiplier > 3.0) return false;
@@ -1341,7 +1584,7 @@ bool ResidentApplication::hop(double height) {
   const auto &s=runtime_.state();
   if (!hasGroundMotion() || stopped_ || !s.visible || s.paused || s.suspended ||
       s.dragging || dropBusy() || !std::isfinite(height) || height<=0 || height>160) return false;
-  const bool accepted=spatialCharacter_ ? spatialCharacter_->hop(height) : groundedController_->hop(height);
+  const bool accepted=spatialCharacter_ ? spatialCharacter_->hop(height) : groundedController_->hop(height/host_->companionScale());
   if(!accepted) return false;
   host_->clearSupport(); reconcileGround();
   manualNavigation_=true; flightLandAt_.reset(); perchTargetId_.clear();
@@ -1361,7 +1604,7 @@ bool ResidentApplication::flyTo(double worldX,double elevation) {
   // drop before the wings have built enough stroke speed to lift the body.
   if(!dropBusy() && !host_->selectedSurfaceId().empty()) {
     const bool launched=spatialCharacter_ ? spatialCharacter_->flyTo(host_->groundRootX(),elevation)
-                                        : groundedController_->flyTo(host_->groundRootX(),elevation);
+                                        : groundedController_->flyTo(host_->groundRootX()/host_->companionScale(),elevation/host_->companionScale());
     if(!launched)return false;
   }
   host_->clearSupport();
@@ -1372,7 +1615,7 @@ bool ResidentApplication::flyTo(double worldX,double elevation) {
   const double maxHeight=std::max(0.,host_->floorWorldY()-host_->minimumGroundWorldY());
   elevation=std::min(elevation,maxHeight);
   const bool accepted=spatialCharacter_ ? spatialCharacter_->flyTo(worldX,elevation)
-                                      : groundedController_->flyTo(worldX,elevation);
+                                      : groundedController_->flyTo(worldX/host_->companionScale(),elevation/host_->companionScale());
   if(!accepted) return false;
   manualNavigation_=true; manualUntil_=clock_()+.25;
   flightLandAt_.reset(); perchTargetId_.clear(); perchDescending_=false;
@@ -1395,7 +1638,7 @@ void ResidentApplication::setGroundTarget(double worldX) {
   // Integer presentation is authoritative, including authored fractional origin.
   const auto target = std::round(worldX-host_->groundRootX()) + host_->groundRootX();
   if (spatialCharacter_) spatialCharacter_->target(target);
-  else groundedController_->setTargetX(target);
+  else groundedController_->setTargetX(target/host_->companionScale());
   if (!groundDeadline_ && !groundSettled()) {
     lastGroundTime_=clock_(); groundDeadline_=lastGroundTime_+1.0/60;
   }
@@ -1434,7 +1677,7 @@ void ResidentApplication::advanceSignature(double now) {
   // never accumulate during interaction or suppression.
   signatureDeadline_ = now + 5;
   if (manualNavigation_ && now >= manualUntil_ && groundSettled()) manualNavigation_ = false;
-  signature();
+  if (curiosity_.activity() != behavior::Activity::Attention) signature();
 }
 void ResidentApplication::persist() {
   if (!host_)
@@ -1452,6 +1695,7 @@ void ResidentApplication::persist() {
     settingsErrorAction_->setVisible(failed);
 }
 void ResidentApplication::updateMenu() {
+  updateAppearanceMenu();
   for (auto* action : findChildren<QAction*>())
     if (action->objectName() == "walkLeft" || action->objectName() == "walkRight" || action->objectName() == "stopWalking")
       action->setEnabled(hasGroundMotion());
@@ -1476,6 +1720,8 @@ void ResidentApplication::shutdown() {
   ipc_.reset();
   statusLabel_.reset();
   toolbox_.reset();
+  productivityPanel_.reset();
+  productivity_.reset();
   persist();
   if (host_) {
     host_->draggingChanged = {};
@@ -1486,11 +1732,7 @@ void ResidentApplication::shutdown() {
     host_->groundChanged = {};
     host_.reset();
   }
-  if (tray_) {
-    tray_->hide();
-    tray_->setContextMenu(nullptr);
-    tray_.reset();
-  }
+  tray_.reset();
   menu_.reset();
   if (instance_)
     instance_->release();

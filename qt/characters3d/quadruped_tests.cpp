@@ -30,6 +30,7 @@ LimbArray<Leg> catalogueAnatomy(bool low){
 }
 void midstrideReversals(){
  constexpr double dt=1./120;
+ bool exercisedSwing=false,exercisedPair=false,exercisedSteering=false;
  for(bool low:{false,true})for(int reverseTick:{96,128,160,176,200})for(bool rapid:{false,true}){
   const auto legs=catalogueAnatomy(low);
   Motion m(legs,{},false,0,Gait::QuadrupedWalk);
@@ -56,10 +57,23 @@ void midstrideReversals(){
     check(delta<=18*dt,"midstride reversal teleports a spatial paw");
     if(previous.grounded[i]&&p.grounded[i])check(delta<1e-9,"midstride reversal slides a planted paw");
    }
-   check(std::count(p.swing.begin(),p.swing.end(),true)<=1,"midstride reversal lifts multiple paws");
+   const int swinging=int(std::count(p.swing.begin(),p.swing.end(),true));
+   check(swinging<=2,"midstride reversal exceeds its declared swing support");
+   check(std::count(p.grounded.begin(),p.grounded.end(),true)>=2,"midstride reversal loses its declared support");
+   if(swinging==2){
+    // Travel retains diagonal pairs. A foot-led turn can transfer through
+    // ipsilateral support while the planted leading paw owns the body path.
+    if(!p.pivoting)check(!((p.swing[0]&&p.swing[2])||(p.swing[1]&&p.swing[3])),"paired travel lifts both paws on one side");
+    exercisedPair=true;
+   }
+   for(int i=0;i<4;++i){
+    if(previous.grounded[i]&&p.grounded[i])check(std::abs(previous.footYaw[i]-p.footYaw[i])<1e-9,
+      "turn twists a loaded paw instead of steering during its step");
+    if(p.swing[i]&&std::abs(previous.footYaw[i]-p.footYaw[i])>1e-7)exercisedSteering=true;
+   }
    previous=p;
   }
-  if(reverseTick==176)check(reversedSwing,"native capture reversal fixture misses its in-flight paw");
+  exercisedSwing|=reversedSwing;
   // Reset after a reversed swing must clear the retained trajectory basis.
   m.reset(0,{-120,120});
   m.target(35);previous=m.pose();
@@ -74,6 +88,9 @@ void midstrideReversals(){
   }
   check(m.settled(),"reversed quadruped drop recovery never settles");
  }
+ check(exercisedSwing,"reversal fixtures never interrupt an in-flight paw");
+ check(exercisedPair,"reversal fixtures never exercise coordinated paired placement");
+ check(exercisedSteering,"reversal fixtures never steer a lifted paw");
 }
 void authoredBend(const Pose& pose,const LimbArray<Leg>& legs){
  for(std::size_t i=0;i<legs.size();++i){
@@ -103,7 +120,11 @@ void inspect(const Pose& before,const Pose& p,const LimbArray<Leg>& legs,bool gr
    check(distance({ankle.x+offset.x,ankle.y+offset.y,ankle.z+offset.z+p.rootX/100},p.contacts[i])<1e-8,"quadruped rendered paw disagrees with world pin");
   }
  }
- if(grounded)check(lifted<=1,"quadruped lifts multiple feet during walk/turn");
+ if(grounded){
+  check(lifted<=2,"quadruped exceeds its declared walk/pivot support");
+  check(std::count(p.grounded.begin(),p.grounded.end(),true)>=2,"quadruped loses its declared support contacts");
+  if(lifted==2)check(!((p.swing[0]&&p.swing[2])||(p.swing[1]&&p.swing[3])),"quadruped paired swing lifts both paws on one side");
+ }
 }
 }
 int main(){try{

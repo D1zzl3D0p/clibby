@@ -83,6 +83,20 @@ public:
   // Minimum double-support pause after touchdown; swing duration is separate.
   void setFootPlantDuration(double seconds);
   void setSwingAdmission(bool allowed) { swingAdmission_ = allowed; }
+  // Spatial turns can brake navigation without replacing its destination.
+  void setTravelScale(double scale);
+  // Apply a spatial reach ceiling to the physical support state, not just art.
+  void constrainBodyRise(double minimumDown);
+  // Spatial pivot animation owns vertical support during its dynamic transfer.
+  // Releasing the override preserves the current height and zero vertical speed.
+  void holdBodyHeight(std::optional<double> down);
+  // Import a completed spatial stance without resetting navigation or followers.
+  void plantContacts(LimbArray<Vec2> positions);
+  void setStepDuration(double seconds);
+  // Opt-in spatial trot: diagonal pairs (0,3)/(1,2); planar walk stays single-foot.
+  void setPairedGait(bool enabled);
+  // Spatial anatomy opts into contact forecasts centered on the next stance.
+  void setCenteredSteps(bool enabled) { centeredSteps_=enabled; }
   void setSupportTuning(SupportTuning);
   void setSupportContacts(std::array<bool, 2> grounded);
   // A constrained array overload keeps legacy braced two-contact calls unambiguous.
@@ -100,6 +114,7 @@ public:
   // Absolute sole limits for future touchdowns; nullopt preserves desktop gait.
   // Existing stance pins are never clamped or moved by this setter.
   void setSupportBounds(std::optional<GroundSpan> absoluteSoleInterval);
+  GroundSpan groundSpan() const { return span_; }
   double speedMultiplier() const { return speedMultiplier_; }
   const Definition &definition() const { return definition_; }
 
@@ -108,10 +123,13 @@ private:
   Locomotion tuning_;
   SecondaryTuning secondaryTuning_;
   SupportTuning supportTuning_;
+  double supportTransferTime() const;
   LimbArray<pets::motion::SupportLeg> supportGeometry_;
-  bool hasSupportGeometry_ = false, swingAdmission_ = true;
+  bool hasSupportGeometry_ = false, swingAdmission_ = true, pairedGait_ = false, centeredSteps_ = false;
   LimbArray<bool> supportContacts_;
   LimbArray<double> supportLoad_;
+  double travelScale_ = 1;
+  std::optional<double> minimumBodyDown_, heldBodyDown_;
   double speedMultiplier_ = 1, bodyLowering_ = 0, landingLeadFraction_ = .3, footHomeRadius_ = .5;
   double vertical_ = 0, verticalVelocity_ = 0, gravity_ = 0, supportReach_ = 0, verticalAcceleration_ = 0;
   double landingBodyLift_ = 0;

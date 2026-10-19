@@ -23,7 +23,7 @@ void check(bool value, const char *message) {
 }
 QQuickWindow *window() {
   for (auto *w : QGuiApplication::topLevelWindows())
-    if (w->title() == "Better Pets")
+    if (w->title() == "Clibby")
       return dynamic_cast<QQuickWindow *>(w);
   throw std::runtime_error("pet window not found");
 }
@@ -528,6 +528,67 @@ int main(int argc, char **argv) {
     check(std::abs(window()->position().x()-position.x()) < 3, "resume discards stale time");
     shell.control(pets::Control::Hide);
     check(!shell.groundMotionActive(), "hide discards movement");
+  });
+  test("companion scale preserves screen travel, floor, pause and selection", [&] {
+    for (double scale : {.5, 2.}) {
+      QTemporaryDir state;
+      double now = 0;
+      pets::ResidentApplication shell(root + "/soft-creature", state.path(), false,
+          [&] { return now; }, pets::IpcMode::DisabledForTests, nullptr, false,
+          [] { return std::optional<QPointF>{}; });
+      const auto loaded = pets::character::loadCharacter(root + "/soft-creature");
+      const auto canonicalSize = window()->size();
+      const double initialFloor = shell.groundedState()->feet[0].position.y;
+      const double floorAnchor = std::ceil(loaded.definition.motionEnvelope)
+          + loaded.definition.locomotion->groundY;
+      check(shell.setCompanionScale(scale), "size endpoint accepted");
+      check(window()->size() == QSize(int(std::ceil(canonicalSize.width()*scale)),
+              int(std::ceil(canonicalSize.height()*scale))), "size changes actual presentation");
+      check(std::abs(window()->position().y()+floorAnchor*scale-initialFloor)<1,
+          "resizing preserves presented world floor");
+      const auto resized = shell.groundedState().value();
+      for (const auto &foot : resized.feet)
+        check(std::abs(foot.position.y-initialFloor)<1, "resized state reports screen-space foot floor");
+      const auto before = shell.groundedState()->rootX;
+      const double target = before+40;
+      shell.setGroundTarget(target);
+      check(std::abs(shell.groundedState()->targetX-target)<.001,
+          "scaled navigation target is reported in screen coordinates");
+      for (int frame=0; frame<12; ++frame) { now+=1./60; tick(shell); }
+      shell.control(pets::Control::Pause);
+      const auto frozen = shell.groundedState().value();
+      const auto pose = shell.characterPose();
+      const auto position = window()->position();
+      now+=100; tick(shell);
+      check(window()->position()==position && equalPose(pose,shell.characterPose()) &&
+          shell.groundedState()->rootX==frozen.rootX && !shell.groundMotionActive() && !shell.timerActive(),
+          "pause freezes resized companion and removes its timer");
+      shell.control(pets::Control::Resume);
+      check(shell.groundMotionActive(), "resized outstanding travel resumes");
+      now+=1./60; tick(shell);
+      check(std::abs(window()->position().x()-position.x())<4,
+          "resized motion discards paused elapsed time");
+      for (int frame=0; frame<1200 && shell.groundMotionActive(); ++frame) {
+        now+=1./60; tick(shell);
+      }
+      check(std::abs(shell.groundedState()->rootX-target)<=1.5 &&
+          std::abs(window()->position().x()-position.x()+frozen.rootX-shell.groundedState()->rootX)<.001,
+          "scaled state and actual desktop placement reach screen target");
+      check(!shell.groundMotionActive() && shell.timerInterval()>33,
+          "scaled arrival releases animation deadlines");
+      const auto arrived = shell.groundedState().value();
+      for (const auto &foot : arrived.feet)
+        check(std::abs(foot.position.y-initialFloor)<1, "scaled travel retains world floor");
+      check(shell.selectCharacter(root+"/werewolf"), "switch resized companion");
+      const auto alternate = pets::character::loadCharacter(root+"/werewolf");
+      const double margin = std::ceil(alternate.definition.motionEnvelope);
+      check(window()->size()==QSize(int(std::ceil((alternate.definition.width+2*margin)*scale)),
+              int(std::ceil((alternate.definition.height+2*margin)*scale))),
+          "companion selection retains chosen size");
+      check(shell.selectCharacter(root+"/soft-creature") &&
+          window()->size()==QSize(int(std::ceil(canonicalSize.width()*scale)),
+              int(std::ceil(canonicalSize.height()*scale))), "switching back retains chosen size");
+    }
   });
   test("character host uses its own bounds and stable interaction geometry",
        [&] {

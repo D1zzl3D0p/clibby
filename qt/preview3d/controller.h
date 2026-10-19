@@ -97,6 +97,7 @@ public:
  void apply();
  bool eyeBlinkSupported() const { return joints_.count("eye_left") && joints_.count("eye_right"); }
  bool reachSupported() const { return hasArms_; }
+ double authoredFacingBiasDegrees() const { return authoredFacingBiasDegrees_; }
  double eyeOpenness() const { return eyeOpenness_; }
  void setEyeOpenness(double);
 signals: void changed(); void anchorsChanged();
@@ -112,6 +113,7 @@ private:
  bool wings_=false,hasArms_=false,catalogueStyle_=false;
  std::uint32_t expressionRoles_=0;
  std::optional<pets::behavior::Personality> personality_;
+ double authoredFacingBiasDegrees_=-35;
  double eyeOpenness_=1;
  QString skinName_="WerewolfSkin";
  QString gesture_;

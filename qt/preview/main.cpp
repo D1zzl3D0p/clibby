@@ -1,6 +1,7 @@
 #include "behavior/curiosity.h"
 #include "characters/item.h"
 #include "characters/grounded.h"
+#include "resident/brand_theme.h"
 #include <QApplication>
 #include <QCheckBox>
 #include <QComboBox>
@@ -183,8 +184,11 @@ int main(int argc, char **argv) {
   }
   if(loaded.definition.locomotion && !parser.isSet("target") && actionIndex==2) targetX=60;
   QWidget panel;
-  panel.setWindowTitle("Better Pets character preview");
+  panel.setWindowTitle("Clibby character preview");
   auto *layout = new QVBoxLayout(&panel);
+  pets::brand::spacing(layout);
+  layout->addWidget(pets::brand::header(&panel, "Character preview"));
+  pets::brand::install(&panel);
   auto *controls = new QHBoxLayout;
   layout->addLayout(controls);
   auto *load = new QPushButton("Load character");

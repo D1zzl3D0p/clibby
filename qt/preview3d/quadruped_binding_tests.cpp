@@ -41,7 +41,21 @@ int main(int argc,char** argv){
   cat.gesture("wave");for(int i=0;i<200;++i)cat.advance(1./120);
   require(!cat.motion().pose().arms[0]&&!cat.motion().pose().arms[1],"cat gesture acquired human arms");
   cat.reach(0,{.1f,1.f,.2f});require(!cat.motion().pose().arms[0],"cat reach acquired an arm");
-  QFile legacyFile(QCoreApplication::applicationDirPath()+"/../better-pets-3d/rig.json");
+  // A loaded rig must expose real paired travel/turn support, rather than a
+  // test-only four-chain pose that never participates in coordinated stepping.
+  bool sawPair=false;
+  for(double target:{35.,-20.}){
+   cat.target(target);
+   for(int tick=0;tick<6000&&!cat.settled();++tick){
+    cat.advance(1./120);const auto pose=cat.motion().pose();int lifted=0,supported=0;
+    for(int i=0;i<4;++i){lifted+=pose.swing[i];supported+=pose.grounded[i];}
+    require(lifted<=2&&supported>=2,"loaded quadruped loses coordinated support");
+    if(lifted==2){require(!((pose.swing[0]&&pose.swing[2])||(pose.swing[1]&&pose.swing[3])),"loaded quadruped lifts both paws on one side");sawPair=true;}
+   }
+   require(cat.settled(),"loaded quadruped travel/reversal never settles");
+  }
+  require(sawPair,"loaded quadruped never exposes paired placements");
+  QFile legacyFile(QCoreApplication::applicationDirPath()+"/../clibby-3d/rig.json");
   require(legacyFile.open(QIODevice::ReadOnly),"legacy biped fixture unavailable");
   auto legacyRig=QJsonDocument::fromJson(legacyFile.readAll()).object();legacyRig.remove("gait");save(path,legacyRig);
   WolfMotion legacy(path);require(legacy.motion().pose().legs.size()==2,"omitted gait no longer defaults to legacy biped");

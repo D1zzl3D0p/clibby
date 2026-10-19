@@ -2,6 +2,7 @@
 from pathlib import Path
 import hashlib
 import json
+import math
 import bpy
 from mathutils import Vector
 from catalogue_asset import Asset, look_at
@@ -53,14 +54,28 @@ class Humanoid(Asset):
             self.box('brow',(s*.078,front-.025,self.face_z+.092),(.047,.019,.020),'hair','head')
         self.blob('hair crown',(0,.015,height-.105),(face_x+.010,face_y+.01,.125),'hair','head',10,5)
         self.blob('pelvis clothes',(0,.015,self.hip+.06),(width*.78,.19,.20),'trousers','pelvis')
-        self.blob('broad clothed trunk',(0,.025,(self.neck+self.hip)/2),(width,.22,(self.neck-self.hip)/2+.05),'coat','spine',10,5)
+        # A continuous clothed chest reaches the arm sockets before sloping
+        # toward the neck. The former ellipsoid narrowed below the sockets,
+        # leaving sleeve columns hanging outside the upper chest.
+        rings=[(self.hip+.12,width*.78,.19),
+               (self.hip+.32,width*.91,.22),
+               (self.neck-.28,width*.96,.22),
+               (self.neck-.14,width*.86,.20),
+               (self.neck-.025,width*.42,.12)]
+        vertices=[(rx*math.cos(i*math.tau/10),.025+ry*math.sin(i*math.tau/10),z)
+                  for z,rx,ry in rings for i in range(10)]
+        faces=[(r*10+i,r*10+(i+1)%10,(r+1)*10+(i+1)%10,(r+1)*10+i)
+               for r in range(len(rings)-1) for i in range(10)]
+        faces += [tuple(reversed(range(10))),tuple(range(40,50))]
+        self.wedge('sloped clothed chest',vertices,faces,'coat','spine')
+        self.shoulder_half_span=width*.84
         self.contacts=self.biped(hip_z=self.hip,width=width*.48,knee_y=-.065,radius=limb_radius if limb_radius is not None else (.082 if width<.32 else .105),
                                foot_scale=(.115,.205,.075),color='trousers',feet_color='boots')
         self.hands={}
         for side,s in [('left',1),('right',-1)]:
-            sh=Vector((s*(width+.035),0,self.neck-.10))
-            elbow=Vector((s*(width+.10),-.035,self.neck-.43*arm_scale))
-            hand=Vector((s*(width+.065),-.255,self.neck-.67*arm_scale))
+            sh=Vector((s*self.shoulder_half_span,0,self.neck-.15))
+            elbow=Vector((s*(self.shoulder_half_span+.025),-.035,self.neck-.43*arm_scale))
+            hand=Vector((s*(self.shoulder_half_span+.025),-.255,self.neck-.67*arm_scale))
             upper,lower,palm=[p+'_'+side for p in ('upper_arm','forearm','hand')]
             self.joint(upper,sh,elbow,'spine')
             self.joint(lower,elbow,hand,upper)

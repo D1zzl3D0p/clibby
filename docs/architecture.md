@@ -1,5 +1,36 @@
 # Architecture direction
 
+This document combines implemented updates with the original incremental design.
+Use the newest updates here and [the handoff](handoff.md) for delivery status;
+dated result records retain their original acceptance limits.
+
+Update, 2026-10-18 (directional leading plant): spatial quadrupeds choose a
+world step into the new heading before planning body motion. The leading paw
+plants with the body held, then the body follows that support. Six placements
+finish in .84s through overlapping fore/hind transfers; at least two contacts
+remain grounded. Bipeds keep two placements. Loaded positions and orientations
+stay pinned. Full-plan geometry admission checks actual links, upright height
+and bounds; host reconciliation translates all directional waypoints, and
+retargeting waits for a safe grounded boundary. Subpixel heading corrections
+settle without stepping. Quadruped resident views read authored yaw angles
+(default -35°), replacing the former hardcoded -10.8°; all final audits must use
+actual runtime properties, not a guessed rig-to-view mapping. Explicit API turns
+above140° retain the bounded paired fallback. This is kinematic support transfer,
+not a COM/force simulation. Selected walking speed and longer spatial strides
+remain; planar defaults are unchanged. See the
+[turning record](results/2026-10-17-natural-turning.md).
+
+Update, 2026-10-16: the [productivity system design](superpowers/specs/2026-10-16-productivity-system-design.md)
+sets functionality and personality at equal weight. `qt/productivity/` now owns a
+shared Qt Core persistent inbox/schedule service and separate Widgets panel.
+`productivity.*` extends authenticated local IPC without changing temporary session
+semantics. Claude/Codex hooks normalize into this common boundary; source occurrence
+IDs distinguish genuinely new attention requests from refreshes. The resident
+bridges accepted events to bounded pet reactions and adds productivity deadlines
+to its existing single timer. OS notification providers are still a capability and
+feasibility boundary, not implemented universal capture. See the
+[implementation record](results/2026-10-16-productivity-foundation.md).
+
 Update, 2026-10-16: the first catalogue expansion adds thirteen original skinned
 biped/quadruped base pets through a fixed trusted asset registry and generic build
 conversion. Optional arms/ears/tails derive actual expression capabilities;
@@ -93,15 +124,14 @@ anatomy. See the [format](characters-v1.md). 3D shares the proposed action/anato
 concepts through a separate optional Qt Quick 3D preview and original Blender
 model. Its Qt-free pose adapter shares ground navigation/contact planning while
 solving the measured 3D rig separately. See the
-[grounded record](results/2026-10-08-grounded-characters.md). Native GPU acceptance
-and resident 3D integration remain open.
+[grounded record](results/2026-10-08-grounded-characters.md). Resident 3D integration is implemented; broader native GPU acceptance remains open.
 
 Use C++ for the Qt Quick runtime and QML for UI and a future rig editor. Retain the
 current C++17 baseline unless a concrete requirement justifies changing it. Do not add
 Rust merely to create a boundary. Python remains useful for asset tools and experiments.
 
 The preserved benchmark `main.cpp` still combines scenario timing, placement and
-telemetry. The resident `better_pets` entry point composes separate services:
+telemetry. The resident `clibby` entry point composes separate services:
 Qt-free `pets::Runtime` computes suppression and quiet/active deadlines;
 `pets::DesktopHost` owns the transparent window, renderer and display placement;
 `pets::ResidentApplication` owns the precise single-shot timer, menu, preferences,
@@ -120,7 +150,8 @@ Placement saves on drag release, pause changes, display reconciliation and
 shutdown. Runtime diagnostics retain saturating counters, not frame history.
 
 `pet_motion` still depends on Qt Core and remains the frozen fixture adapter.
-There is no real coding-tool adapter or object-aware behavior. `Runtime` and `Sessions` are
+Opt-in Claude/Codex hook adapters now use the productivity boundary. Broader
+object-aware behavior remains proposed. `Runtime` and `Sessions` are
 Qt-free; motion and display still use Qt types. Small internal boundaries do not
 freeze future character contracts. macOS sleep observation is native;
 other platforms use a stub and have no support claim. Actual desktop behavior
@@ -161,8 +192,10 @@ observations. Distinguish desired from realized motion for gait/contact decision
 
 ## External integration direction
 
-Propose versioned JSON-RPC over local IPC, with `petctl` as one client. Transport,
-endpoint discovery, authentication, and exact schemas remain open. Shell commands,
+Versioned JSON-RPC over authenticated local IPC is implemented, with `petctl`
+as one client. See the [session API](api/session-v1.md) and
+[productivity API](api/productivity-v1.md) for discovery, schemas and limits.
+The broader input surfaces below remain design direction. Shell commands,
 editor adapters, and other apps should share this integration path.
 
 Four input surfaces express different lifetimes and semantics:
@@ -198,7 +231,7 @@ starts with four named contacts and a conservative planar walk. Shared support
 math has two/four-contact overloads and normalized neutral calibration. The
 live loader and planar planner now support four canonical leg roles, conservative
 single-paw gait and all-contact host aggregation, with Marmalade as the reference.
-Spatial adapters remain two-legged. See the
+The spatial adapter also supports two/four-leg anatomy, as recorded above. See the
 [planar implementation status](results/2026-10-16-planar-quadruped.md) and the
 [earlier foundation record](results/2026-10-16-catalogue-and-quadruped-foundation.md).
 
@@ -212,8 +245,8 @@ Grounded Mallow uses planted world-space contacts, reach-triggered generated
 steps and analytical two-link IK. Its second-order followers expose frequency,
 damping and response. The host returns realized integer window movement to the
 controller; ground deadlines join the existing timer and disappear on settling.
-Legacy packages retain bounded local springs/contact correction. Full rigid-body
-physics and autonomous wandering remain deferred. Drag motion can drive these
+Legacy packages retain bounded local springs/contact correction. Full rigid-body physics remains deferred. Bounded autonomous curiosity and
+travel now use the shared behavior scheduler described above. Drag motion can drive these
 local responses while direct placement remains host-owned; pause still wins.
 Sparse spring deadlines join the existing application timer and disappear when
 settled. Preview palette/dither/debug modes opt into CPU composition with changed-
@@ -280,7 +313,11 @@ production design choices; the fixture's 60 Hz contract remains unchanged.
 Battery impact is unverified: architecture and process CPU measurements do not establish
 whole-system battery savings or the proposed under-5% target.
 
-## First milestone and open decisions
+## Original milestone and open decisions (2026-10-08)
+
+This section preserves the initial scope. Character examples, local IPC transport,
+versioned APIs and the first integrations have since been implemented; use the
+updates above for current status.
 
 Prove the boundaries with two materially different body types and two external
 integrations, using the same runtime and API. Select the specific examples before

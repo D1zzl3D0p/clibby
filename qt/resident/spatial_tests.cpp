@@ -4,6 +4,7 @@
 #include "desktop_host.h"
 #include <QQuaternion>
 #include <QApplication>
+#include <QAction>
 #include <QJsonArray>
 #include <QQuickWindow>
 #include <QSGRendererInterface>
@@ -19,7 +20,7 @@
 void check(bool value, const char *message) { if (!value) throw std::runtime_error(message); }
 QQuickWindow *window() {
   for (auto *w : QGuiApplication::topLevelWindows())
-    if (w->title() == "Better Pets") return static_cast<QQuickWindow*>(w);
+    if (w->title() == "Clibby") return static_cast<QQuickWindow*>(w);
   throw std::runtime_error("resident window unavailable");
 }
 void tick(pets::ResidentApplication &shell) {
@@ -89,6 +90,44 @@ int main(int argc, char **argv) {
             "held canonical cursor gaze follows current body frame through turn");
       verifyGaze();
     }
+    // Head and front-torso presses must reach the host, not only the rump.
+    {
+      QTemporaryDir pickupState; double pickupTime=0;
+      pets::ResidentApplication shell(root+"/biscuit-3d",pickupState.path(),false,
+          [&]{return pickupTime;},pets::IpcMode::DisabledForTests,nullptr,false,
+          []{return std::optional<QPointF>{QPointF(-100000,-100000)};});
+      auto *stage=window()->findChild<QObject*>("resident3dStage");
+      check(stage,"Biscuit pickup has a live stage");
+      auto sendMouse=[&](QEvent::Type type,QPoint local,Qt::MouseButton button,Qt::MouseButtons buttons){
+        QMouseEvent event(type,QPointF(local),QPointF(window()->position()+local),button,buttons,Qt::NoModifier);
+        QApplication::sendEvent(window(),&event);
+      };
+      sendMouse(QEvent::MouseButtonPress,{0,0},Qt::LeftButton,Qt::LeftButton);
+      check(!shell.runtime().state().dragging,"transparent corner must not pick up Biscuit");
+      for(const char* role:{"head","spine"}){
+        auto *joint=stage->findChild<QObject*>(QString::fromLatin1(role));
+        check(joint,"Biscuit pickup core joint exists");
+        QVariant projected;
+        check(QMetaObject::invokeMethod(stage,"project",Q_RETURN_ARG(QVariant,projected),
+              Q_ARG(QVariant,joint->property("scenePosition"))),"project Biscuit pickup point");
+        const auto hit=projected.toPointF().toPoint();
+        const auto floorPosition=window()->position();
+        sendMouse(QEvent::MouseButtonPress,hit,Qt::LeftButton,Qt::LeftButton);
+        check(shell.runtime().state().dragging&&shell.groundedState()->phase==pets::character::DropPhase::Held,
+              "Biscuit head and torso presses start pickup");
+        pickupTime+=.05;
+        sendMouse(QEvent::MouseMove,hit-QPoint(0,70),Qt::NoButton,Qt::LeftButton);
+        const auto raised=window()->position();
+        check(raised.y()<floorPosition.y()-50,"Biscuit pickup follows upward drag");
+        pickupTime+=.3;
+        sendMouse(QEvent::MouseButtonRelease,hit,Qt::LeftButton,Qt::NoButton);
+        check(!shell.runtime().state().dragging&&shell.groundedState()->elevation>50,
+              "Biscuit release preserves lifted height");
+        for(int i=0;i<1800&&shell.groundMotionActive();++i){pickupTime+=1./60;tick(shell);}
+        check(!shell.groundMotionActive()&&shell.groundedState()->phase==pets::character::DropPhase::Grounded,
+              "Biscuit pickup release lands and settles");
+      }
+    }
     // Nearby attention may rotate the body, but must never turn into navigation.
     {
       QTemporaryDir cursorState; double cursorTime=0;
@@ -105,15 +144,87 @@ int main(int argc, char **argv) {
       const auto leftRotation=avatar->property("sceneRotation").value<QQuaternion>();
       check(std::abs(QQuaternion::dotProduct(startRotation,leftRotation))<.85,
             "cursor behind the 3D pet turns its body to face that side");
-      check(window()->position()==startPosition&&std::abs(shell.groundedState()->rootX-startRoot)<.01
-            &&std::abs(shell.groundedState()->targetX-startRoot)<.01,
-            "cursor facing turns in place without requesting travel");
+      const auto facingState=*shell.groundedState();
+      check(window()->position().y()==startPosition.y()
+            &&std::abs(facingState.rootX-startRoot)<window()->width()
+            &&std::abs(facingState.targetX-facingState.rootX)<.01
+            &&std::abs(facingState.velocity)<.01,
+            "cursor facing follows a local support arc without requesting travel");
       check(!shell.groundMotionActive(),"held cursor-facing turn eventually stops frame scheduling");
       cursor=QPointF(startPosition)+QPointF(302,160);
       for(int i=0;i<420;++i){cursorTime+=1./60;tick(shell);}
       check(std::abs(QQuaternion::dotProduct(startRotation,avatar->property("sceneRotation").value<QQuaternion>()))>.99,
             "cursor across the pet requests the opposite procedural facing");
       check(!shell.groundMotionActive(),"opposite held turn settles");
+    }
+    // Biscuit must keep cursor attention after a left/right support turn.
+    {
+      QTemporaryDir cursorState; double cursorTime=0;
+      std::optional<QPointF> cursor=QPointF(-100000,-100000);
+      pets::ResidentApplication shell(root+"/biscuit-3d",cursorState.path(),false,
+          [&]{return cursorTime;},pets::IpcMode::DisabledForTests,nullptr,false,[&]{return cursor;});
+      auto *stage=window()->findChild<QObject*>("resident3dStage");
+      auto *avatar=stage->findChild<QObject*>("avatar");
+      auto *head=stage->findChild<QObject*>("head");
+      check(avatar&&head,"Biscuit cursor attention has live body and head");
+      auto projectedHead=[&] {
+        QVariant projected;
+        check(QMetaObject::invokeMethod(stage,"project",Q_RETURN_ARG(QVariant,projected),
+              Q_ARG(QVariant,QVariant::fromValue(head->property("scenePosition").value<QVector3D>()))),
+              "Biscuit cursor uses projected head");
+        return QPointF(window()->position())+projected.toPointF();
+      };
+      auto advance=[&](int frames) {
+        for(int i=0;i<frames;++i){cursorTime+=1./60;tick(shell);}
+      };
+      const auto rightRotation=avatar->property("sceneRotation").value<QQuaternion>();
+      const auto neutralHead=head->property("rotation").value<QQuaternion>();
+      auto *walkLeft=shell.findChild<QAction*>("walkLeft");
+      check(walkLeft,"Biscuit cursor regression has the context-menu walk action");
+      walkLeft->trigger();
+      for(int i=0;i<1800&&shell.groundMotionActive();++i)advance(1);
+      check(!shell.groundMotionActive(),"Biscuit reaches the left desktop edge");
+      const auto leftRotation=avatar->property("sceneRotation").value<QQuaternion>();
+      check(std::abs(QQuaternion::dotProduct(rightRotation,leftRotation))<.85,
+            "Biscuit faces left at the desktop edge");
+      cursor=projectedHead()+QPointF(110,-25); advance(420);
+      check(std::abs(QQuaternion::dotProduct(rightRotation,avatar->property("sceneRotation").value<QQuaternion>()))>.99,
+            "Biscuit cursor attention can turn back right");
+      // Hold attention through the automatic signature deadline before
+      // checking the head, so a quiet idle action cannot steal this gaze.
+      while(cursorTime<32.) {
+        advance(1);
+        check(!shell.signatureActive(),"Biscuit automatic signature waits during cursor attention");
+      }
+      cursor=projectedHead()+QPointF(0,-60); advance(180);
+      const auto up=head->property("rotation").value<QQuaternion>();
+      cursor=projectedHead()+QPointF(0,60); advance(180);
+      const auto down=head->property("rotation").value<QQuaternion>();
+      check(std::abs(QQuaternion::dotProduct(up,down))<.999,
+            "Biscuit head still follows cursor vertically after the right turn");
+      check(std::abs(QQuaternion::dotProduct(rightRotation,avatar->property("sceneRotation").value<QQuaternion>()))>.99,
+            "Biscuit vertical cursor motion keeps the rightward body heading");
+      for(double offset:{-25.,25.}) {
+        cursor=projectedHead()+QPointF(offset,0); advance(180);
+        const auto rotation=head->property("rotation").value<QQuaternion>();
+        check((neutralHead.conjugated()*rotation).toEulerAngles().y()*offset>0,
+              "Biscuit head follows either cursor side after manual navigation");
+      }
+      const auto heldHead=head->property("rotation").value<QQuaternion>();
+      cursor=projectedHead(); advance(180);
+      // Attention retains its last gaze inside the center deadzone and adds
+      // a small interest roll, so this is not the startup rest quaternion.
+      check(std::abs(QQuaternion::dotProduct(heldHead,head->property("rotation").value<QQuaternion>()))>.9999,
+            "Biscuit centered cursor preserves the settled attention pose");
+      cursor=projectedHead()+QPointF(-180,-25); advance(420);
+      check(std::abs(QQuaternion::dotProduct(leftRotation,avatar->property("sceneRotation").value<QQuaternion>()))>.99,
+            "Biscuit deliberate pointer crossing still turns its body left");
+      cursor=QPointF(-100000,-100000);
+      bool automaticSignature=false;
+      for(int i=0;i<720&&!automaticSignature;++i) {
+        advance(1); automaticSignature=shell.signatureActive();
+      }
+      check(automaticSignature,"Biscuit automatic signature resumes after cursor attention leaves");
     }
     {
       QTemporaryDir blinkState;double blinkTime=0;
@@ -136,6 +247,55 @@ int main(int argc, char **argv) {
         }
       }
       check(minimum<.1&&pausedBlink,"resident schedules and renders an occasional 3D blink");
+    }
+    {
+      QTemporaryDir appearanceState; double appearanceTime=0;
+      pets::ResidentApplication shell(root+"/werewolf-3d",appearanceState.path(),false,
+          [&]{return appearanceTime;},pets::IpcMode::DisabledForTests,nullptr,false,
+          []{return std::optional<QPointF>{};});
+      auto worldFloor = [&] {
+        auto *stage=window()->findChild<QObject*>("resident3dStage");
+        return window()->y()+stage->property("rootFloorAnchor").toPointF().y()*stage->property("scale").toDouble();
+      };
+      for (double scale : {.5, 2.}) {
+        const auto floor = worldFloor();
+        check(shell.setCompanionScale(scale),"spatial size accepted");
+        check(window()->size()==QSize(384*scale,384*scale),"spatial size changes window");
+        check(std::abs(worldFloor()-floor)<1.01,"spatial size preserves world floor");
+        auto *stage=window()->findChild<QObject*>("resident3dStage");
+        auto *output=stage->findChild<QObject*>("pixelOutput");
+        check(shell.setPixelation(4),"spatial coarse pixels accepted");
+        check(output->property("textureSize").toSize()==QSize(32,32),"spatial pixelation adjusts actual render resolution");
+        auto captureAppearance = [&](const QString &density) {
+          if (!nativeCapture) return;
+          window()->update();
+          QEventLoop present; QTimer::singleShot(150,&present,&QEventLoop::quit); present.exec();
+          const auto frame=window()->grabWindow();
+          check(!frame.isNull() && frame.save(QString::fromLocal8Bit(argv[3])+
+              "."+QString::number(int(scale*100))+"-"+density+".png"),"native appearance capture");
+        };
+        captureAppearance("chunky");
+        const double target=shell.groundedState()->rootX+40;
+        shell.setGroundTarget(target);
+        for(int frame=0;frame<1800&&shell.groundMotionActive();++frame) {
+          appearanceTime+=1./60; tick(shell);
+        }
+        check(!shell.groundMotionActive()&&std::abs(shell.groundedState()->rootX-target)<2,
+              "scaled spatial travel reaches logical target");
+        shell.control(pets::Control::Pause);
+        check(!shell.timerActive(),"scaled paused pet remains quiet");
+        check(shell.setPixelation(.25),"spatial fine pixels accepted while paused");
+        check(output->property("textureSize").toSize()==QSize(512,512),"spatial fine resolution applied");
+        check(!shell.timerActive(),"pixel change does not wake paused pet");
+        captureAppearance("fine");
+        shell.control(pets::Control::Resume);
+      }
+      QString error;
+      check(shell.selectCharacter(root+"/soft-creature",&error),error.toUtf8().constData());
+      check(shell.selectCharacter(root+"/werewolf-3d",&error),error.toUtf8().constData());
+      check(window()->size()==QSize(768,768),"companion switching retains size");
+      check(window()->findChild<QObject*>("resident3dStage")->property("pixelation").toDouble()==.25,
+            "companion switching retains pixelation");
     }
     QTemporaryDir state; double now=0;
     QPoint savedPosition;

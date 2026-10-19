@@ -263,7 +263,7 @@ def generate(character, destination):
         'This is the first art iteration; procedural action poses and '
         'silhouette/seam polish remain reviewable.\n')
     (destination/'ATTRIBUTION.md').write_text(
-        f'# {manifest["name"]}\n\nOriginal Better Pets pixel artwork and anatomy, '
+        f'# {manifest["name"]}\n\nOriginal Clibby pixel artwork and anatomy, '
         'authored as editable polygon/ellipse recipes in `tools/author_characters.py`. '
         'No downloaded art, traced game sprites, AI-generated images, or animation frame '
         'sequences are included. MIT licensed. ' + art_iteration)
@@ -297,7 +297,7 @@ def main():
         validate(character)
         identity=character.manifest['id']
         if args.check:
-            with tempfile.TemporaryDirectory(prefix='better-pets-art-') as directory:
+            with tempfile.TemporaryDirectory(prefix='clibby-art-') as directory:
                 generated=Path(directory)/identity
                 generate(character,generated)
                 for path in generated.iterdir():

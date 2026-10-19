@@ -1,6 +1,6 @@
-# Better Pets session API, major 1
+# Clibby session API, major 1
 
-This is the generic local session interface for the resident `better_pets` app.
+This is the generic local session interface for the resident `clibby` app.
 The checked-in example sends **simulated inputs**; no coding-tool adapter is
 implemented. The machine-readable wire contract is
 [session-v1.schema.json](session-v1.schema.json), using JSON Schema 2020-12.
@@ -27,8 +27,10 @@ Discovery uses `QDir::tempPath()/bp-<effective uid>-<digest>/s`, where `digest` 
 the first 16 hexadecimal characters of SHA-256 of the UTF-8 canonical state
 directory (or its cleaned absolute path when canonicalization is unavailable).
 Create the state directory before discovery when using symlinks. Both programs
-default to the same `Better Pets` app/organization per-user app-data directory;
-`--state-dir ABS_DIR` selects an independent instance. The instance lock is
+default to the same `Clibby` app/organization per-user app-data directory. If
+that directory is absent but the previous Better Pets directory exists, both
+reuse the legacy directory in place. If both exist, the Clibby directory takes
+priority. `--state-dir ABS_DIR` selects an independent instance. The instance lock is
 acquired before server construction. Socket paths must be under 104 bytes.
 
 The runtime directory is atomically created with mode 0700 and verified using

@@ -22,6 +22,8 @@
 #include <QTemporaryDir>
 #include <QThread>
 #include <QSystemTrayIcon>
+#include <QScrollArea>
+#include <QScrollBar>
 #include <vector>
 #include <iostream>
 #include <functional>
@@ -46,7 +48,7 @@ void fire(pets::ResidentApplication& shell) {
 }
 QQuickWindow* window() {
     for (auto* candidate : QGuiApplication::allWindows())
-        if (candidate->title() == "Better Pets") return dynamic_cast<QQuickWindow*>(candidate);
+        if (candidate->title() == "Clibby") return dynamic_cast<QQuickWindow*>(candidate);
     return nullptr;
 }
 void beginDrag() {
@@ -77,6 +79,128 @@ int main(int argc, char** argv) {
         try { run(); std::cout << "PASS " << name << '\n'; }
         catch (const std::exception& error) { ++failures; std::cerr << "FAIL " << name << ": " << error.what() << '\n'; }
     };
+    test("appearance menu applies size and remembers independent pixelation", [&] {
+        QTemporaryDir dir;
+        QSize normal;
+        const auto companion = QFileInfo(assets).absolutePath() + "/characters/soft-creature";
+        {
+            pets::ResidentApplication shell(companion, dir.path(), false, [] { return 0.; }, pets::IpcMode::DisabledForTests);
+            shell.control(pets::Control::Pause);
+            normal = window()->size();
+            auto *large = shell.findChild<QAction*>("companionSize150");
+            auto *coarse = shell.findChild<QAction*>("pixelation200");
+            check(large && coarse, "size and pixelation options are available");
+            large->trigger();
+            check(window()->size() == normal * 1.5, "size changes actual presentation");
+            check(large->isChecked(), "selected size is visible");
+            coarse->trigger();
+            check(coarse->isChecked(), "selected pixelation is visible");
+            check(window()->size() == normal * 1.5, "pixelation does not change companion size");
+            check(!shell.timerActive(), "appearance changes do not animate a paused pet");
+        }
+        pets::ResidentApplication restored(companion, dir.path(), false, [] { return 0.; }, pets::IpcMode::DisabledForTests);
+        check(window()->size() == normal * 1.5, "size survives relaunch");
+        check(restored.findChild<QAction*>("pixelation200")->isChecked(), "pixelation survives relaunch");
+    });
+    test("productivity inbox survives restart independently of session expiry", [&] {
+        QTemporaryDir dir;
+        QJsonObject event{{"source_id", "claude"}, {"event_id", "review"}, {"seq", 1},
+                          {"kind", "needs_input"}, {"title", "Review needs your input"}};
+        {
+            pets::ResidentApplication shell(assets, dir.path(), false, [] { return 0.; }, pets::IpcMode::DisabledForTests);
+            auto reply = shell.handleRequest("productivity.publish", event);
+            check(reply.errorCode == 0, "productivity publish accepted");
+            check(shell.handleRequest("productivity.publish", event).errorCode == -32003, "duplicate rejected");
+            auto* summon = shell.findChild<QAction*>("summonProductivity");
+            check(summon, "productivity panel reachable from menu");
+            shell.control(pets::Control::Hide);
+            summon->trigger();
+            QWidget* panel = nullptr;
+            for (auto* widget : QApplication::topLevelWidgets())
+                if (widget->objectName() == "productivityPanel") panel = widget;
+            check(panel && panel->isVisible(), "productivity remains available with pet hidden");
+        }
+        pets::ResidentApplication restored(assets, dir.path(), false, [] { return 0.; }, pets::IpcMode::DisabledForTests);
+        const auto list = restored.handleRequest("productivity.list", {{"attention_only", true}});
+        check(list.errorCode == 0 && list.result["items"].toArray().size() == 1, "attention restored after restart");
+        check(restored.handleRequest("state.get", {}).result["sessions"].toArray().isEmpty(), "restore does not replay session reactions");
+        const auto acknowledged = restored.handleRequest("productivity.act", {{"source_id", "claude"}, {"event_id", "review"}, {"seq", 1}, {"action", "acknowledge"}});
+        check(acknowledged.errorCode == 0 && !acknowledged.result["item"].toObject()["completed"].toBool(), "seen remains distinct from complete");
+        check(restored.handleRequest("productivity.list", {{"attention_only", true}}).result["items"].toArray().isEmpty(), "acknowledgment removes attention");
+    });
+    test("productivity timers use resident deadline while pet is hidden", [&] {
+        QTemporaryDir dir;
+        double now = 0;
+        qint64 wall = 1000000;
+        pets::ResidentApplication shell(assets, dir.path(), false, [&] { return now; },
+            pets::IpcMode::DisabledForTests, nullptr, true, {}, {}, [&] { return wall; });
+        shell.control(pets::Control::Hide);
+        check(!shell.timerActive(), "empty hidden host has no timer");
+        auto created = shell.handleRequest("productivity.timer_create", {{"label", "Tea"}, {"seconds", 2}});
+        check(created.errorCode == 0, "countdown created");
+        check(shell.timerActive() && shell.timerInterval() <= 2000, "existing resident timer includes countdown deadline");
+        check(shell.findChildren<QTimer*>().size() == 1, "no extra application polling timer");
+        now += 3; wall += 3000;
+        check(shell.handleRequest("productivity.list", {}).errorCode == 0, "query reconciles due countdown");
+        check(!shell.handleRequest("state.get", {}).result["foreground"].isNull(), "query preserves timer cue for the pet bridge");
+        fire(shell);
+        const auto list = shell.handleRequest("productivity.list", {{"attention_only", true}});
+        check(list.errorCode == 0 && list.result["items"].toArray().size() == 1, "timer creates durable missed item while hidden");
+        check(!shell.petVisible(), "timer does not reveal pet");
+        now += 300; wall += 300000; fire(shell);
+        check(shell.handleRequest("productivity.list", {}).result["items"].toArray().size() == 1, "missed timer does not duplicate");
+        check(!shell.timerActive(), "finished hidden countdown returns to no scheduling");
+    });
+    test("productivity cancellation clears transient agent attention", [&] {
+        QTemporaryDir dir;
+        pets::ResidentApplication shell(assets, dir.path(), false, [] { return 0.; }, pets::IpcMode::DisabledForTests);
+        QJsonObject event{{"source_id", "codex"}, {"event_id", "review"}, {"seq", 1},
+                          {"kind", "needs_input"}, {"title", "Approval requested"}};
+        check(shell.handleRequest("productivity.publish", event).errorCode == 0, "agent requests input");
+        check(!shell.handleRequest("state.get", {}).result["foreground"].isNull(), "attention visible before interruption");
+        event["seq"] = 2; event["kind"] = "cancelled"; event["title"] = "Turn interrupted";
+        check(shell.handleRequest("productivity.publish", event).errorCode == 0, "interruption accepted");
+        check(shell.handleRequest("state.get", {}).result["foreground"].isNull(), "cancelled request no longer claims attention");
+    });
+    test("every Pomodoro interval can signal through the shared pet cards", [&] {
+        QTemporaryDir dir;
+        double now = 0; qint64 wall = 1000000;
+        pets::ResidentApplication shell(assets, dir.path(), false, [&] { return now; },
+            pets::IpcMode::DisabledForTests, nullptr, true, {}, {}, [&] { return wall; });
+        auto created = shell.handleRequest("productivity.timer_create", {{"label", "Review"}, {"seconds", 1},
+            {"mode", "pomodoro"}, {"break_seconds", 1}});
+        const QJsonValue id = created.result["timer"].toObject()["id"];
+        now += 2; wall += 2000; fire(shell);
+        auto foreground = shell.handleRequest("state.get", {}).result["foreground"].toObject();
+        check(!foreground.isEmpty(), "work interval signals completion");
+        auto* card = [&]() -> pets::StatusLabel* {
+            for (auto* widget : QApplication::topLevelWidgets())
+                if (auto* value = dynamic_cast<pets::StatusLabel*>(widget)) return value;
+            return nullptr;
+        }();
+        check(card && card->findChild<QPushButton*>("acknowledgeCard"), "shared notification card available");
+        card->findChild<QPushButton*>("acknowledgeCard")->click();
+        check(shell.handleRequest("productivity.list", {{"attention_only", true}}).result["items"].toArray().isEmpty(), "card acknowledges persistent timer item");
+        check(shell.handleRequest("productivity.timer_act", {{"id", id}, {"action", "next"}}).errorCode == 0, "break starts");
+        now += 10; wall += 10000; fire(shell);
+        foreground = shell.handleRequest("state.get", {}).result["foreground"].toObject();
+        check(!foreground.isEmpty() && !foreground["acknowledged"].toBool(), "break completion signals after acknowledged work completion");
+    });
+    test("distinct approval occurrences rearm both inbox and pet attention", [&] {
+        QTemporaryDir dir;
+        pets::ResidentApplication shell(assets, dir.path(), false, [] { return 0.; }, pets::IpcMode::DisabledForTests);
+        QJsonObject event{{"source_id", "codex"}, {"event_id", "review"}, {"seq", 1},
+            {"kind", "needs_input"}, {"title", "Approval requested"}, {"occurrence_id", "request-1"}};
+        check(shell.handleRequest("productivity.publish", event).errorCode == 0, "first approval accepted");
+        shell.handleRequest("productivity.act", {{"source_id", "codex"}, {"event_id", "review"}, {"seq", 1}, {"action", "acknowledge"}});
+        check(shell.handleRequest("state.get", {}).result["foreground"].isNull(), "first approval seen");
+        event["seq"] = 2;
+        shell.handleRequest("productivity.publish", event);
+        check(shell.handleRequest("state.get", {}).result["foreground"].isNull(), "same occurrence remains seen");
+        event["seq"] = 3; event["occurrence_id"] = "request-3";
+        shell.handleRequest("productivity.publish", event);
+        check(!shell.handleRequest("state.get", {}).result["foreground"].isNull(), "new approval reopens pet attention");
+    });
     test("walking speed control persists without resetting locomotion or waking rest", [&] {
         QTemporaryDir dir;
         const QString creature = QFileInfo(assets).absolutePath() + "/characters/soft-creature";
@@ -89,7 +213,22 @@ int main(int argc, char** argv) {
                 if (widget->objectName() == "utilityToolbox") toolbox = dynamic_cast<pets::UtilityToolbox*>(widget);
             auto* speed = toolbox ? toolbox->findChild<QDoubleSpinBox*>("walkingSpeed") : nullptr;
             check(speed && speed->isEnabled() && speed->minimum() == .5 && speed->maximum() == 3.0, "toolbox offers supported walking speed range");
-            if (const auto capture = qEnvironmentVariable("BETTER_PETS_UTILITY_CAPTURE"); !capture.isEmpty()) {
+            toolbox->show();
+            auto* scroll = toolbox->findChild<QScrollArea*>();
+            check(scroll, "toolbox exposes its scrolling utility content");
+            for (const int width : {420, 440, 640}) {
+                toolbox->resize(width, 700); QApplication::processEvents(); QApplication::processEvents();
+                if (scroll->horizontalScrollBar()->maximum() != 0)
+                    throw std::runtime_error(QString("toolbox overflows at %1px: viewport %2px, content %3px, minimum hint %4px")
+                        .arg(width).arg(scroll->viewport()->width()).arg(scroll->widget()->width()).arg(scroll->widget()->minimumSizeHint().width()).toStdString());
+                for (auto* button : toolbox->findChildren<QToolButton*>()) {
+                    const auto position = button->mapTo(scroll->viewport(), QPoint());
+                    check(position.x() >= 0 && position.x() + button->width() <= scroll->viewport()->width(), "toolbox controls fit within viewport horizontally");
+                    check(button->width() >= button->sizeHint().width(), "toolbox control labels retain their full readable width");
+                }
+            }
+            toolbox->resize(440, 700); toolbox->hide();
+            if (const auto capture = qEnvironmentVariable("CLIBBY_UTILITY_CAPTURE"); !capture.isEmpty()) {
                 check(QDir().mkpath(capture), "speed capture directory created");
                 toolbox->show(); QApplication::processEvents();
                 check(toolbox->grab().save(capture + "/walking-speed.png"), "walking speed control captured");
@@ -218,10 +357,42 @@ int main(int argc, char** argv) {
         for (auto* widget : QApplication::topLevelWidgets())
             if (widget->objectName() == "utilityToolbox") toolbox = widget;
         check(toolbox && toolbox->isVisible(), "summoned toolbox visible");
-        if (const auto capture = qEnvironmentVariable("BETTER_PETS_UTILITY_CAPTURE"); !capture.isEmpty()) {
+        auto* scroll = toolbox->findChild<QScrollArea*>();
+        check(scroll, "notification toolbox has scrollable content");
+        toolbox->grab(); // Force the first paint before any user resize.
+        if (scroll->widget()->width() > scroll->viewport()->width())
+            throw std::runtime_error(QString("notification toolbox initial content exceeds viewport: viewport %1px, content %2px, minimum hint %3px")
+                .arg(scroll->viewport()->width()).arg(scroll->widget()->width()).arg(scroll->widget()->minimumSizeHint().width()).toStdString());
+        if (scroll->horizontalScrollBar()->maximum() != 0)
+            throw std::runtime_error(QString("notification toolbox initially overflows: viewport %1px, content %2px, minimum hint %3px")
+                .arg(scroll->viewport()->width()).arg(scroll->widget()->width()).arg(scroll->widget()->minimumSizeHint().width()).toStdString());
+        for (const int width : {420, 440, 640}) {
+            toolbox->resize(width, 700); QApplication::processEvents(); QApplication::processEvents();
+            if (scroll->horizontalScrollBar()->maximum() != 0)
+                throw std::runtime_error(QString("notification toolbox overflows at %1px: viewport %2px, content %3px, minimum hint %4px")
+                    .arg(width).arg(scroll->viewport()->width()).arg(scroll->widget()->width()).arg(scroll->widget()->minimumSizeHint().width()).toStdString());
+            for (auto* button : toolbox->findChildren<QToolButton*>()) {
+                const auto position = button->mapTo(scroll->viewport(), QPoint());
+                check(position.x() >= 0 && position.x() + button->width() <= scroll->viewport()->width(), "notification toolbox controls fit within viewport horizontally");
+            }
+        }
+        toolbox->resize(440, 700); QApplication::processEvents();
+        const auto initialPalette = QApplication::palette();
+        auto darkPalette = initialPalette; darkPalette.setColor(QPalette::Window, QColor("#292638")); darkPalette.setColor(QPalette::WindowText, QColor("#F7F4EE"));
+        QApplication::setPalette(darkPalette); QApplication::processEvents();
+        auto* nestedCard = toolbox->findChild<QWidget*>("utilityCard");
+        check(nestedCard && nestedCard->palette().color(QPalette::Window).lightnessF() < .5, "nested notification card follows toolbox dark appearance");
+        QApplication::setPalette(initialPalette); QApplication::processEvents();
+        if (const auto capture = qEnvironmentVariable("CLIBBY_UTILITY_CAPTURE"); !capture.isEmpty()) {
             check(QDir().mkpath(capture), "capture output directory created");
             check(card->grab().save(capture + "/notification.png"), "notification capture saved");
             check(toolbox->grab().save(capture + "/toolbox.png"), "toolbox capture saved");
+            const auto appearance = QApplication::palette();
+            auto dark = appearance; dark.setColor(QPalette::Window, QColor("#292638")); dark.setColor(QPalette::WindowText, QColor("#F7F4EE"));
+            QApplication::setPalette(dark); QApplication::processEvents();
+            check(toolbox->grab().save(capture + "/toolbox-dark.png"), "dark toolbox capture saved");
+            check(card->grab().save(capture + "/notification-dark.png"), "dark notification capture saved");
+            QApplication::setPalette(appearance); QApplication::processEvents();
         }
         auto* pause = toolbox->findChild<QToolButton*>("toolboxPause");
         check(pause, "toolbox exposes existing pause control");

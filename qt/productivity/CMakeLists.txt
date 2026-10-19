@@ -1,0 +1,6 @@
+add_library(pet_productivity service.cpp)
+target_link_libraries(pet_productivity PUBLIC Qt6::Core)
+target_include_directories(pet_productivity PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
+add_executable(productivity_service_tests service_tests.cpp)
+target_link_libraries(productivity_service_tests PRIVATE pet_productivity)
+add_test(NAME productivity_service COMMAND productivity_service_tests)

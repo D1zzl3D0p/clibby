@@ -52,7 +52,7 @@ void checkPolicyDoesNotMove(QWindow *window) {
 
 QQuickWindow *petWindow() {
     for (auto *window : QGuiApplication::topLevelWindows())
-        if (window->title() == "Better Pets")
+        if (window->title() == "Clibby")
             if (auto *quick = dynamic_cast<QQuickWindow *>(window)) return quick;
     throw std::runtime_error("DesktopHost owns a discoverable pet window");
 }

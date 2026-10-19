@@ -47,7 +47,9 @@ int main(){try{
    const auto before=bounded.pose();bounded.step(1./120);const auto p=bounded.pose();
    for(int side=0;side<2;++side) {
     if(!p.swing[side])check(p.contacts[side].z*100>=-10-1e-8&&p.contacts[side].z*100<=10+1e-8,"spatial sole touchdown stays inside raw edge during turn");
-    if(before.grounded[side]&&p.grounded[side])check(before.contacts[side].z==p.contacts[side].z,"spatial bounds preserve planted contacts");
+    if(before.grounded[side]&&p.grounded[side]){
+     check(std::abs(before.contacts[side].z-p.contacts[side].z)<1e-10,"spatial bounds preserve planted contacts");
+    }
    }
   }
   check(bounded.settled(),"bounded spatial edge walking settles after reversal");

@@ -35,6 +35,8 @@ bool validPreferences(const Preferences &p) {
     return true;
   };
   return std::isfinite(p.walkingSpeed) && p.walkingSpeed >= 0.5 && p.walkingSpeed <= 3.0 &&
+         std::isfinite(p.companionScale) && p.companionScale >= 0.5 && p.companionScale <= 2.0 &&
+         std::isfinite(p.pixelation) && p.pixelation >= 0.25 && p.pixelation <= 4.0 &&
          validDisplay(p.display) && validCharacter() &&
          (!p.hasPosition || (qAbs(qint64(p.position.x())) <= maxCoordinate &&
                              qAbs(qint64(p.position.y())) <= maxCoordinate));
@@ -64,6 +66,14 @@ Preferences loadPreferences(const QString &path) {
     if (!object["walkingSpeed"].isDouble()) return {};
     p.walkingSpeed = object["walkingSpeed"].toDouble();
   }
+  if (object.contains("companionScale")) {
+    if (!object["companionScale"].isDouble()) return {};
+    p.companionScale = object["companionScale"].toDouble();
+  }
+  if (object.contains("pixelation")) {
+    if (!object["pixelation"].isDouble()) return {};
+    p.pixelation = object["pixelation"].toDouble();
+  }
   if (object.contains("display")) {
     if (!object["display"].isString())
       return {};
@@ -91,6 +101,8 @@ bool savePreferences(const QString &path, const Preferences &p) {
   QJsonObject object{{"version", 1},
                      {"paused", p.paused},
                      {"walkingSpeed", p.walkingSpeed},
+                     {"companionScale", p.companionScale},
+                     {"pixelation", p.pixelation},
                      {"character", p.character},
                      {"display", p.display}};
   if (p.hasPosition)

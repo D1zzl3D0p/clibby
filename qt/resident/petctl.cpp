@@ -1,4 +1,5 @@
 #include "ipc.h"
+#include "app_identity.h"
 #include <QCoreApplication>
 #include <QDir>
 #include <QElapsedTimer>
@@ -15,13 +16,14 @@ namespace {
 class ConnectionFailure : public std::runtime_error { using std::runtime_error::runtime_error; };
 const char* help =
     "Usage: petctl [--state-dir ABS_DIR] COMMAND [OPTIONS]\n"
-    "Commands: update, clear, state\n"
+    "Commands: update, clear, state, productivity\n"
+    "productivity --method OPERATION --json JSON_OBJECT\n"
     "update --source ID --session ID --label TEXT --seq N --status STATUS [--ttl SECONDS] [--source-url URL]\n"
     "clear  --source ID --session ID --seq N\n"
     "state  (no command options)\n"
     "Statuses: working, needs_input, completed, failed. TTL defaults to 120 (1..3600).\n"
     "IDs: 1..64 ASCII letters/digits/._-. Sequence: 0..9007199254740991.\n"
-    "--state-dir may appear anywhere; defaults to Better Pets per-user app data.\n"
+    "--state-dir may appear anywhere; defaults to Clibby per-user app data.\n"
     "Successful command result is compact JSON on stdout; RPC errors are JSON envelopes.\n"
     "Exit codes: 0 success/help, 2 usage, 3 connection/timeout, 4 RPC rejection.\n";
 qint64 number(const QString& text, qint64 maximum, const char* name, qint64 minimum = 0) {
@@ -58,7 +60,7 @@ void output(const QJsonObject& value) { std::cout << QJsonDocument(value).toJson
 }
 int main(int argc, char** argv) {
     QCoreApplication app(argc, argv);
-    app.setApplicationName("Better Pets"); app.setOrganizationName("Better Pets");
+    app.setApplicationName("Clibby"); app.setOrganizationName("Clibby");
     try {
         QString state, command;
         QMap<QString, QString> options;
@@ -71,7 +73,7 @@ int main(int argc, char** argv) {
                 if (!QDir::isAbsolutePath(state)) throw std::runtime_error("state directory must be absolute");
             } else if (arg.startsWith("--")) {
                 const auto key = arg.mid(2);
-                if (!QStringList{"source", "session", "label", "seq", "status", "ttl", "source-url"}.contains(key)) throw std::runtime_error("unknown option");
+                if (!QStringList{"source", "session", "label", "seq", "status", "ttl", "source-url", "method", "json"}.contains(key)) throw std::runtime_error("unknown option");
                 if (++i >= argc || options.contains(key)) throw std::runtime_error("missing or duplicate option");
                 options[key] = QString::fromLocal8Bit(argv[i]);
             } else {
@@ -79,14 +81,25 @@ int main(int argc, char** argv) {
                 command = arg;
             }
         }
-        if (!QStringList{"update", "clear", "state"}.contains(command)) throw std::runtime_error("command must be update, clear, or state");
+        if (!QStringList{"update", "clear", "state", "productivity"}.contains(command)) throw std::runtime_error("command must be update, clear, state, or productivity");
         QStringList required, allowed;
         if (command == "update") { required = {"source", "session", "label", "seq", "status"}; allowed = required; allowed << "ttl" << "source-url"; }
         if (command == "clear") { required = {"source", "session", "seq"}; allowed = required; }
+        if (command == "productivity") { required = {"method", "json"}; allowed = required; }
         for (const auto& key : required) if (!options.contains(key)) throw std::runtime_error("missing --" + key.toStdString());
         for (auto it = options.begin(); it != options.end(); ++it) if (!allowed.contains(it.key())) throw std::runtime_error("option not valid for command");
         QJsonObject params;
-        if (command != "state") {
+        if (command == "productivity") {
+            if (!QStringList{"publish", "list", "act", "timer_create", "timer_act", "timers", "capabilities"}.contains(options["method"]))
+                throw std::runtime_error("unknown productivity method");
+            if (options["json"].toUtf8().size() > 15000) throw std::runtime_error("productivity payload exceeds frame budget");
+            QJsonParseError error;
+            auto doc = QJsonDocument::fromJson(options["json"].toUtf8(), &error);
+            if (error.error != QJsonParseError::NoError || !doc.isObject()) throw std::runtime_error("--json must be a JSON object");
+            params = doc.object();
+            const QJsonObject frame{{"jsonrpc", "2.0"}, {"id", 2}, {"method", "productivity." + options["method"]}, {"params", params}};
+            if (QJsonDocument(frame).toJson(QJsonDocument::Compact).size() > 16384) throw std::runtime_error("productivity request exceeds frame limit");
+        } else if (command != "state") {
             const QRegularExpression pattern("\\A[A-Za-z0-9._-]{1,64}\\z");
             for (const auto& key : QStringList{"source", "session"}) {
                 if (!pattern.match(options[key]).hasMatch()) throw std::runtime_error("invalid source/session ID");
@@ -119,7 +132,7 @@ int main(int argc, char** argv) {
             params.insert("label", label); params.insert("status", options["status"]);
             if (options.contains("ttl")) params.insert("ttl", static_cast<double>(number(options["ttl"], 3600, "ttl", 1)));
         }
-        if (state.isEmpty()) state = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+        if (state.isEmpty()) state = pets::defaultStateDirectory();
         QString endpoint;
         try { endpoint = pets::ipcEndpoint(state); } catch (const std::exception& e) { throw ConnectionFailure(e.what()); }
         if (!pets::ipcRuntimeDirectoryIsPrivate(endpoint)) throw ConnectionFailure("IPC runtime directory is missing or unsafe");
@@ -129,7 +142,9 @@ int main(int argc, char** argv) {
         auto reply = transact(socket, "hello", {{"api_major", 1}}, 1);
         if (reply.contains("error")) { output(reply); return 4; }
         if (reply.value("result").toObject().value("api_major") != QJsonValue(1)) throw ConnectionFailure("unsupported resident API major");
-        reply = transact(socket, command == "state" ? "state.get" : "session." + command, params, 2);
+        const auto method = command == "productivity" ? "productivity." + options["method"]
+            : command == "state" ? QString("state.get") : "session." + command;
+        reply = transact(socket, method, params, 2);
         if (reply.contains("error")) { output(reply); return 4; }
         if (!reply.value("result").isObject()) throw ConnectionFailure("invalid command result");
         output(reply.value("result").toObject()); return 0;

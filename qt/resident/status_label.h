@@ -5,6 +5,7 @@
 #include <functional>
 class QAction;
 class QDoubleSpinBox;
+class QGridLayout;
 class QLabel;
 class QPushButton;
 class QVBoxLayout;
@@ -22,6 +23,7 @@ public:
     UtilityDispatch dispatch;
 private:
     QLabel* label_;
+    QLabel* state_;
     QLabel* feedback_;
     QPushButton* open_;
     QPushButton* acknowledge_;
@@ -45,7 +47,8 @@ public:
 private:
     QDoubleSpinBox* walkingSpeed_;
     QVBoxLayout* rows_;
-    QVBoxLayout* controls_;
+    QGridLayout* controls_;
+    int controlCount_ = 0;
     std::vector<SessionRecord> records_;
 };
 }

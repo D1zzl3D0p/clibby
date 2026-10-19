@@ -23,6 +23,10 @@ namespace {
 constexpr int frameLimit = 16 * 1024;
 constexpr int txLimit = 64 * 1024;
 constexpr double safeInteger = 9007199254740991.0;
+const QStringList productivityMethods{
+    "productivity.publish", "productivity.list", "productivity.act",
+    "productivity.timer_create", "productivity.timer_act", "productivity.timers",
+    "productivity.capabilities"};
 bool integer(const QJsonValue& value) {
     return value.isDouble() && std::isfinite(value.toDouble()) &&
            std::floor(value.toDouble()) == value.toDouble();
@@ -108,7 +112,7 @@ QJsonObject RpcProtocol::process(const QByteArray& bytes, qint64 nowMilliseconds
             id = QJsonValue::Null; return fail(-32600, "invalid JSON-RPC envelope");
         }
         const auto method = request.value("method").toString();
-        if (method != "hello" && method != "session.update" && method != "session.clear" && method != "state.get") {
+        if (method != "hello" && method != "session.update" && method != "session.clear" && method != "state.get" && !productivityMethods.contains(method)) {
             return fail(-32601, "unknown method");
         }
         if (request.contains("params") && !request.value("params").isObject()) { return fail(-32602, "params must be an object"); }
@@ -117,9 +121,11 @@ QJsonObject RpcProtocol::process(const QByteArray& bytes, qint64 nowMilliseconds
             if (!integer(params.value("api_major"))) { return fail(-32602, "api_major must be an integer"); }
             if (params.value("api_major").toDouble() != 1) { return fail(-32001, "unsupported API major"); }
             handshaken_ = true;
+            QJsonArray methods{"hello", "session.update", "session.clear", "state.get"};
+            for (const auto &name : productivityMethods) methods.append(name);
             return response(id, 0, {}, {
                 {"api_major", 1},
-                {"methods", QJsonArray{"hello", "session.update", "session.clear", "state.get"}},
+                {"methods", methods},
                 {"statuses", QJsonArray{"working", "needs_input", "completed", "failed"}},
                 {"limits", QJsonObject{{"frame_bytes", frameLimit}, {"clients", 16}, {"session_records", 32},
                     {"pending_requests", 64}, {"tx_bytes", txLimit}, {"incomplete_frame_seconds", 5},
