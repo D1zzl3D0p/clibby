@@ -55,7 +55,7 @@ Avoid mixing unrelated character or runtime work into repository housekeeping.
 
 ## Licensing
 
-Character packages include their own license and attribution files. There is
-currently no repository-wide license grant for the remaining source or brand
-assets. Preserve existing notices; do not assume package licenses cover the
-whole repository. Qt and other dependencies retain their own licenses.
+Clibby's source and original brand assets use the [MIT License](LICENSE).
+Character packages retain their own license and attribution files. Preserve all
+existing copyright and attribution notices. Qt, other dependencies and referenced
+third-party material retain their own licenses.

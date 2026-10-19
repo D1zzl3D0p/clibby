@@ -75,8 +75,8 @@ toolkit study remain in `docs/evidence/` and `docs/archive/`.
 
 ## Licensing and provenance
 
-Character packages carry individual licenses and attribution. A repository-wide
-license for the remaining source and brand assets has not yet been selected.
-See [contributing](CONTRIBUTING.md#licensing) and preserve dependency notices when
-redistributing. Historical research and evidence retain the names and metadata
-used when recorded.
+Clibby's source and original brand assets are licensed under the [MIT License](LICENSE).
+Character packages retain their individual licenses and attribution; Qt and other
+dependencies retain their own licenses. See [contributing](CONTRIBUTING.md#licensing)
+and preserve existing notices when redistributing. Historical research and evidence
+retain the names and metadata used when recorded.

@@ -1,5 +1,15 @@
 # New-session handoff
 
+## Public GitHub repository and MIT license (2026-10-18)
+
+The repository is published at [D1zzl3D0p/clibby](https://github.com/D1zzl3D0p/clibby)
+with public visibility and `main` as the default branch. The user selected the
+root [MIT License](../LICENSE) for source and original brand assets. Existing
+character copyright/attribution and dependency licenses remain intact. This
+supersedes earlier notes that repository-wide licensing was unselected.
+The validated runtime is unchanged: 109 Python passes; 88 Qt passes and five
+environment skips. Build outputs and new benchmark results remain local.
+
 ## Final pre-upload validation passed (2026-10-18)
 
 Independent fresh Release/app build in `build/github-edge-fix-2026-10-18/`
